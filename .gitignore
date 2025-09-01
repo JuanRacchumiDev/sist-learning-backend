@@ -7,4 +7,6 @@ src/uploads
 dist
 
 # local env files
+.env
 .env.development
+.env.production
