@@ -1,5 +1,5 @@
 import app from './app'
-import sequelize from './config/db'
+import sequelize from './app/config/db'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 
