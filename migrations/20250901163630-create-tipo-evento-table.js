@@ -11,7 +11,7 @@ module.exports = {
      */
     await queryInterface.createTable('tipoevento', {
       id: {
-        type: Sequelize.INT,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false,
         autoIncrement: true

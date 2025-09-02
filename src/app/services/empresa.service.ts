@@ -1,5 +1,5 @@
 import Empresa from '../models/empresa.models';
-import { IEmpresa, EmpresaResponse } from '../interfaces/empresaInterface'
+import { IEmpresa, EmpresaResponse } from '../interfaces/Empresa/IEmpresa'
 
 class EmpresaService {
     async getEmpresas(): Promise<EmpresaResponse> {

@@ -1,5 +1,5 @@
 import { ITrabajador } from "../interfaces/trabajadorInterface"
-import TrabajadorRepository from "../repositories/Trabajador/trabajadorRepository"
+import TrabajadorRepository from "../repositories/Trabajador/TrabajadorRepository"
 
 class TrabajadorService {
     async getTrabajadores() {

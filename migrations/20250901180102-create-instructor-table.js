@@ -17,7 +17,7 @@ module.exports = {
         autoIncrement: true
       },
       id_tipodocumento: {
-        type: Sequelize.INT,
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'tipodocumentos',

@@ -1,5 +1,5 @@
 import { IInstructor } from "../interfaces/instructorInterface"
-import InstructorRepository from "../repositories/Instructor/instructorRepository"
+import InstructorRepository from "../repositories/Instructor/InstructorRepository"
 
 class InstructorService {
     async getInstructores() {

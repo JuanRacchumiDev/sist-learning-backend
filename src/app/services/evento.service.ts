@@ -1,5 +1,5 @@
 import { IEvento } from "../interfaces/eventoInterface"
-import EventoRepository from "../repositories/Evento/eventoRepository"
+import EventoRepository from "../repositories/Evento/EventoRepository"
 
 class EventoService {
     async getEventos() {
