@@ -1,16 +1,13 @@
-import GrupoAdjunto from '../models/grupoAdjunto.models'
-import { IGrupoAdjunto, GrupoAdjuntoResponse } from "../interfaces/GrupoAdjunto/IGrupoAdjunto"
+import { GrupoAdjunto } from '../../models/grupoAdjunto.models'
+import { IGrupoAdjunto, GrupoAdjuntoResponse, GrupoAdjuntoResponsePaginate, IGrupoAdjuntoPaginate } from "../../interfaces/GrupoAdjunto/IGrupoAdjunto"
+import { GRUPO_ADJUNTO_ATTRIBUTES } from '../../../constants/GrupoAdjuntoConstant'
+import HPagination from '../../../helpers/HPagination'
 
 class GrupoAdjuntoRepository {
     async getAll(): Promise<GrupoAdjuntoResponse> {
         try {
             const grupos = await GrupoAdjunto.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: GRUPO_ADJUNTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -23,18 +20,56 @@ class GrupoAdjuntoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<GrupoAdjuntoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await GrupoAdjunto.findAndCountAll({
+                attributes: GRUPO_ADJUNTO_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IGrupoAdjuntoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<GrupoAdjuntoResponse> {
         try {
             const grupos = await GrupoAdjunto.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: GRUPO_ADJUNTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -50,12 +85,7 @@ class GrupoAdjuntoRepository {
     async getById(id: number): Promise<GrupoAdjuntoResponse> {
         try {
             const grupo = await GrupoAdjunto.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ]
+                attributes: GRUPO_ADJUNTO_ATTRIBUTES
             })
 
             if (!grupo) {
@@ -71,9 +101,11 @@ class GrupoAdjuntoRepository {
 
     async create(data: IGrupoAdjunto): Promise<GrupoAdjuntoResponse> {
         try {
-            const newGrupo = await GrupoAdjunto.create(data as any)
+            const newGrupo = await GrupoAdjunto.create(data as IGrupoAdjunto)
 
-            if (newGrupo.id) {
+            const { id } = newGrupo
+
+            if (id) {
                 return { result: true, message: 'Grupo adjunto registrado con éxito', data: newGrupo, status: 200 }
             }
 
@@ -92,7 +124,9 @@ class GrupoAdjuntoRepository {
                 return { result: false, message: 'Grupo adjunto no encontrado', data: [], status: 200 }
             }
 
-            const updatedGrupo = await grupo.update(data)
+            const dataGrupoAdjunto: Partial<IGrupoAdjunto> = data
+
+            const updatedGrupo = await grupo.update(dataGrupoAdjunto)
 
             return { result: true, message: 'Grupo adjunto actualizado con éxito', data: updatedGrupo, status: 200 }
         } catch (error) {

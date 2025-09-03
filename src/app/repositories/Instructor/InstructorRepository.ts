@@ -1,39 +1,19 @@
+import { INSTRUCTOR_ATTRIBUTES } from "../../../constants/InstructorConstant";
 import HString from "../../../helpers/HString";
-import { IInstructor, InstructorResponse } from "../interfaces/instructorInterface";
-import Instructor from "../../models/instructor.models"
-import Pais from "../../models/pais.models";
-import TipoDocumento from "../../models/tipoDocumento.models";
+import { IInstructor, IInstructorPaginate, InstructorResponse, InstructorResponsePaginate } from "../../interfaces/Instructor/IInstructor";
+import { Instructor } from "../../models/instructor.models"
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
+import HPagination from "../../../helpers/HPagination";
 
 class InstructorRepository {
     async getAll(): Promise<InstructorResponse> {
         try {
             const instructores = await Instructor.findAll({
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'nombre_capitalized',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: INSTRUCTOR_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    },
-                    {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE
                 ],
                 order: [
                     ['apellido_paterno', 'ASC']
@@ -47,38 +27,63 @@ class InstructorRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<InstructorResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Instructor.findAndCountAll({
+                attributes: INSTRUCTOR_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IInstructorPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<InstructorResponse> {
         try {
             const instructores = await Instructor.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'nombre_capitalized',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: INSTRUCTOR_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    },
-                    {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE
                 ],
                 order: [
                     ['apellido_paterno', 'ASC']
@@ -95,32 +100,10 @@ class InstructorRepository {
     async getById(id: number): Promise<InstructorResponse> {
         try {
             const instructor = await Instructor.findByPk(id, {
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'nombre_capitalized',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: INSTRUCTOR_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    },
-                    {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE
                 ]
             })
 
@@ -142,31 +125,10 @@ class InstructorRepository {
                     id_tipodocumento: idTipoDoc,
                     numero_documento: numDoc
                 },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'nombre_capitalized',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: INSTRUCTOR_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    }, {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE
                 ]
             })
 
@@ -184,32 +146,11 @@ class InstructorRepository {
     async getByNumDoc(numDoc: string): Promise<InstructorResponse> {
         try {
             const instructor = await Instructor.findOne({
-                where: { numDoc },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'nombre_capitalized',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                where: { numero_documento: numDoc },
+                attributes: INSTRUCTOR_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    }, {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE
                 ]
             })
 
@@ -226,21 +167,27 @@ class InstructorRepository {
 
     async create(data: IInstructor): Promise<InstructorResponse> {
         try {
-            const nombreCompleto = `${data.nombres} ${data.apellido_paterno} ${data.apellido_materno}`
+            const { nombres, apellido_paterno, apellido_materno } = data
+
+            const nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`
+
             const options = {
                 timeZone: 'America/Lima',
                 hour12: false
             }
+
             const nombreCapitalized = HString.capitalizeNames(nombreCompleto)
 
-            data.apellido_paterno = data.apellido_paterno?.trim()
-            data.apellido_materno = data.apellido_materno?.trim()
-            data.nombres = data.nombres?.trim()
+            data.apellido_paterno = apellido_paterno?.trim()
+            data.apellido_materno = apellido_materno?.trim()
+            data.nombres = nombres?.trim()
             data.nombre_capitalized = nombreCapitalized
 
-            const newInstructor = await Instructor.create(data as any)
+            const newInstructor = await Instructor.create(data as IInstructor)
 
-            if (newInstructor.id) {
+            const { id } = newInstructor
+
+            if (id) {
                 return { result: true, message: 'Instructor registrado con éxito', data: newInstructor, status: 200 }
             }
 
@@ -271,7 +218,9 @@ class InstructorRepository {
             data.nombres = nombres
             data.nombre_capitalized = nombreCapitalized
 
-            const updatedInstructor = await instructor.update(data)
+            const dataInstructor: Partial<IInstructor> = data
+
+            const updatedInstructor = await instructor.update(dataInstructor)
 
             return { result: true, message: 'Instructor actualizado con éxito', data: updatedInstructor, status: 200 }
         } catch (error) {
@@ -289,6 +238,7 @@ class InstructorRepository {
             }
 
             instructor.estado = estado
+
             await instructor.save()
 
             return { result: true, message: 'Estado actualizado con éxito', data: instructor, status: 200 }

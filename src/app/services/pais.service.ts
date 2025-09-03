@@ -1,9 +1,13 @@
 import { IPais } from "../interfaces/Pais/IPais"
-import PaisRepository from "../repositories/paisRepository"
+import PaisRepository from "../repositories/Pais/PaisRepository"
 
 class PaisService {
     async getPaises() {
         return await PaisRepository.getAll()
+    }
+
+    async getPaisPaginado(page: number, limit: number, estado?: boolean) {
+        return await PaisRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getPaisesPorEstado(estado: boolean) {

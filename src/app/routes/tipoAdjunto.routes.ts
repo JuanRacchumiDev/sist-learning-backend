@@ -7,8 +7,8 @@ const router = Router()
 router.get('/', authToken, TipoAdjuntoController.getTipos)
 router.get('/:id', authToken, TipoAdjuntoController.getTipoPorId)
 router.post('/', authToken, TipoAdjuntoController.createTipo)
-router.put('/:id', authToken, TipoAdjuntoController.updateTipo)
-router.put('/cambiar-estado/:id', authToken, TipoAdjuntoController.updateEstado)
+router.patch('/:id', authToken, TipoAdjuntoController.updateTipo)
+router.patch('/cambiar-estado/:id', authToken, TipoAdjuntoController.updateEstado)
 router.delete('/:id', authToken, TipoAdjuntoController.deleteTipo)
 
 export default router

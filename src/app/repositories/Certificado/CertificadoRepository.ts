@@ -1,53 +1,28 @@
-import { CertificadoResponse, ICertificado } from "../../interfaces/Certificado/ICertificado";
-import Alumno from "../../models/alumno.models";
-import Certificado from "../../models/certificado.models";
-import Evento from "../../models/evento.models";
+import { CertificadoResponse, CertificadoResponsePaginate, ICertificado, ICertificadoPaginate } from "../../interfaces/Certificado/ICertificado";
+import { Alumno } from "../../models/alumno.models";
+import { Certificado } from "../../models/certificado.models";
+import { Evento } from "../../models/evento.models";
 import fs from 'fs';
 import AlumnoService from '../../services/alumno.service';
 import EventoService from '../../services/evento.service';
-import { IAlumno } from "../interfaces/alumnoInterface";
-import { IEvento } from "../interfaces/eventoInterface";
+import { IAlumno } from "../../interfaces/Alumno/IAlumno";
+import { IEvento } from "../../interfaces/Evento/IEvento";
 import HString from "../../../helpers/HString";
 import HPdf from "../../../helpers/HPdf"
+import { CERTIFICADO_ATTRIBUTES } from "../../../constants/CertificadoConstant";
+import { ALUMNO_INCLUDE } from "../../../includes/AlumnoInclude";
+import { EVENTO_INCLUDE } from "../../../includes/EventoInclude";
+import { TCertificado, TResponseCertificado } from "../../../app/types/TCertificado";
+import HPagination from "../../../helpers/HPagination";
 
 class CertificadoRepository {
     async getAll(): Promise<CertificadoResponse> {
         try {
             const certificados = await Certificado.findAll({
-                attributes: [
-                    'id',
-                    'id_alumno',
-                    'id_evento',
-                    'codigo',
-                    'codigoQR',
-                    'ruta',
-                    'fileName',
-                    'templateName',
-                    'fecha_registro',
-                    'fecha_descarga',
-                    'fecha_envio',
-                    'estado',
-                    'nombre_alumno_impresion'
-                ],
+                attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    }, {
-                        model: Evento,
-                        attributes: [
-                            'id',
-                            'titulo',
-                            'fecha',
-                            'fecha_fin',
-                            'duracion'
-                        ]
-                    }
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE
                 ],
                 order: [
                     ['id', 'DESC']
@@ -61,47 +36,63 @@ class CertificadoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CertificadoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Certificado.findAndCountAll({
+                attributes: CERTIFICADO_ATTRIBUTES,
+                include: [
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ICertificadoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getByAlumnoId(idAlumno?: number): Promise<CertificadoResponse> {
         try {
             const whereClause = idAlumno ? { id_alumno: idAlumno } : {}
 
             const certificados = await Certificado.findAll({
                 where: whereClause,
-                attributes: [
-                    'id',
-                    'id_alumno',
-                    'id_evento',
-                    'codigo',
-                    'codigoQR',
-                    'ruta',
-                    'fileName',
-                    'fecha_registro',
-                    'fecha_descarga',
-                    'templateName',
-                    'fecha_envio',
-                    'estado',
-                    'nombre_alumno_impresion'
-                ],
+                attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres',
-                            'nombre_capitalized'
-                        ]
-                    }, {
-                        model: Evento,
-                        attributes: [
-                            'id',
-                            'titulo',
-                            'fecha',
-                            'fecha_fin',
-                            'duracion'
-                        ]
-                    }
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE
                 ],
                 order: [
                     ['id', 'desc']
@@ -119,41 +110,10 @@ class CertificadoRepository {
         try {
             const certificado = await Certificado.findOne({
                 where: { codigo },
-                attributes: [
-                    'id',
-                    'id_alumno',
-                    'id_evento',
-                    'codigo',
-                    'codigoQR',
-                    'ruta',
-                    'fileName',
-                    'fecha_registro',
-                    'fecha_descarga',
-                    'templateName',
-                    'fecha_envio',
-                    'estado',
-                    'nombre_alumno_impresion'
-                ],
+                attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres',
-                            'nombre_capitalized'
-                        ]
-                    }, {
-                        model: Evento,
-                        attributes: [
-                            'id',
-                            'titulo',
-                            'fecha',
-                            'fecha_fin',
-                            'duracion'
-                        ]
-                    }
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE
                 ]
             })
 
@@ -171,41 +131,10 @@ class CertificadoRepository {
     async getById(id: number): Promise<CertificadoResponse> {
         try {
             const certificado = await Certificado.findByPk(id, {
-                attributes: [
-                    'id',
-                    'id_alumno',
-                    'id_evento',
-                    'codigo',
-                    'codigoQR',
-                    'ruta',
-                    'fileName',
-                    'fecha_registro',
-                    'fecha_descarga',
-                    'templateName',
-                    'fecha_envio',
-                    'estado',
-                    'nombre_alumno_impresion'
-                ],
+                attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres',
-                            'nombre_capitalized'
-                        ]
-                    }, {
-                        model: Evento,
-                        attributes: [
-                            'id',
-                            'titulo',
-                            'fecha',
-                            'fecha_fin',
-                            'duracion'
-                        ]
-                    }
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE
                 ]
             })
 
@@ -227,41 +156,10 @@ class CertificadoRepository {
                     id_alumno: idAlumno,
                     id_evento: idEvento
                 },
-                attributes: [
-                    'id',
-                    'id_alumno',
-                    'id_evento',
-                    'codigo',
-                    'codigoQR',
-                    'ruta',
-                    'fileName',
-                    'fecha_registro',
-                    'fecha_descarga',
-                    'templateName',
-                    'fecha_envio',
-                    'estado',
-                    'nombre_alumno_impresion'
-                ],
+                attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres',
-                            'nombre_capitalized'
-                        ]
-                    }, {
-                        model: Evento,
-                        attributes: [
-                            'id',
-                            'titulo',
-                            'fecha',
-                            'fecha_fin',
-                            'duracion'
-                        ]
-                    }
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE
                 ]
             })
 
@@ -280,10 +178,12 @@ class CertificadoRepository {
         try {
             const response = await this.getById(id)
 
-            const { result } = response
+            const { result, error } = response
 
             if (result) {
-                const certificado = response.data as ICertificado
+                const { data } = response
+
+                const certificado = data as ICertificado
 
                 const { ruta, fileName } = certificado
 
@@ -303,7 +203,7 @@ class CertificadoRepository {
 
                 return { result: false, message: 'Certificado no encontrado', outputPath: null, fileName: null, status: 200 }
             } else {
-                return { result: false, error: response.error, outputPath: null, fileName: null, status: 500 }
+                return { result: false, error, outputPath: null, fileName: null, status: 500 }
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
@@ -320,29 +220,31 @@ class CertificadoRepository {
 
             const alumnoResponse = await AlumnoService.getAlumnoPorId(idAlumno)
 
-            const { error } = alumnoResponse
+            const { result: resultAlumno, error: errorAlumno, message: messageAlumno, data: dataAlumno } = alumnoResponse
 
-            if (!alumnoResponse.result) {
-                if (error) {
-                    return { result: false, error: alumnoResponse.error, status: 500 }
+            if (!resultAlumno) {
+                if (errorAlumno) {
+                    return { result: false, error: errorAlumno, status: 500 }
                 }
 
-                return { result: false, message: alumnoResponse.message, status: 200 }
+                return { result: false, message: messageAlumno, status: 200 }
             }
 
             const eventoResponse = await EventoService.getEventoPorId(idEvento)
 
-            if (!eventoResponse.result) {
-                if (eventoResponse.error) {
-                    return { result: false, error: eventoResponse.error, status: 500 }
+            const { result: resultEvento, error: errorEvento, message: messageEvento, data: dataEvento } = eventoResponse
+
+            if (!resultEvento) {
+                if (errorEvento) {
+                    return { result: false, error: errorEvento, status: 500 }
                 }
 
-                return { result: false, message: eventoResponse.message, status: 200 }
+                return { result: false, message: messageEvento, status: 200 }
             }
 
-            const alumno = alumnoResponse.data as IAlumno
+            const alumno = dataAlumno as IAlumno
 
-            const evento = eventoResponse.data as IEvento
+            const evento = dataEvento as IEvento
 
             const { nombre_capitalized } = alumno
 
@@ -353,25 +255,22 @@ class CertificadoRepository {
             data.nombre_alumno_impresion = nombreAlumnoImpresion
 
             // Generar un nuevo certificado
-            const { result, message, dataResult } = await HPdf.generarCertificado(data, alumno, evento)
+            const responseCertificado = await HPdf.generarCertificado(data, alumno, evento)
 
-            if (!result) {
-                return { result, message }
-            }
+            const { dataResult } = responseCertificado as TResponseCertificado
 
-            const outputPath = dataResult?.outputPath
-            const fileName = dataResult?.fileName
-            const codigoQR = dataResult?.codigoQR
-            const codigo = dataResult?.codigo
+            const { outputPath, fileName, codigoQR, codigo } = dataResult as TCertificado
 
             data.ruta = outputPath
             data.fileName = fileName
             data.codigoQR = codigoQR
             data.codigo = codigo
 
-            const newCertificado = await Certificado.create(data as any)
+            const newCertificado = await Certificado.create(data as ICertificado)
 
-            if (newCertificado.id) {
+            const { id } = newCertificado
+
+            if (id) {
                 return { result: true, message: 'Certificado registrado correctamente', data: newCertificado, status: 200 }
             }
 
@@ -407,29 +306,33 @@ class CertificadoRepository {
             ) {
                 const alumnoResponse = await AlumnoService.getAlumnoPorId(data.id_alumno as number)
 
-                if (!alumnoResponse.result) {
-                    if (alumnoResponse.error) {
-                        return { result: false, error: alumnoResponse.error, status: 500 }
+                const { result: resultAlumno, error: errorAlumno, message: messageAlumno, data: dataAlumno } = alumnoResponse
+
+                if (!resultAlumno) {
+                    if (errorAlumno) {
+                        return { result: false, error: errorAlumno, status: 500 }
                     }
 
-                    return { result: false, message: alumnoResponse.message, status: 201 }
+                    return { result: false, message: messageAlumno, status: 201 }
                 }
 
-                const alumno = alumnoResponse.data as IAlumno
+                const alumno = dataAlumno as IAlumno
 
                 const { nombre_capitalized } = alumno
 
                 const eventoResponse = await EventoService.getEventoPorId(data.id_evento as number)
 
-                if (!eventoResponse.result) {
-                    if (eventoResponse.error) {
-                        return { result: false, error: eventoResponse.error, status: 500 }
+                const { result: resultEvento, error: errorEvento, message: messageEvento, data: dataEvento } = eventoResponse
+
+                if (!resultEvento) {
+                    if (errorEvento) {
+                        return { result: false, error: errorEvento, status: 500 }
                     }
 
-                    return { result: false, message: eventoResponse.message, status: 201 }
+                    return { result: false, message: messageEvento, status: 201 }
                 }
 
-                const evento = eventoResponse.data as IEvento
+                const evento = dataEvento as IEvento
 
                 // Reemplazar el archivo anterior si existe
                 if (fs.existsSync(ruta as string)) {
@@ -447,16 +350,13 @@ class CertificadoRepository {
                 data.nombre_alumno_impresion = nombreAlumnoImpresion
 
                 // Generar un nuevo archivo PDF
-                const { result, message, dataResult } = await HPdf.generarCertificado(data, alumno, evento)
+                const { result: resultCertificado, message: messageCertificado, dataResult } = await HPdf.generarCertificado(data, alumno, evento)
 
-                if (!result) {
-                    return { result, message }
+                if (!resultCertificado) {
+                    return { result: resultCertificado, message: messageCertificado }
                 }
 
-                const outputPath = dataResult?.outputPath
-                const fileName = dataResult?.fileName
-                const codigoQR = dataResult?.codigoQR
-                const codigo = dataResult?.codigo
+                const { outputPath, fileName, codigoQR, codigo } = dataResult as TCertificado
 
                 // Actualizar la base de datos con la nueva ruta y los nuevos datos
                 data.ruta = outputPath;
@@ -464,8 +364,10 @@ class CertificadoRepository {
                 data.codigoQR = codigoQR;
                 data.codigo = codigo;
 
+                const dataCertificado: Partial<ICertificado> = data
+
                 // Actualizamos el registro en la base de datos
-                const updatedCertificado = await certificado.update(data);
+                const updatedCertificado = await certificado.update(dataCertificado);
 
                 return { result: true, message: 'Certificado actualizado con éxito', data: updatedCertificado, status: 200 };
             } else {
@@ -511,6 +413,7 @@ class CertificadoRepository {
 
             // Eliminar el archivo del sistema de archivos
             const outputPath = ruta as string
+
             if (fs.existsSync(outputPath)) {
                 fs.unlinkSync(outputPath)
             }

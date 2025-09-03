@@ -1,16 +1,12 @@
-import TipoAdjunto from '../models/tipoAdjunto.models'
-import { ITipoAdjunto, TipoAdjuntoResponse } from "../interfaces/TipoAdjunto/ITipoAdjunto"
+import { TipoAdjunto } from '../../models/tipoAdjunto.models'
+import { ITipoAdjunto, TipoAdjuntoResponse } from "../../interfaces/TipoAdjunto/ITipoAdjunto"
+import { TIPO_ADJUNTO_ATTRIBUTES } from '../../../constants/TipoAdjuntoConstant'
 
 class TipoAdjuntoRepository {
     async getAll(): Promise<TipoAdjuntoResponse> {
         try {
             const tipos = await TipoAdjunto.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: TIPO_ADJUNTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -27,14 +23,9 @@ class TipoAdjuntoRepository {
         try {
             const tipos = await TipoAdjunto.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: TIPO_ADJUNTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -50,12 +41,7 @@ class TipoAdjuntoRepository {
     async getById(id: number): Promise<TipoAdjuntoResponse> {
         try {
             const tipo = await TipoAdjunto.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ]
+                attributes: TIPO_ADJUNTO_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -71,9 +57,11 @@ class TipoAdjuntoRepository {
 
     async create(data: ITipoAdjunto): Promise<TipoAdjuntoResponse> {
         try {
-            const newTipo = await TipoAdjunto.create(data as any)
+            const newTipo = await TipoAdjunto.create(data as ITipoAdjunto)
 
-            if (newTipo.id) {
+            const { id } = newTipo
+
+            if (id) {
                 return { result: true, message: 'Tipo de adjunto registrado con éxito', data: newTipo, status: 200 }
             }
 
@@ -92,7 +80,9 @@ class TipoAdjuntoRepository {
                 return { result: false, message: 'Tipo de adjunto no encontrado', data: [], status: 200 }
             }
 
-            const updatedTipo = await tipo.update(data)
+            const dataTipoAdjunto: Partial<ITipoAdjunto> = data
+
+            const updatedTipo = await tipo.update(dataTipoAdjunto)
 
             return { result: true, message: 'Tipo de adjunto actualizado con éxito', data: updatedTipo, status: 200 }
         } catch (error) {

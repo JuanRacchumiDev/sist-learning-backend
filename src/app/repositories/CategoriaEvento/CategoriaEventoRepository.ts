@@ -1,17 +1,14 @@
-import CategoriaEvento from "../models/categoriaEvento.models"
-import { ICategoriaEvento, CategoriaEventoResponse } from "../interfaces/CategoriaEvento/ICategoriaEvento"
-import HString from "../../helpers/HString"
+import { CategoriaEvento } from "../../models/categoriaEvento.models"
+import { ICategoriaEvento, CategoriaEventoResponse, CategoriaEventoResponsePaginate, ICategoriaEventoPaginate } from '../../interfaces/CategoriaEvento/ICategoriaEvento';
+import HString from "../../../helpers/HString"
+import { CATEGORIA_EVENTO_ATTRIBUTES } from "../../../constants/CategoriaEventoConstant"
+import HPagination from "../../../helpers/HPagination"
 
 class CategoriaEventoRepository {
     async getAll(): Promise<CategoriaEventoResponse> {
         try {
             const categorias = await CategoriaEvento.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: CATEGORIA_EVENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -24,18 +21,56 @@ class CategoriaEventoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CategoriaEventoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await CategoriaEvento.findAndCountAll({
+                attributes: CATEGORIA_EVENTO_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ICategoriaEventoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<CategoriaEventoResponse> {
         try {
             const categorias = await CategoriaEvento.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: CATEGORIA_EVENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -51,12 +86,7 @@ class CategoriaEventoRepository {
     async getById(id: number): Promise<CategoriaEventoResponse> {
         try {
             const categoria = await CategoriaEvento.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ]
+                attributes: CATEGORIA_EVENTO_ATTRIBUTES
             })
 
             if (!categoria) {
@@ -76,7 +106,7 @@ class CategoriaEventoRepository {
 
             data.nombre_url = HString.convertToUrlString(nombre as String)
 
-            const newTipo = await CategoriaEvento.create(data as any)
+            const newTipo = await CategoriaEvento.create(data as ICategoriaEvento)
 
             if (newTipo.id) {
                 return { result: true, message: 'Categoría registrado con éxito', data: newTipo, status: 200 }
@@ -94,7 +124,7 @@ class CategoriaEventoRepository {
             const { nombre } = data
 
             if (nombre) {
-                data.nombre_url = HString.convertToUrlString(nombre as String)
+                data.nombre_url = HString.convertToUrlString(nombre as string)
             }
 
             const categoria = await CategoriaEvento.findByPk(id)
@@ -103,7 +133,9 @@ class CategoriaEventoRepository {
                 return { result: false, message: 'Categoría no encontrada', data: [], status: 200 }
             }
 
-            const updatedCategoria = await categoria.update(data)
+            const dataCategoria: Partial<ICategoriaEvento> = data
+
+            const updatedCategoria = await categoria.update(dataCategoria)
 
             return { result: true, message: 'Categoría actualizada con éxito', data: updatedCategoria, status: 200 }
         } catch (error) {

@@ -1,4 +1,4 @@
-import EmailRepository from "../repositories/emailRepository"
+import EmailRepository from "../repositories/Email/EmailRepository"
 import { IEmail } from "../interfaces/Email/IEmail"
 
 class EmailService {

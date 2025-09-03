@@ -1,9 +1,13 @@
 import { IPerfil } from "../interfaces/Perfil/IPerfil"
-import PerfilRepository from "../repositories/perfilRepository"
+import PerfilRepository from "../repositories/Perfil/PerfilRepository"
 
 class PerfilService {
     async getPerfiles() {
         return await PerfilRepository.getAll()
+    }
+
+    async getPerfilesPaginado(page: number, limit: number, estado?: boolean) {
+        return await PerfilRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getPerfilesPorEstado(estado: boolean) {

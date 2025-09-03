@@ -1,24 +1,13 @@
-import TipoDocumento from '../models/tipoDocumento.models'
-import { ITipoDocumento, TipoDocumentoResponse } from "../interfaces/TipoDocumento/ITipoDocumento"
-import HString from '../../helpers/HString'
+import { TipoDocumento } from '../../models/tipoDocumento.models'
+import { ITipoDocumento, TipoDocumentoResponse } from "../../interfaces/TipoDocumento/ITipoDocumento"
+import HString from '../../../helpers/HString'
+import { TIPO_DOCUMENTO_ATTRIBUTES } from '../../../constants/TipoDocumentoConstant'
 
 class TipoDocumentoRepository {
     async getAll(): Promise<TipoDocumentoResponse> {
         try {
             const tipos = await TipoDocumento.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -35,21 +24,9 @@ class TipoDocumentoRepository {
         try {
             const tipos = await TipoDocumento.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -73,19 +50,7 @@ class TipoDocumentoRepository {
                         "en_empresa": false,
                         "estado": true
                     },
-                    attributes: [
-                        'id',
-                        'nombre',
-                        'nombre_url',
-                        'abreviatura',
-                        'longitud',
-                        'en_persona',
-                        'en_empresa',
-                        'compra',
-                        'venta',
-                        'sistema',
-                        'estado'
-                    ],
+                    attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                     order: [
                         ['nombre', 'ASC']
                     ]
@@ -97,19 +62,7 @@ class TipoDocumentoRepository {
                         "en_persona": false,
                         "estado": true
                     },
-                    attributes: [
-                        'id',
-                        'nombre',
-                        'nombre_url',
-                        'abreviatura',
-                        'longitud',
-                        'en_persona',
-                        'en_empresa',
-                        'compra',
-                        'venta',
-                        'sistema',
-                        'estado'
-                    ],
+                    attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                     order: [
                         ['nombre', 'ASC']
                     ]
@@ -126,19 +79,7 @@ class TipoDocumentoRepository {
     async getById(id: number): Promise<TipoDocumentoResponse> {
         try {
             const tipo = await TipoDocumento.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -156,9 +97,11 @@ class TipoDocumentoRepository {
         try {
             data.nombre_url = HString.convertToUrlString(data.nombre as string)
 
-            const newTipo = await TipoDocumento.create(data as any)
+            const newTipo = await TipoDocumento.create(data as ITipoDocumento)
 
-            if (newTipo.id) {
+            const { id } = newTipo
+
+            if (id) {
                 return { result: true, message: 'Tipo de documento registrado con éxito', data: newTipo, status: 200 }
             }
 
@@ -179,7 +122,9 @@ class TipoDocumentoRepository {
                 return { result: false, message: 'Tipo de documento no encontrado', data: [], status: 200 }
             }
 
-            const updatedTipo = await tipo.update(data)
+            const dataTipoDocumento: Partial<ITipoDocumento> = data
+
+            const updatedTipo = await tipo.update(dataTipoDocumento)
 
             return { result: true, message: 'Tipo de documento actualizado con éxito', data: updatedTipo, status: 200 }
         } catch (error) {

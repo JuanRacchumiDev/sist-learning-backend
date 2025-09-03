@@ -1,17 +1,14 @@
-import HString from "../../helpers/HString";
-import { ICargo, CargoResponse } from "../interfaces/Cargo/ICargo";
-import Cargo from "../models/cargo.models";
+import { CARGO_ATTRIBUTES } from "../../../constants/CargoConstant";
+import HString from "../../../helpers/HString";
+import { ICargo, CargoResponse, CargoResponsePaginate, ICargoPaginate } from "../../interfaces/Cargo/ICargo";
+import { Cargo } from "../../models/cargo.models";
+import HPagination from "../../../helpers/HPagination";
 
 class CargoRepository {
     async getAll(): Promise<CargoResponse> {
         try {
             const cargos = await Cargo.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: CARGO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -24,18 +21,56 @@ class CargoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CargoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Cargo.findAndCountAll({
+                attributes: CARGO_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ICargoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<CargoResponse> {
         try {
             const cargos = await Cargo.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: CARGO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -51,12 +86,7 @@ class CargoRepository {
     async getById(id: number): Promise<CargoResponse> {
         try {
             const cargo = await Cargo.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ]
+                attributes: CARGO_ATTRIBUTES
             })
 
             if (!cargo) {
@@ -76,12 +106,7 @@ class CargoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'estado'
-                ],
+                attributes: CARGO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -104,9 +129,11 @@ class CargoRepository {
 
             data.nombre_url = HString.convertToUrlString(nombre as string)
 
-            const newCargo = await Cargo.create(data as any)
+            const newCargo = await Cargo.create(data as ICargo)
 
-            if (newCargo.id) {
+            const { id } = newCargo
+
+            if (id) {
                 return { result: true, message: 'Cargo registrado con éxito', data: newCargo, status: 200 }
             }
 
@@ -131,7 +158,9 @@ class CargoRepository {
                 return { result: false, message: 'Cargo no encontrado', status: 200 }
             }
 
-            const updatedCargo = await cargo.update(data)
+            const dataCargo: Partial<ICargo> = data
+
+            const updatedCargo = await cargo.update(dataCargo)
 
             return { result: true, message: 'Cargo actualizado con éxito', data: updatedCargo, status: 200 }
         } catch (error) {
@@ -149,6 +178,7 @@ class CargoRepository {
             }
 
             cargo.estado = estado
+
             await cargo.save()
 
             return { result: true, message: 'Estado actualizado con éxito', data: cargo, status: 200 }

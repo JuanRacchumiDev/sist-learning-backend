@@ -1,9 +1,13 @@
 import { ITipoEvento } from "../interfaces/TipoEvento/ITipoEvento"
-import TipoEventoRepository from "../repositories/tipoEventoRepository"
+import TipoEventoRepository from "../repositories/TipoEvento/TipoEventoRepository"
 
 class TipoEventoService {
     async getTipos() {
         return await TipoEventoRepository.getAll()
+    }
+
+    async getTiposPaginado(page: number, limit: number, estado?: boolean) {
+        return await TipoEventoRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getTiposPorEstado(estado: boolean) {

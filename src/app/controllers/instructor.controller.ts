@@ -14,6 +14,27 @@ class InstructorController {
         }
     }
 
+    async getInstructoresPaginated(req: Request, res: Response) {
+        const page = parseInt(req.query.page as string) || 1
+        const limit = parseInt(req.query.limit as string) || 10
+        const estadoParam = req.query.estado
+        let estado: boolean | undefined
+
+        if (typeof estadoParam === 'string') {
+            estado = estadoParam.toLowerCase() === 'true'
+        }
+
+        const response = await InstructorService.getInstructoresPaginado(page, limit, estado)
+
+        const { result } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            res.status(500).json(response)
+        }
+    }
+
     async getInstructoresPorEstado(req: Request, res: Response) {
         const { estado } = req.params
 

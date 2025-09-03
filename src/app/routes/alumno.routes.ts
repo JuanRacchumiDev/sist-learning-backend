@@ -4,13 +4,14 @@ import { authToken } from '../middleware/authMiddleware'
 
 const router = Router()
 
+router.get('/paginate', authToken, AlumnoController.getAlumnosPaginated)
 router.get('/', authToken, AlumnoController.getAlumnos)
 router.get('/:id', authToken, AlumnoController.getAlumnoPorId)
 router.get('/tipo-documento/:idTipoDoc/numero-documento/:numDoc', authToken, AlumnoController.getAlumnoPorIdTipoDocNumDoc)
 router.get('/numero-documento/:numDoc', AlumnoController.getAlumnoPorNumDoc)
 router.post('/', authToken, AlumnoController.createAlumno)
-router.put('/:id', authToken, AlumnoController.updateAlumno)
-router.put('/cambiar-estado/:id', authToken, AlumnoController.updateEstado)
+router.patch('/:id', authToken, AlumnoController.updateAlumno)
+router.patch('/cambiar-estado/:id', authToken, AlumnoController.updateEstado)
 router.delete('/:id', authToken, AlumnoController.deleteAlumno)
 
 router.post('/load-data', AlumnoController.loadData)

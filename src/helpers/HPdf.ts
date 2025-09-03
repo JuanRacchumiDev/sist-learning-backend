@@ -1,6 +1,6 @@
-import { IAlumno } from "../app/interfaces/alumnoInterface";
+import { IAlumno } from "../app/interfaces/Alumno/IAlumno";
 import { ICertificado } from "../app/interfaces/Certificado/ICertificado";
-import { IEvento } from "../app/interfaces/eventoInterface";
+import { IEvento } from "../app/interfaces/Evento/IEvento";
 import path from "path";
 import fs from 'fs';
 import HDate from "./HDate";
@@ -12,9 +12,10 @@ import { PDFDocument, PDFImage, rgb } from "pdf-lib";
 import fontkit from 'fontkit';
 import QRCode from 'qrcode';
 import dotenv from 'dotenv';
+import { TResponseCertificado } from '../app/types/TCertificado';
 
 export default class HPdf {
-    static async generarCertificado(data: ICertificado, alumno: IAlumno, evento: IEvento) {
+    static async generarCertificado(data: ICertificado, alumno: IAlumno, evento: IEvento): Promise<TResponseCertificado> {
         try {
             let codigo = ""
             let fechaFinalStr = ""
@@ -118,17 +119,6 @@ export default class HPdf {
             } else {
                 codigo = HString.generateCodigo()
             }
-
-            // if (!plantilla_certificado) {
-            //     return { result: false, message: `El evento no tiene una plantilla asignada` }
-            // }
-
-            // const withFirma = (firmado === undefined) ? true : (!firmado ? false : true)
-
-            // // Actualizando la plantilla del certificado
-            // data.templateName = this.validateFirma(plantilla_certificado, withFirma)
-
-            // console.log('data certificado', data)
 
             // Verificando que el directorio de salida exista, sino se crea
             const outputDir = path.dirname(outputPath)
@@ -1008,7 +998,6 @@ export default class HPdf {
                 await QRCode.toFile(qrOutputPath, dataUrlQR);
             }
 
-            // return { outputPath, fileName, codigoQR: qrOutputPath, codigo };
             const dataResult = {
                 outputPath,
                 fileName,

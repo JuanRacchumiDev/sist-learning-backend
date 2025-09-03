@@ -1,62 +1,27 @@
-import { IUsuario, UsuarioResponse } from "../interfaces/Usuario/IUsuario";
-import Usuario from "../models/usuario.models"
-import Trabajador from "../models/trabajador.models"
-import Instructor from "../models/instructor.models";
-import Alumno from "../models/alumno.models";
-import Perfil from "../models/perfil.models"
+import { IUsuario, IUsuarioPaginate, UsuarioResponse, UsuarioResponsePaginate } from "../../interfaces/Usuario/IUsuario";
+import { Usuario } from "../../models/usuario.models"
+import { Trabajador } from "../../models/trabajador.models"
+import { Instructor } from "../../models/instructor.models";
+import { Alumno } from "../../models/alumno.models";
+import { Perfil } from "../../models/perfil.models"
 import bcrypt from 'bcryptjs';
+import { USUARIO_ATTRIBUTES } from "../../../constants/UsuarioConstant";
+import { TRABAJADOR_INCLUDE } from "../../../includes/TrabajadorInclude";
+import { INSTRUCTOR_INCLUDE } from "../../../includes/InstructorInclude";
+import { ALUMNO_INCLUDE } from "../../../includes/AlumnoInclude";
+import { PERFIL_INCLUDE } from "../../../includes/PerfilInclude";
+import HPagination from "../../../helpers/HPagination";
 
 class UsuarioRepository {
     async getAll(): Promise<UsuarioResponse> {
         try {
             const usuarios = await Usuario.findAll({
-                attributes: [
-                    'id',
-                    'id_trabajador',
-                    'id_instructor',
-                    'id_alumno',
-                    'id_perfil',
-                    'username',
-                    'estado'
-                ],
+                attributes: USUARIO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Trabajador,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Instructor,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Perfil,
-                        attributes: [
-                            'id',
-                            'nombre'
-                        ]
-                    }
+                    TRABAJADOR_INCLUDE,
+                    INSTRUCTOR_INCLUDE,
+                    ALUMNO_INCLUDE,
+                    PERFIL_INCLUDE
                 ],
                 order: [
                     ['username', 'ASC']
@@ -70,59 +35,67 @@ class UsuarioRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<UsuarioResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Usuario.findAndCountAll({
+                attributes: USUARIO_ATTRIBUTES,
+                include: [
+                    TRABAJADOR_INCLUDE,
+                    INSTRUCTOR_INCLUDE,
+                    ALUMNO_INCLUDE,
+                    PERFIL_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IUsuarioPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<UsuarioResponse> {
         try {
             const usuarios = await Usuario.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'id_trabajador',
-                    'id_instructor',
-                    'id_alumno',
-                    'id_perfil',
-                    'username',
-                    'estado'
-                ],
+                attributes: USUARIO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Trabajador,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Instructor,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Perfil,
-                        attributes: [
-                            'id',
-                            'nombre'
-                        ]
-                    }
+                    TRABAJADOR_INCLUDE,
+                    INSTRUCTOR_INCLUDE,
+                    ALUMNO_INCLUDE,
+                    PERFIL_INCLUDE
                 ],
                 order: [
                     ['id', 'DESC']
@@ -139,53 +112,12 @@ class UsuarioRepository {
     async getById(id: number): Promise<UsuarioResponse> {
         try {
             const usuario = await Usuario.findByPk(id, {
-                attributes: [
-                    'id',
-                    'id_trabajador',
-                    'id_instructor',
-                    'id_alumno',
-                    'id_perfil',
-                    'username',
-                    'estado'
-                ],
+                attributes: USUARIO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Trabajador,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Instructor,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Perfil,
-                        attributes: [
-                            'id',
-                            'nombre'
-                        ]
-                    }
+                    TRABAJADOR_INCLUDE,
+                    INSTRUCTOR_INCLUDE,
+                    ALUMNO_INCLUDE,
+                    PERFIL_INCLUDE
                 ],
             })
             if (!usuario) {
@@ -224,53 +156,12 @@ class UsuarioRepository {
 
             const usuario = await Usuario.findOne({
                 where: whereClause,
-                attributes: [
-                    'id',
-                    'id_trabajador',
-                    'id_instructor',
-                    'id_alumno',
-                    'id_perfil',
-                    'username',
-                    'estado'
-                ],
+                attributes: USUARIO_ATTRIBUTES,
                 include: [
-                    {
-                        model: Trabajador,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Instructor,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Alumno,
-                        attributes: [
-                            'id',
-                            'numero_documento',
-                            'apellido_paterno',
-                            'apellido_materno',
-                            'nombres'
-                        ]
-                    },
-                    {
-                        model: Perfil,
-                        attributes: [
-                            'id',
-                            'nombre'
-                        ]
-                    }
+                    TRABAJADOR_INCLUDE,
+                    INSTRUCTOR_INCLUDE,
+                    ALUMNO_INCLUDE,
+                    PERFIL_INCLUDE
                 ],
             })
             if (!usuario) {
@@ -286,12 +177,16 @@ class UsuarioRepository {
     async create(data: IUsuario): Promise<UsuarioResponse> {
         try {
             const password = data.password as string
+
             const hashedPassword = await bcrypt.hash(password, 10)
+
             data.password = hashedPassword
 
-            let newUsuario = await Usuario.create(data as any)
+            const newUsuario = await Usuario.create(data as IUsuario)
 
-            if (newUsuario.id) {
+            const { id } = newUsuario
+
+            if (id) {
                 return { result: true, message: 'Usuario registrado con éxito', data: newUsuario as IUsuario, status: 200 }
             }
 
@@ -310,7 +205,9 @@ class UsuarioRepository {
                 return { result: false, data: [], message: 'Usuario no encontrado', status: 200 }
             }
 
-            const updatedUsuario = await usuario.update(data)
+            const dataUsuario: Partial<IUsuario> = data
+
+            const updatedUsuario = await usuario.update(dataUsuario)
 
             return { result: true, data: updatedUsuario as IUsuario, message: 'Usuario actualizado con éxito', status: 200 }
         } catch (error) {

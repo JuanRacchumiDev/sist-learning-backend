@@ -1,46 +1,21 @@
-import Evento from "../../models/evento.models"
-import TipoEvento from "../../models/tipoEvento.models"
-import CategoriaEvento from "../../models/categoriaEvento.models"
+import { Evento } from "../../models/evento.models"
 import HString from "../../../helpers/HString"
-import { IEvento, EventoResponse } from "../interfaces/eventoInterface"
-import Instructor from "../../models/instructor.models"
+import { IEvento, EventoResponse, EventoResponsePaginate, IEventoPaginate } from "../../interfaces/Evento/IEvento"
+import { EVENTO_ATTRIBUTES } from "../../../constants/EventoConstant"
+import { TIPO_EVENTO_INCLUDE } from "../../../includes/TipoEventoInclude"
+import { CATEGORIA_EVENTO_INCLUDE } from "../../../includes/CategoriaEventoInclude"
+import { INSTRUCTOR_INCLUDE } from "../../../includes/InstructorInclude"
+import HPagination from "../../../helpers/HPagination"
 
 class EventoRepository {
     async getAll(): Promise<EventoResponse> {
         try {
             const eventos = await Evento.findAll({
-                attributes: [
-                    'id',
-                    'id_parent',
-                    'id_tipoevento',
-                    'id_categoriaevento',
-                    'id_instructor',
-                    'titulo',
-                    'titulo_url',
-                    'descripcion',
-                    'temario',
-                    'plantilla_certificado',
-                    'fecha',
-                    'fecha_fin',
-                    'modalidad',
-                    'duracion',
-                    'capacidad_maxima',
-                    'precio',
-                    'estado'
-                ],
+                attributes: EVENTO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: CategoriaEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Instructor,
-                        attributes: ['id', 'apellido_paterno', 'apellido_materno', 'nombres', 'nombre_capitalized']
-                    }
+                    TIPO_EVENTO_INCLUDE,
+                    CATEGORIA_EVENTO_INCLUDE,
+                    INSTRUCTOR_INCLUDE
                 ],
                 order: [
                     ['id', 'DESC']
@@ -54,44 +29,65 @@ class EventoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<EventoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Evento.findAndCountAll({
+                attributes: EVENTO_ATTRIBUTES,
+                include: [
+                    TIPO_EVENTO_INCLUDE,
+                    CATEGORIA_EVENTO_INCLUDE,
+                    INSTRUCTOR_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IEventoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<EventoResponse> {
         try {
             const eventos = await Evento.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'id_parent',
-                    'id_tipoevento',
-                    'id_categoriaevento',
-                    'id_instructor',
-                    'titulo',
-                    'titulo_url',
-                    'descripcion',
-                    'temario',
-                    'plantilla_certificado',
-                    'fecha',
-                    'fecha_fin',
-                    'modalidad',
-                    'duracion',
-                    'capacidad_maxima',
-                    'precio',
-                    'estado'
-                ],
+                attributes: EVENTO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: CategoriaEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Instructor,
-                        attributes: ['id', 'apellido_paterno', 'apellido_materno', 'nombres', 'nombre_capitalized']
-                    }
+                    TIPO_EVENTO_INCLUDE,
+                    CATEGORIA_EVENTO_INCLUDE,
+                    INSTRUCTOR_INCLUDE
                 ],
                 order: [
                     ['id', 'DESC']
@@ -108,38 +104,11 @@ class EventoRepository {
     async getById(id: number): Promise<EventoResponse> {
         try {
             const evento = await Evento.findByPk(id, {
-                attributes: [
-                    'id',
-                    'id_parent',
-                    'id_tipoevento',
-                    'id_categoriaevento',
-                    'id_instructor',
-                    'titulo',
-                    'titulo_url',
-                    'descripcion',
-                    'temario',
-                    'plantilla_certificado',
-                    'fecha',
-                    'fecha_fin',
-                    'modalidad',
-                    'duracion',
-                    'capacidad_maxima',
-                    'precio',
-                    'estado'
-                ],
+                attributes: EVENTO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: CategoriaEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Instructor,
-                        attributes: ['id', 'apellido_paterno', 'apellido_materno', 'nombres', 'nombre_capitalized']
-                    }
+                    TIPO_EVENTO_INCLUDE,
+                    CATEGORIA_EVENTO_INCLUDE,
+                    INSTRUCTOR_INCLUDE
                 ]
             })
 
@@ -160,38 +129,11 @@ class EventoRepository {
                 where: {
                     titulo
                 },
-                attributes: [
-                    'id',
-                    'id_parent',
-                    'id_tipoevento',
-                    'id_categoriaevento',
-                    'id_instructor',
-                    'titulo',
-                    'titulo_url',
-                    'descripcion',
-                    'temario',
-                    'plantilla_certificado',
-                    'fecha',
-                    'fecha_fin',
-                    'modalidad',
-                    'duracion',
-                    'capacidad_maxima',
-                    'precio',
-                    'estado'
-                ],
+                attributes: EVENTO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: CategoriaEvento,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Instructor,
-                        attributes: ['id', 'apellido_paterno', 'apellido_materno', 'nombres', 'nombre_capitalized']
-                    }
+                    TIPO_EVENTO_INCLUDE,
+                    CATEGORIA_EVENTO_INCLUDE,
+                    INSTRUCTOR_INCLUDE
                 ]
             })
 
@@ -215,9 +157,11 @@ class EventoRepository {
             data.plantilla_certificado = plantillaCertificado
             data.titulo_url = HString.convertToUrlString(titulo as String)
 
-            const newEvento = await Evento.create(data as any)
+            const newEvento = await Evento.create(data as IEvento)
 
-            if (newEvento.id) {
+            const { id } = newEvento
+
+            if (id) {
                 return { result: true, message: 'Evento registrado con éxito', data: newEvento, status: 200 }
             }
 
@@ -246,7 +190,9 @@ class EventoRepository {
                 return { result: false, data: [], message: 'Evento no encontrado', status: 200 }
             }
 
-            const updatedEvento = await evento.update(data)
+            const dataEvento: Partial<IEvento> = data
+
+            const updatedEvento = await evento.update(dataEvento)
 
             return { result: true, data: updatedEvento, message: 'Evento actualizado con éxito', status: 200 }
         } catch (error) {

@@ -1,43 +1,21 @@
-import sequelize from "../../config/db";
-import { IPersona, PersonaResponse } from "../interfaces/personaInterface";
-import { IAlumno } from "../interfaces/alumnoInterface"
-import Persona from "../../models/persona.models"
-import TipoDocumento from "../../models/tipoDocumento.models";
+import sequelize from "../../../config/database";
+import { IPersona, IPersonaPaginate, PersonaResponse, PersonaResponsePaginate } from "../../interfaces/Persona/IPersona";
+import { IAlumno } from "../../interfaces/Alumno/IAlumno"
+import { Persona } from "../../models/persona.models"
+import { TipoDocumento } from "../../models/tipoDocumento.models";
 import AlumnoService from "../../services/alumno.service"
 import { toZonedTime } from "date-fns-tz";
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { PERSONA_ATTRIBUTES } from "../../../constants/PersonaConstant";
+import HPagination from "../../../helpers/HPagination";
 
 class PersonaRepository {
     async getAll(): Promise<PersonaResponse> {
         try {
             const personas = await Persona.findAll({
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'numero',
-                    'nombres',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombre_completo',
-                    'departamento',
-                    'provincia',
-                    'distrito',
-                    'direccion',
-                    'direccion_completa',
-                    'ubigeo_reniec',
-                    'ubigeo_sunat',
-                    'ubigeo',
-                    'fecha_nacimiento',
-                    'estado_civil',
-                    'foto',
-                    'sexo',
-                    'origen',
-                    'estado'
-                ],
+                attributes: PERSONA_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE
                 ],
                 order: [
                     ['apellido_paterno', 'ASC']
@@ -51,37 +29,58 @@ class PersonaRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PersonaResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Persona.findAndCountAll({
+                attributes: PERSONA_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IPersonaPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getById(id: number): Promise<PersonaResponse> {
         try {
             const persona = await Persona.findByPk(id, {
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'numero',
-                    'nombres',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombre_completo',
-                    'departamento',
-                    'provincia',
-                    'distrito',
-                    'direccion',
-                    'direccion_completa',
-                    'ubigeo_reniec',
-                    'ubigeo_sunat',
-                    'ubigeo',
-                    'fecha_nacimiento',
-                    'estado_civil',
-                    'foto',
-                    'sexo',
-                    'origen',
-                    'estado'
-                ],
+                attributes: PERSONA_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE
                 ],
                 order: [
                     ['apellido_paterno', 'ASC']
@@ -106,34 +105,9 @@ class PersonaRepository {
                     id_tipodocumento: idTipoDoc,
                     numero: numDoc
                 },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'numero',
-                    'nombres',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombre_completo',
-                    'departamento',
-                    'provincia',
-                    'distrito',
-                    'direccion',
-                    'direccion_completa',
-                    'ubigeo_reniec',
-                    'ubigeo_sunat',
-                    'ubigeo',
-                    'fecha_nacimiento',
-                    'estado_civil',
-                    'foto',
-                    'sexo',
-                    'origen',
-                    'estado'
-                ],
+                attributes: PERSONA_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE
                 ]
             })
 
@@ -152,13 +126,13 @@ class PersonaRepository {
         const t = await sequelize.transaction()
 
         try {
-            const newPersona = await Persona.create(data as any)
+            const newPersona = await Persona.create(data as IPersona)
 
             await t.commit()
 
-            // console.log('newPersona', newPersona)
+            const { id } = newPersona
 
-            if (newPersona.id) {
+            if (id) {
                 return { result: true, message: 'Persona registrada con éxito', data: newPersona, status: 200 }
             }
 
@@ -201,14 +175,16 @@ class PersonaRepository {
             const fechaNacimientoDate = toZonedTime(fechaNacimientoStr as string, 'America/Lima')
 
             // Validamos si existe un alumno con el número de documento
-            const alumno = await AlumnoService.getAlumnoPorNumDoc(numero_documento as string)
+            const responseAlumno = await AlumnoService.getAlumnoPorNumDoc(numero_documento as string)
 
-            if (alumno.result) {
-                const dataAlumno = alumno.data as IAlumno
+            const { result, data } = responseAlumno
 
+            const dataAlumno = data as IPersona
+
+            if (result) {
                 // Si existe el alumno, actualizamos su información
                 const updatedAlumno = await AlumnoService.updateAlumno(dataAlumno.id as number, {
-                    ...alumno.data,
+                    ...data,
                     nombres,
                     apellido_paterno,
                     apellido_materno,
@@ -223,18 +199,18 @@ class PersonaRepository {
                 }
             }
 
-            data.nombres = nombres
-            data.apellido_paterno = apellido_paterno
-            data.apellido_materno = apellido_materno
-            data.nombre_completo = nombre_completo
-            data.departamento = departamento
-            data.provincia = provincia
-            data.distrito = distrito
-            data.direccion = direccion
-            data.direccion_completa = direccion_completa
+            dataAlumno.nombres = nombres
+            dataAlumno.apellido_paterno = apellido_paterno
+            dataAlumno.apellido_materno = apellido_materno
+            dataAlumno.nombre_completo = nombre_completo
+            dataAlumno.departamento = departamento
+            dataAlumno.provincia = provincia
+            dataAlumno.distrito = distrito
+            dataAlumno.direccion = direccion
+            dataAlumno.direccion_completa = direccion_completa
 
             // Actualizamos la persona
-            const updatedPersona = await persona.update(data, { transaction: t })
+            const updatedPersona = await persona.update(dataAlumno, { transaction: t })
 
             await t.commit()
 

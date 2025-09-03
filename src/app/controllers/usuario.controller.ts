@@ -2,14 +2,35 @@ import { Request, Response } from "express"
 import UsuarioService from "../services/usuario.service"
 import AlumnoService from "../services/alumno.service"
 import { IUsuario } from '../interfaces/Usuario/IUsuario'
-import { IAlumno } from "../interfaces/alumnoInterface"
-import Perfil from "../models/perfil.models"
+import { IAlumno } from "../interfaces/Alumno/IAlumno"
+import { Perfil } from "../models/perfil.models"
 import { ITemporal } from "../interfaces/Temporal/ITemporal"
-import Temporal from "../models/temporal.models"
+import { Temporal } from "../models/temporal.models"
 
 class UsuarioController {
     async getUsuarios(req: Request, res: Response) {
         const response = await UsuarioService.getUsuarios()
+
+        const { result } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            res.status(500).json(response)
+        }
+    }
+
+    async getUsuariosPaginated(req: Request, res: Response) {
+        const page = parseInt(req.query.page as string) || 1
+        const limit = parseInt(req.query.limit as string) || 10
+        const estadoParam = req.query.estado
+        let estado: boolean | undefined
+
+        if (typeof estadoParam === 'string') {
+            estado = estadoParam.toLowerCase() === 'true'
+        }
+
+        const response = await UsuarioService.getUsuariosPaginado(page, limit, estado)
 
         const { result } = response
 

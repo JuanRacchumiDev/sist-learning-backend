@@ -1,9 +1,13 @@
-import { IInstructor } from "../interfaces/instructorInterface"
+import { IInstructor } from "../interfaces/Instructor/IInstructor"
 import InstructorRepository from "../repositories/Instructor/InstructorRepository"
 
 class InstructorService {
     async getInstructores() {
         return await InstructorRepository.getAll()
+    }
+
+    async getInstructoresPaginado(page: number, limit: number, estado?: boolean) {
+        return await InstructorRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getInstructoresPorEstado(estado: boolean) {

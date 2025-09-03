@@ -17,7 +17,7 @@ export class Usuario extends Model<IUsuario, UsuarioAttributes> implements IUsua
     public username?: string | undefined
     public password?: string | undefined
     public token?: string | undefined
-    public fecha_sesion?: string | undefined
+    public fecha_sesion?: Date | undefined
     public user_crea?: string | undefined
     public user_actualiza?: string | undefined
     public user_elimina?: string | undefined

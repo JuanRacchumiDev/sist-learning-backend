@@ -1,18 +1,14 @@
-import Pais from '../models/pais.models'
-import { IPais, PaisResponse } from "../interfaces/Pais/IPais"
-import HString from '../../helpers/HString'
+import { Pais } from '../../models/pais.models'
+import { IPais, IPaisPaginate, PaisResponse, PaisResponsePaginate } from "../../interfaces/Pais/IPais"
+import HString from '../../../helpers/HString'
+import { PAIS_ATTRIBUTES } from '../../../constants/PaisConstant'
+import HPagination from '../../../helpers/HPagination'
 
 class PaisRepository {
     async getAll(): Promise<PaisResponse> {
         try {
             const paises = await Pais.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'estado'
-                ],
+                attributes: PAIS_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -25,19 +21,56 @@ class PaisRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PaisResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Pais.findAndCountAll({
+                attributes: PAIS_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IPaisPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<PaisResponse> {
         try {
             const paises = await Pais.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'estado'
-                ],
+                attributes: PAIS_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -53,13 +86,7 @@ class PaisRepository {
     async getById(id: number): Promise<PaisResponse> {
         try {
             const pais = await Pais.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'estado'
-                ]
+                attributes: PAIS_ATTRIBUTES
             })
 
             if (!pais) {
@@ -77,9 +104,11 @@ class PaisRepository {
         try {
             data.nombre_url = HString.convertToUrlString(data.nombre as string)
 
-            const newPais = await Pais.create(data as any)
+            const newPais = await Pais.create(data as IPais)
 
-            if (newPais.id) {
+            const { id } = newPais
+
+            if (id) {
                 return { result: true, message: 'País registrado con éxito', data: newPais, status: 200 }
             }
 
@@ -100,7 +129,9 @@ class PaisRepository {
                 return { result: false, message: 'País no encontrado', data: [], status: 200 }
             }
 
-            const updatedPais = await pais.update(data)
+            const dataPais: Partial<IPais> = data
+
+            const updatedPais = await pais.update(dataPais)
 
             return { result: true, message: 'País actualizado con éxito', data: updatedPais, status: 200 }
         } catch (error) {

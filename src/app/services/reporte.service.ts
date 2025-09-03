@@ -1,11 +1,12 @@
-import { AlumnoResponse } from "../interfaces/alumnoInterface";
-import Alumno from "../models/alumno.models";
-import TipoDocumento from '../models/tipoDocumento.models';
-import Pais from '../models/pais.models';
-import Departamento from '../models/departamento.models';
+import { AlumnoResponse } from "../interfaces/Alumno/IAlumno";
+import { Alumno } from "../models/alumno.models";
 import AlumnoRepository from '../repositories/Alumno/AlumnoRepository'
-import { PersonaResponse } from "../interfaces/personaInterface";
+import { PersonaResponse } from "../interfaces/Persona/IPersona";
 import personaRepository from "../repositories/Persona/PersonaRepository";
+import { REPORT_ALUMNO_ATTRIBUTES } from "../../constants/Reports/ReportAlumnoConstant";
+import { TIPO_DOCUMENTO_INCLUDE } from "../../includes/TipoDocumentoInclude";
+import { PAIS_INCLUDE } from "../../includes/PaisInclude";
+import { DEPARTAMENTO_INCLUDE } from "../../includes/DepartamentoInclude";
 
 class ReporteService {
     async getCumpleaniosAlumnos(): Promise<AlumnoResponse> {
@@ -14,36 +15,11 @@ class ReporteService {
                 where: {
                     estado: 1
                 },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'id_departamento',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'nombre_capitalized',
-                    'fecha_nacimiento_str',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: REPORT_ALUMNO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    }, {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    }, {
-                        model: Departamento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
                 ],
                 order: [
                     ['fecha_nacimiento', 'ASC']

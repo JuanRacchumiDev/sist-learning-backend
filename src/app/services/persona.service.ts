@@ -1,9 +1,13 @@
-import { IPersona } from "../interfaces/personaInterface"
+import { IPersona } from "../interfaces/Persona/IPersona"
 import PersonaRepository from "../repositories/Persona/PersonaRepository"
 
 class PersonaService {
     async getPersonas() {
         return await PersonaRepository.getAll()
+    }
+
+    async getPersonasPaginado(page: number, limit: number, estado?: boolean) {
+        return await PersonaRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getPersonaPorId(id: number) {

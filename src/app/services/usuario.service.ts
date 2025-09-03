@@ -1,9 +1,13 @@
 import { IUsuario } from "../interfaces/Usuario/IUsuario"
-import UsuarioRepository from "../repositories/usuarioRepository"
+import UsuarioRepository from "../repositories/Usuario/UsuarioRepository"
 
 class UsuarioService {
     async getUsuarios() {
         return await UsuarioRepository.getAll()
+    }
+
+    async getUsuariosPaginado(page: number, limit: number, estado?: boolean) {
+        return await UsuarioRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getUsuariosPorEstado(estado: boolean) {

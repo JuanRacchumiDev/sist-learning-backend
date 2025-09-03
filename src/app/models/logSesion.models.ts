@@ -9,7 +9,7 @@ export class LogSesion extends Model<ILogSesion, LogSesionAttributes> implements
     public id?: number | undefined
     public id_usuario?: number | undefined
     public token?: string | undefined
-    public fecha_sesion?: string | undefined
+    public fecha_sesion?: Date | undefined
     public user_agent?: string | undefined
 
     // Timestamps

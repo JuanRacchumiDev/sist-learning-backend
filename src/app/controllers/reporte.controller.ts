@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import ReporteService from '../services/reporte.service';
 import TipoDocumentoService from '../services/tipoDocumento.service'
-import { IAlumno } from '../interfaces/alumnoInterface'
+import { IAlumno } from '../interfaces/Alumno/IAlumno'
 import HExcel from '../../helpers/HExcel'
 import path from 'path'
 import fs from 'fs'
 import { ITipoDocumento } from "../interfaces/TipoDocumento/ITipoDocumento";
-import { IPersona } from "../interfaces/personaInterface";
+import { IPersona } from "../interfaces/Persona/IPersona";
 
 class ReporteController {
     async listCumpleaniosExcel(req: Request, res: Response) {

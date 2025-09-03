@@ -1,9 +1,13 @@
 import { ICategoriaEvento } from "../interfaces/CategoriaEvento/ICategoriaEvento"
-import CategoriaEventoRepository from "../repositories/categoriaEventoRepository"
+import CategoriaEventoRepository from "../repositories/CategoriaEvento/CategoriaEventoRepository"
 
 class CategoriaEventoService {
     async getCategorias() {
         return await CategoriaEventoRepository.getAll()
+    }
+
+    async getCategoriasPaginado(page: number, limit: number, estado?: boolean) {
+        return await CategoriaEventoRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getCategoriasPorEstado(estado: boolean) {

@@ -1,9 +1,13 @@
-import { ITrabajador } from "../interfaces/trabajadorInterface"
+import { ITrabajador } from "../interfaces/Trabajador/ITrabajador"
 import TrabajadorRepository from "../repositories/Trabajador/TrabajadorRepository"
 
 class TrabajadorService {
     async getTrabajadores() {
         return await TrabajadorRepository.getAll()
+    }
+
+    async getTrabajadoresPaginado(page: number, limit: number, estado?: boolean) {
+        return await TrabajadorRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getTrabajadoresPorEstado(estado: boolean) {

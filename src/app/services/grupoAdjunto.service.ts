@@ -1,9 +1,13 @@
 import { IGrupoAdjunto } from "../interfaces/GrupoAdjunto/IGrupoAdjunto"
-import GrupoAdjuntoRepository from "../repositories/grupoAdjuntoRepository"
+import GrupoAdjuntoRepository from "../repositories/GrupoAdjunto/GrupoAdjuntoRepository"
 
 class GrupoAdjuntoService {
     async getGrupos() {
         return await GrupoAdjuntoRepository.getAll()
+    }
+
+    async getGruposPaginado(page: number, limit: number, estado?: boolean) {
+        return await GrupoAdjuntoRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getGruposPorEstado(estado: boolean) {

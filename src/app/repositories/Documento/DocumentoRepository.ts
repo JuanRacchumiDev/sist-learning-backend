@@ -1,4 +1,4 @@
-import { EOrigen, IPersona, PersonaResponse } from "../interfaces/personaInterface";
+import { IPersona, PersonaResponse } from "../../interfaces/Persona/IPersona";
 import { ITipoDocumento } from "../../interfaces/TipoDocumento/ITipoDocumento";
 import PersonaService from "../../services/persona.service"
 import TipoDocumentoService from "../../services/tipoDocumento.service"
@@ -6,6 +6,7 @@ import { API_DNI, API_CEE } from "../../../helpers/HApi"
 import dotenv from 'dotenv';
 import axios from "axios";
 import HString from "../../../helpers/HString";
+import { EOrigen } from "../../../enums/EOrigen";
 
 class DocumentoRepository {
     async getInfo(idTipoDocumento: number, numeroDocumento: string): Promise<PersonaResponse> {
@@ -13,18 +14,17 @@ class DocumentoRepository {
             let urlApiDoc = ""
 
             // Verificando si existe una persona
-            const dataPersona = await PersonaService.getPersonaPorIdTipoDocAndNumDoc(idTipoDocumento, numeroDocumento)
+            const responsePersona = await PersonaService.getPersonaPorIdTipoDocAndNumDoc(idTipoDocumento, numeroDocumento)
+
             const getTipoDocumento = await TipoDocumentoService.getTipoPorId(idTipoDocumento);
+
             const dataTipoDocumento = getTipoDocumento.data as ITipoDocumento
+
             const { abreviatura } = dataTipoDocumento
 
-            // console.log('dataPersona', dataPersona)
+            const { result: resultPersona, data: dataPersona, status: statusPersona } = responsePersona
 
-            // console.log('dataTipoDocumento', dataTipoDocumento)
-
-            const { result, data, status } = dataPersona
-
-            if (!result) {
+            if (!resultPersona) {
 
                 urlApiDoc = (abreviatura === 'DNI')
                     ? `${API_DNI}${numeroDocumento}`
@@ -43,12 +43,11 @@ class DocumentoRepository {
                     }
                 })
 
-                // console.log('response api', response)
+                const { data: dataApiPersona } = response
 
-                // Comprobando si la respuesta es exitosa
-                if (response.data.success) {
-                    const data = response.data.data
+                const { success, data: dataDetailPersona, message, status } = dataApiPersona
 
+                if (success) {
                     const {
                         numero,
                         nombres,
@@ -67,7 +66,7 @@ class DocumentoRepository {
                         estado_civil,
                         foto,
                         sexo
-                    } = data
+                    } = dataDetailPersona
 
                     const persona: IPersona = {
                         id_tipodocumento: idTipoDocumento,
@@ -92,21 +91,20 @@ class DocumentoRepository {
                         estado: true
                     }
 
-                    const createPersona = await PersonaService.createPersona(persona)
+                    const responseCreatePersona = await PersonaService.createPersona(persona)
 
-                    // console.log('createPersona', createPersona)
+                    const { result, data, message, status, error } = responseCreatePersona
 
-                    // return createPersona
-                    if (createPersona.result) {
-                        return { result: createPersona.result, data: createPersona.data, message: createPersona.message, status: createPersona.status }
+                    if (result) {
+                        return { result, data, message, status }
                     } else {
-                        return { result: createPersona.result, error: createPersona.error, status: createPersona.status }
+                        return { result, error, status }
                     }
                 } else {
-                    return { result: response.data.success, message: response.data.message, data: response.data.data, status: response.data.status }
+                    return { result: success, message, data: dataDetailPersona, status }
                 }
             } else {
-                return { result, data, status }
+                return { result: resultPersona, data: dataPersona, status: statusPersona }
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'

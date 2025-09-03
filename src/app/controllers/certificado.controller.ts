@@ -2,13 +2,34 @@ import { Request, Response } from 'express'
 import CertificadoService from '../services/certificado.service'
 import AlumnoService from '../services/alumno.service'
 import { ICertificado } from '../interfaces/Certificado/ICertificado'
-import { IAlumno } from '../interfaces/alumnoInterface'
-import Temporal from '../models/temporal.models'
+import { IAlumno } from '../interfaces/Alumno/IAlumno'
+import { Temporal } from '../models/temporal.models'
 import { ITemporal } from '../interfaces/Temporal/ITemporal'
 
 class CertificadoController {
     async getCertificados(req: Request, res: Response) {
         const response = await CertificadoService.getCertificados()
+
+        const { result } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            res.status(500).json(response)
+        }
+    }
+
+    async getCertificadosPaginated(req: Request, res: Response) {
+        const page = parseInt(req.query.page as string) || 1
+        const limit = parseInt(req.query.limit as string) || 10
+        const estadoParam = req.query.estado
+        let estado: boolean | undefined
+
+        if (typeof estadoParam === 'string') {
+            estado = estadoParam.toLowerCase() === 'true'
+        }
+
+        const response = await CertificadoService.getCertificadosPaginado(page, limit, estado)
 
         const { result } = response
 

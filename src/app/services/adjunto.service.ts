@@ -1,4 +1,4 @@
-import { IAdjunto } from "../interfaces/adjuntoInterface"
+import { IAdjunto } from "../interfaces/Adjunto/IAdjunto"
 import AdjuntoRepository from "../repositories/Ajunto/AdjuntoRepository"
 import { File } from 'node:buffer'
 

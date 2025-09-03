@@ -1,4 +1,4 @@
-import Empresa from '../models/empresa.models';
+import { Empresa } from '../models/empresa.models';
 import { IEmpresa, EmpresaResponse } from '../interfaces/Empresa/IEmpresa'
 
 class EmpresaService {

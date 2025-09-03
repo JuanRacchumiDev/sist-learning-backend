@@ -1,14 +1,19 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "API para la gestión de certificados digitales con NodeJs, TypeScript and Sequelize",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=development nodemon -r tsconfig-paths/register src/server.ts",
-    "build": "cross-env NODE_ENV=production npx tsc",
-    "start": "cross-env NODE_ENV=production node tsconfig-paths-bootstrap.js",
-    "env:check": "node -e \"console.log(require('dotenv').config({ path: '.env.' + process.env.NODE_ENV }).parsed)\""
+    "build": "npx tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "migrate": "npx sequelize-cli db:migrate",
+    "create": "npx sequelize-cli db:create",
+    "drop": "npx sequelize-cli db:drop",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo:all"
   },
   "keywords": [],
   "author": "",
@@ -53,6 +58,7 @@
     "cross-env": "^7.0.3",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.3"
   }
 }

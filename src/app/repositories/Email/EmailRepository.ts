@@ -1,5 +1,5 @@
-import transporter from '../config/mailer'
-import { IEmail } from "../interfaces/Email/IEmail"
+import transporter from '../../config/mailer'
+import { IEmail } from "../../interfaces/Email/IEmail"
 
 class EmailRepository {
     async sendEmail({ to, subject, text, copyTo }: IEmail): Promise<any> {

@@ -1,9 +1,13 @@
 import { ICargo } from "../interfaces/Cargo/ICargo"
-import CargoRepository from "../repositories/cargoRepository"
+import CargoRepository from "../repositories/Cargo/CargoRepository"
 
 class CargoService {
     async getCargos() {
         return await CargoRepository.getAll()
+    }
+
+    async getCargosPaginado(page: number, limit: number, estado?: boolean) {
+        return await CargoRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async gerCargosPorEstado(estado: boolean) {

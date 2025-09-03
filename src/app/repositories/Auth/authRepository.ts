@@ -1,28 +1,28 @@
 import { UsuarioResponse } from "../../interfaces/Usuario/IUsuario"
 import { AuthResponse, IAuth } from "../../interfaces/Auth/IAuth"
-import LogSesion from "../../models/logSesion.models";
-import Usuario from "../../models/usuario.models"
+import { LogSesion } from "../../models/logSesion.models";
+import { Usuario } from "../../models/usuario.models"
 import PerfilService from "../../services/perfil.service"
 import AlumnoService from "../../services/alumno.service"
 import InstructorService from "../../services/instructor.service"
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { IPerfil } from "../../interfaces/Perfil/IPerfil";
-import { IAlumno } from "../interfaces/alumnoInterface";
-import { IInstructor } from "../interfaces/instructorInterface";
+import { IAlumno } from "../../interfaces/Alumno/IAlumno";
+import { IInstructor } from "../../interfaces/Instructor/IInstructor";
 import TrabajadorService from '../../services/trabajador.service';
-import { ITrabajador } from "../interfaces/trabajadorInterface";
+import { ITrabajador } from "../../interfaces/Trabajador/ITrabajador";
 
 class AuthRepository {
     async login(data: IAuth): Promise<AuthResponse> {
         try {
             let usuarioAutenticado: IAuth = {}
 
-            const { username, password, userAgent } = data
+            const { username, password, user_agent } = data
 
             const dataUsername = username as string
             const dataPassword = password as string
-            const dataUserAgent = userAgent as string
+            const dataUserAgent = user_agent as string
 
             const getUsuario = await Usuario.findOne(
                 {
@@ -44,10 +44,10 @@ class AuthRepository {
                 id_instructor,
             } = getUsuario
 
-            usuarioAutenticado.idPerfil = id_perfil
-            usuarioAutenticado.idTrabajador = id_trabajador
-            usuarioAutenticado.idAlumno = id_alumno
-            usuarioAutenticado.idInstructor = id_instructor
+            usuarioAutenticado.id_perfil = id_perfil as number
+            usuarioAutenticado.id_trabajador = id_trabajador as number
+            usuarioAutenticado.id_alumno = id_alumno as number
+            usuarioAutenticado.id_instructor = id_instructor as number
             usuarioAutenticado.username = username
 
             if (id_perfil) {
@@ -60,25 +60,28 @@ class AuthRepository {
                 const { nombre, nombre_url } = perfil
 
                 if (perfil) {
-                    usuarioAutenticado.nombrePerfil = nombre
-                    usuarioAutenticado.slugPerfil = nombre_url
+                    usuarioAutenticado.nombre_perfil = nombre
+                    usuarioAutenticado.slug_perfil = nombre_url
                 }
             }
 
             if (id_alumno && !id_instructor && !id_trabajador) {
                 const responseAlumno = await AlumnoService.getAlumnoPorId(id_alumno)
 
-                const alumno = responseAlumno.data as IAlumno
+                const { data } = responseAlumno
+
+                const alumno = data as IAlumno
 
                 if (alumno) {
                     const { nombre_capitalized } = alumno
-
                     usuarioAutenticado.usuario = nombre_capitalized
                 }
             } else if (!id_alumno && id_instructor && !id_trabajador) {
                 const responseInstructor = await InstructorService.getInstructorPorId(id_instructor)
 
-                const instructor = responseInstructor.data as IInstructor
+                const { data } = responseInstructor
+
+                const instructor = data as IInstructor
 
                 if (instructor) {
                     const { nombre_capitalized } = instructor
@@ -88,7 +91,9 @@ class AuthRepository {
             } else if (!id_alumno && !id_instructor && id_trabajador) {
                 const responseTrabajador = await TrabajadorService.getTrabajadorPorId(id_trabajador)
 
-                const trabajador = responseTrabajador.data as ITrabajador
+                const { data } = responseTrabajador
+
+                const trabajador = data as ITrabajador
 
                 if (trabajador) {
                     const { nombres, apellido_paterno, apellido_materno } = trabajador
@@ -161,8 +166,8 @@ class AuthRepository {
             // Eliminar el token del usuario
             await usuario.update(
                 {
-                    token: null,
-                    fecha_sesion: null
+                    token: undefined,
+                    fecha_sesion: undefined
                 }
             )
 

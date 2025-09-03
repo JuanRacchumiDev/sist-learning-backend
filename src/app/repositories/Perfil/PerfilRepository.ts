@@ -1,18 +1,14 @@
-import { IPerfil, PerfilResponse } from "../interfaces/Perfil/IPerfil"
-import Perfil from "../models/perfil.models"
-import HString from "../../helpers/HString"
+import { IPerfil, IPerfilPaginate, PerfilResponse, PerfilResponsePaginate } from "../../interfaces/Perfil/IPerfil"
+import { Perfil } from "../../models/perfil.models"
+import HString from "../../../helpers/HString"
+import { PERFIL_ATTRIBUTES } from "../../../constants/PerfilConstant"
+import HPagination from "../../../helpers/HPagination"
 
 class PerfilRepository {
     async getAll(): Promise<PerfilResponse> {
         try {
             const perfiles = await Perfil.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PERFIL_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -25,19 +21,56 @@ class PerfilRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PerfilResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Perfil.findAndCountAll({
+                attributes: PERFIL_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IPerfilPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<PerfilResponse> {
         try {
             const perfiles = await Perfil.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PERFIL_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -53,13 +86,7 @@ class PerfilRepository {
     async getById(id: number): Promise<PerfilResponse> {
         try {
             const perfil = await Perfil.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: PERFIL_ATTRIBUTES
             })
 
             if (!perfil) {
@@ -77,9 +104,11 @@ class PerfilRepository {
         try {
             data.nombre_url = HString.convertToUrlString(data.nombre as String)
 
-            const newPerfil = await Perfil.create(data as any)
+            const newPerfil = await Perfil.create(data as IPerfil)
 
-            if (newPerfil.id) {
+            const { id } = newPerfil
+
+            if (id) {
                 return { result: true, message: 'Perfil registrado con éxito', data: newPerfil, status: 200 }
             }
 
@@ -102,7 +131,9 @@ class PerfilRepository {
                 return { result: false, data: [], message: 'Perfil no encontrado', status: 200 }
             }
 
-            const updatedPerfil = await perfil.update(data)
+            const dataPerfil: Partial<IPerfil> = data
+
+            const updatedPerfil = await perfil.update(dataPerfil)
 
             return { result: true, message: 'Perfil actualizado con éxito', data: updatedPerfil, status: 200 }
         } catch (error) {

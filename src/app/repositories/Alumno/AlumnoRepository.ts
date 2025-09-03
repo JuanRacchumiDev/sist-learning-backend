@@ -1,46 +1,24 @@
 import HString from "../../../helpers/HString";
-import { IAlumno, AlumnoResponse } from "../interfaces/alumnoInterface";
-import Alumno from "../../models/alumno.models"
-import Departamento from "../../models/departamento.models";
-import Pais from "../../models/pais.models";
-import TipoDocumento from "../../models/tipoDocumento.models";
+import { IAlumno, AlumnoResponse, AlumnoResponsePaginate, IAlumnoPaginate } from "../../interfaces/Alumno/IAlumno";
+import { Alumno } from "../../models/alumno.models"
+import { Departamento } from "../../models/departamento.models";
+import { Pais } from "../../models/pais.models";
+import { TipoDocumento } from "../../models/tipoDocumento.models";
+import { ALUMNO_ATTRIBUTES } from "../../../constants/AlumnoConstant";
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
+import { DEPARTAMENTO_INCLUDE } from "../../../includes/DepartamentoInclude";
+import HPagination from "../../../helpers/HPagination";
 
 class AlumnoRepository {
     async getAll(): Promise<AlumnoResponse> {
         try {
             const alumnos = await Alumno.findAll({
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'id_departamento',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'nombre_capitalized',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'fecha_nacimiento_str',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: ALUMNO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    },
-                    {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Departamento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
                 ],
                 order: [
                     ['apellido_paterno', 'ASC']
@@ -54,44 +32,65 @@ class AlumnoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<AlumnoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Alumno.findAndCountAll({
+                attributes: ALUMNO_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IAlumnoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<AlumnoResponse> {
         try {
             const alumnos = await Alumno.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'id_departamento',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'nombre_capitalized',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'fecha_nacimiento_str',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: ALUMNO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    },
-                    {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Departamento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
                 ],
                 order: [
                     ['apellido_paterno', 'ASC']
@@ -108,38 +107,11 @@ class AlumnoRepository {
     async getById(id: number): Promise<AlumnoResponse> {
         try {
             const alumno = await Alumno.findByPk(id, {
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'id_departamento',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'nombre_capitalized',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'fecha_nacimiento_str',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: ALUMNO_ATTRIBUTES,
                 include: [
-                    {
-                        model: TipoDocumento,
-                        attributes: ['id', 'nombre', 'abreviatura']
-                    },
-                    {
-                        model: Pais,
-                        attributes: ['id', 'nombre']
-                    },
-                    {
-                        model: Departamento,
-                        attributes: ['id', 'nombre']
-                    }
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
                 ]
             })
 
@@ -161,35 +133,12 @@ class AlumnoRepository {
                     id_tipodocumento: idTipoDoc,
                     numero_documento: numDoc
                 },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'id_departamento',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'nombre_capitalized',
-                    'fecha_nacimiento_str',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
-                include: [{
-                    model: TipoDocumento,
-                    attributes: ['id', 'nombre', 'abreviatura']
-                }, {
-                    model: Pais,
-                    attributes: ['id', 'nombre']
-                }, {
-                    model: Departamento,
-                    attributes: ['id', 'nombre']
-                }]
+                attributes: ALUMNO_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
+                ]
             })
 
             if (!alumno) {
@@ -206,36 +155,13 @@ class AlumnoRepository {
     async getByNumDoc(numDoc: string): Promise<AlumnoResponse> {
         try {
             const alumno = await Alumno.findOne({
-                where: { numDoc },
-                attributes: [
-                    'id',
-                    'id_tipodocumento',
-                    'id_pais',
-                    'id_departamento',
-                    'numero_documento',
-                    'apellido_paterno',
-                    'apellido_materno',
-                    'nombres',
-                    'telefono',
-                    'direccion',
-                    'email',
-                    'fecha_nacimiento',
-                    'nombre_capitalized',
-                    'fecha_nacimiento_str',
-                    'sexo',
-                    'sistema',
-                    'estado'
-                ],
-                include: [{
-                    model: TipoDocumento,
-                    attributes: ['id', 'nombre', 'abreviatura']
-                }, {
-                    model: Pais,
-                    attributes: ['id', 'nombre']
-                }, {
-                    model: Departamento,
-                    attributes: ['id', 'nombre']
-                }]
+                where: { numero_documento: numDoc },
+                attributes: ALUMNO_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE,
+                    PAIS_INCLUDE,
+                    DEPARTAMENTO_INCLUDE
+                ]
             })
 
             if (!alumno) {
@@ -280,9 +206,7 @@ class AlumnoRepository {
             data.apellido_materno = apellido_materno?.trim()
             data.nombres = nombres?.trim()
 
-            const newAlumno = await Alumno.create(data as any)
-
-            // console.log('newAlumno', newAlumno)
+            const newAlumno = await Alumno.create(data as IAlumno)
 
             const { id } = newAlumno
 
@@ -328,7 +252,9 @@ class AlumnoRepository {
             data.fecha_nacimiento_str = fechaNacimientoStr
             data.nombre_capitalized = nombreCapitalized
 
-            const updatedAlumno = await alumno.update(data)
+            const dataAlumno: Partial<IAlumno> = data
+
+            const updatedAlumno = await alumno.update(dataAlumno)
             return { result: true, message: 'Alumno actualizado con éxito', data: updatedAlumno, status: 200 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';

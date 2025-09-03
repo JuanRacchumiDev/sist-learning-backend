@@ -12,7 +12,7 @@ export interface IUsuario {
     username?: string
     password?: string
     token?: string
-    fecha_sesion?: string
+    fecha_sesion?: Date
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string

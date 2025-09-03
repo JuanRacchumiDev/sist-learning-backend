@@ -1,9 +1,13 @@
-import { IAlumno } from "../interfaces/alumnoInterface"
+import { IAlumno } from "../interfaces/Alumno/IAlumno"
 import AlumnoRepository from "../repositories/Alumno/AlumnoRepository"
 
 class AlumnoService {
     async getAlumnos() {
         return await AlumnoRepository.getAll()
+    }
+
+    async getAlumnosPaginado(page: number, limit: number, estado?: boolean) {
+        return await AlumnoRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getAlumnosPorEstado(estado: boolean) {

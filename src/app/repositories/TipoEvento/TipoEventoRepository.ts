@@ -1,18 +1,14 @@
-import TipoEvento from '../models/tipoEvento.models'
-import HString from "../../helpers/HString"
-import { ITipoEvento, TipoEventoResponse } from "../interfaces/TipoEvento/ITipoEvento"
+import { TipoEvento } from '../../models/tipoEvento.models'
+import HString from "../../../helpers/HString"
+import { ITipoEvento, ITipoEventoPaginate, TipoEventoResponse, TipoEventoResponsePaginate } from "../../interfaces/TipoEvento/ITipoEvento"
+import { TIPO_EVENTO_ATTRIBUTES } from '../../../constants/TipoEventoConstant'
+import HPagination from '../../../helpers/HPagination'
 
 class TipoEventoRepository {
     async getAll(): Promise<TipoEventoResponse> {
         try {
             const tipos = await TipoEvento.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'descripcion',
-                    'estado'
-                ],
+                attributes: TIPO_EVENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -25,19 +21,56 @@ class TipoEventoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<TipoEventoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await TipoEvento.findAndCountAll({
+                attributes: TIPO_EVENTO_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['id', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ITipoEventoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByEstado(estado: boolean): Promise<TipoEventoResponse> {
         try {
             const tipos = await TipoEvento.findAll({
                 where: {
-                    activo: estado
+                    estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'descripcion',
-                    'estado'
-                ],
+                attributes: TIPO_EVENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -53,13 +86,7 @@ class TipoEventoRepository {
     async getById(id: number): Promise<TipoEventoResponse> {
         try {
             const tipo = await TipoEvento.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'descripcion',
-                    'estado'
-                ]
+                attributes: TIPO_EVENTO_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -79,13 +106,7 @@ class TipoEventoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'descripcion',
-                    'estado'
-                ],
+                attributes: TIPO_EVENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -106,9 +127,11 @@ class TipoEventoRepository {
         try {
             data.nombre_url = HString.convertToUrlString(data.nombre as String)
 
-            const newTipo = await TipoEvento.create(data as any)
+            const newTipo = await TipoEvento.create(data as ITipoEvento)
 
-            if (newTipo.id) {
+            const { id } = newTipo
+
+            if (id) {
                 return { result: true, message: 'Tipo de evento registrado con éxito', data: newTipo, status: 200 }
             }
 
@@ -131,7 +154,9 @@ class TipoEventoRepository {
                 return { result: false, data: [], message: 'Tipo de evento no encontrado', status: 200 }
             }
 
-            const updatedTipo = await tipo.update(data)
+            const dataTipoEvento: Partial<ITipoEvento> = data
+
+            const updatedTipo = await tipo.update(dataTipoEvento)
 
             return { result: true, data: updatedTipo, message: 'Tipo de evento actualizado con éxito', status: 200 }
         } catch (error) {

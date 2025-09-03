@@ -1,9 +1,13 @@
-import { IEvento } from "../interfaces/eventoInterface"
+import { IEvento } from "../interfaces/Evento/IEvento"
 import EventoRepository from "../repositories/Evento/EventoRepository"
 
 class EventoService {
     async getEventos() {
         return await EventoRepository.getAll()
+    }
+
+    async getEventosPaginado(page: number, limit: number, estado?: boolean) {
+        return await EventoRepository.getAllWithPaginate(page, limit, estado)
     }
 
     async getEventosPorEstado(estado: boolean) {

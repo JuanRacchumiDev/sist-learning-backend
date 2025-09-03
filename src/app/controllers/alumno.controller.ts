@@ -1,15 +1,36 @@
 import { Request, Response } from 'express'
 import AlumnoService from '../services/alumno.service'
 import PersonaService from '../services/persona.service'
-import { IAlumno } from '../interfaces/alumnoInterface'
-import { IPersona } from '../interfaces/personaInterface'
+import { IAlumno } from '../interfaces/Alumno/IAlumno'
+import { IPersona } from '../interfaces/Persona/IPersona'
 import HString from '../../helpers/HString'
 import { ITemporal } from '../interfaces/Temporal/ITemporal'
-import Temporal from '../models/temporal.models'
+import { Temporal } from '../models/temporal.models'
 
 class AlumnoController {
     async getAlumnos(req: Request, res: Response) {
         const response = await AlumnoService.getAlumnos()
+
+        const { result } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            res.status(500).json(response)
+        }
+    }
+
+    async getAlumnosPaginated(req: Request, res: Response) {
+        const page = parseInt(req.query.page as string) || 1
+        const limit = parseInt(req.query.limit as string) || 10
+        const estadoParam = req.query.estado
+        let estado: boolean | undefined
+
+        if (typeof estadoParam === 'string') {
+            estado = estadoParam.toLowerCase() === 'true'
+        }
+
+        const response = await AlumnoService.getAlumnosPaginado(page, limit, estado)
 
         const { result } = response
 
