@@ -1,32 +1,38 @@
 import express from 'express'
 import cors from 'cors'
-import path from 'path'
+import apiRoutes from './app/routes'
+import sequelize from './config/database'
 
-import alumnoRoutes from './routes/alumno.routes'
-import tipoDocumentoRoutes from './routes/tipoDocumento.routes'
-import tipoEventoRoutes from './routes/tipoEvento.routes'
-import categoriaEventoRoutes from './routes/categoriaEvento.routes'
-import tipoAdjuntoRoutes from './routes/tipoAdjunto.routes'
-import grupoAdjuntoRoutes from './routes/grupoAdjunto.routes'
-import perfilRoutes from './routes/perfil.routes'
-import trabajadorRoutes from './routes/trabajador.routes'
-import empresaRoutes from './routes/empresa.routes'
-import eventoRoutes from './routes/evento.routes'
-import certificadoRoutes from './routes/certificado.routes'
-import adjuntoRoutes from './routes/adjunto.routes'
-import authRoutes from './routes/auth.routes'
-import cargoRoutes from './routes/cargo.routes'
-import documentoRoutes from './routes/documento.routes'
-import personaRoutes from './routes/persona.routes'
-import usuarioRoutes from './routes/usuario.routes'
-import reporteRoutes from './routes/reporte.routes'
-import instructorRoutes from './routes/instructor.routes'
-import paisRoutes from './routes/pais.routes'
-import emailRoutes from './routes/email.routes'
-
-const app = express()
+import { Adjunto } from './app/models/adjunto.models'
+import { Alumno } from './app/models/alumno.models'
+import { Cargo } from './app/models/cargo.models'
+import { CategoriaEvento } from './app/models/categoriaEvento.models'
+import { Certificado } from './app/models/certificado.models'
+import { Departamento } from './app/models/departamento.models'
+import { Empresa } from './app/models/empresa.models'
+import { Evento } from './app/models/evento.models'
+import { GrupoAdjunto } from './app/models/grupoAdjunto.models'
+import { Instructor } from './app/models/instructor.models'
+import { LogSesion } from './app/models/logSesion.models'
+import { Matricula } from './app/models/matricula.models'
+import { Pais } from './app/models/pais.models'
+import { Perfil } from './app/models/perfil.models'
+import { Persona } from './app/models/persona.models'
+import { Programacion } from './app/models/programacion.models'
+import { Temporal } from './app/models/temporal.models'
+import { TipoAdjunto } from './app/models/tipoAdjunto.models'
+import { TipoDocumento } from './app/models/tipoDocumento.models'
+import { TipoEvento } from './app/models/tipoEvento.models'
+import { Trabajador } from './app/models/trabajador.models'
+import { Usuario } from './app/models/usuario.models'
 
 const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '*'
+
+const app = express();
+
+app.use(express.json());
+
+app.use(express.static('public'))
 
 app.use(cors({
     origin: allowedOrigin,
@@ -34,32 +40,96 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
-app.use('/uploads', express.static('src/uploads'))
+const setupDatabase = async () => {
+    try {
+        Alumno.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+        Alumno.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
+        Alumno.belongsTo(Departamento, { foreignKey: 'id_departamento', as: 'departamento' })
 
-app.use(express.json())
+        Cargo.hasMany(Trabajador, { foreignKey: 'id_cargo', as: 'trabajadores' })
 
-app.use('/img', express.static(path.join(path.resolve(), 'public/img')))
+        CategoriaEvento.hasMany(Evento, { foreignKey: 'id_categoriaevento', as: 'eventos' })
 
-app.use('/api/alumno', alumnoRoutes)
-app.use('/api/tipo-documento', tipoDocumentoRoutes)
-app.use('/api/tipo-evento', tipoEventoRoutes)
-app.use('/api/categoria-evento', categoriaEventoRoutes)
-app.use('/api/tipo-adjunto', tipoAdjuntoRoutes)
-app.use('/api/grupo-adjunto', grupoAdjuntoRoutes)
-app.use('/api/perfil', perfilRoutes)
-app.use('/api/trabajador', trabajadorRoutes)
-app.use('/api/empresa', empresaRoutes)
-app.use('/api/evento', eventoRoutes)
-app.use('/api/certificado', certificadoRoutes)
-app.use('/api/adjunto', adjuntoRoutes)
-app.use('/api/auth', authRoutes)
-app.use('/api/cargo', cargoRoutes)
-app.use('/api/documento', documentoRoutes)
-app.use('/api/persona', personaRoutes)
-app.use('/api/usuario', usuarioRoutes)
-app.use('/api/reporte', reporteRoutes)
-app.use('/api/instructor', instructorRoutes)
-app.use('/api/pais', paisRoutes)
-app.use('/api/email', emailRoutes)
+        Certificado.belongsTo(Alumno, { foreignKey: 'id_alumno', as: 'alumno' })
+        Certificado.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
 
-export default app;
+        Departamento.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
+        Departamento.hasMany(Alumno, { foreignKey: 'id_departamento', as: 'alumnos' })
+
+        Evento.belongsTo(TipoEvento, { foreignKey: 'id_tipoevento', as: 'tipoEvento' })
+        Evento.belongsTo(CategoriaEvento, { foreignKey: 'id_categoriaevento', as: 'categoriaEvento' })
+        Evento.belongsTo(Instructor, { foreignKey: 'id_instructor', as: 'instructor' })
+        Evento.hasMany(Certificado, { foreignKey: 'id_evento', as: 'certificados' })
+
+        GrupoAdjunto.hasMany(Adjunto, { foreignKey: 'id_grupoadjunto', as: 'adjuntos' })
+
+        Instructor.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+        Instructor.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
+
+        LogSesion.belongsTo(Usuario, { foreignKey: 'id_usuario', as: 'usuario' })
+
+        Matricula.belongsTo(Alumno, { foreignKey: 'id_alumno', as: 'alumno' })
+        Matricula.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+
+        Pais.hasMany(Alumno, { foreignKey: 'id_pais', as: 'alumnos' })
+        Pais.hasMany(Instructor, { foreignKey: 'id_pais', as: 'instructores' })
+
+        Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
+
+        Persona.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+
+        Programacion.belongsTo(Trabajador, { foreignKey: 'id_trabajador', as: 'trabajador' })
+        Programacion.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+
+        Temporal.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+        Temporal.belongsTo(Usuario, { foreignKey: 'id_usuario', as: 'usuario' })
+        Temporal.belongsTo(Perfil, { foreignKey: 'id_perfil', as: 'perfil' })
+        Temporal.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+
+        TipoAdjunto.hasMany(Adjunto, { foreignKey: 'id_tipoadjunto', as: 'adjuntos' })
+
+        TipoDocumento.hasMany(Alumno, { foreignKey: 'id_tipodocumento', as: 'alumnos' })
+        TipoDocumento.hasMany(Persona, { foreignKey: 'id_tipodocumento', as: 'personas' })
+        TipoDocumento.hasMany(Trabajador, { foreignKey: 'id_tipodocumento', as: 'trabajadores' })
+
+        Trabajador.belongsTo(Cargo, { foreignKey: 'id_cargo', as: 'cargo' })
+        Trabajador.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+
+        Usuario.belongsTo(Trabajador, { foreignKey: 'id_trabajador', as: 'trabajador' })
+        Usuario.belongsTo(Perfil, { foreignKey: 'id_perfil', as: 'perfil' })
+        Usuario.belongsTo(Instructor, { foreignKey: 'id_instructor', as: 'instructor' })
+        Usuario.belongsTo(Alumno, { foreignKey: 'id_alumno', as: 'alumno' })
+
+        await sequelize.authenticate();
+        console.log('Connection to the database has been established successfully.');
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+}
+
+setupDatabase();
+
+// Agregamos API rutas principales
+app.use('/api', apiRoutes)
+
+export default app
+
+// import path from 'path'
+
+// const app = express()
+
+// const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '*'
+
+// app.use(cors({const router = Router()
+//     origin: allowedOrigin,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization']
+// }))
+
+// app.use('/uploads', express.static('src/uploads'))
+
+// app.use(express.json())
+
+// app.use('/img', express.static(path.join(path.resolve(), 'public/img')))
+
+// export default app;

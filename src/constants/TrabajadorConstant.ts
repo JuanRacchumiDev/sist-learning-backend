@@ -1,0 +1,19 @@
+export const TRABAJADOR_ATTRIBUTES = [
+    'id',
+    'id_cargo',
+    'id_tipodocumento',
+    'numero_documento',
+    'apellido_paterno',
+    'apellido_materno',
+    'nombres',
+    'telefono',
+    'direccion',
+    'email',
+    'linkedin',
+    'fecha_nacimiento',
+    'biografia',
+    'sexo',
+    'firma',
+    'foto_perfil',
+    'estado'
+]

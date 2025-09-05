@@ -1,0 +1,19 @@
+export const EVENTO_ATTRIBUTES = [
+    'id',
+    'id_parent',
+    'id_tipoevento',
+    'id_categoriaevento',
+    'id_instructor',
+    'titulo',
+    'titulo_url',
+    'descripcion',
+    'temario',
+    'plantilla_certificado',
+    'fecha',
+    'fecha_fin',
+    'modalidad',
+    'duracion',
+    'capacidad_maxima',
+    'precio',
+    'estado'
+]
