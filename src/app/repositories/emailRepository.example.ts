@@ -2,8 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import transporter from "../config/mailer"
 import { Attachment } from "nodemailer/lib/mailer"
-import { IAlumno } from "../interfaces/alumnoInterface"
-import { IAdjunto } from "../interfaces/adjuntoInterface"
+import { IAlumno } from "../interfaces/Alumno/IAlumno"
+import { IAdjunto } from "../interfaces/Adjunto/IAdjunto"
 
 class EmailRepository {
     async sendAlumnoInscripcionEmail(alumno: IAlumno) {
@@ -24,8 +24,8 @@ class EmailRepository {
         const enlaces: string[] = []
 
         contenidos.forEach(contenido => {
-            if (contenido.es_descargable && contenido.url?.endsWith('.pdf')) {
-                const filePath = path.resolve(__dirname, `../../public/contenidos/${contenido.url}`)
+            if (contenido.es_descargable && contenido.filepath?.endsWith('.pdf')) {
+                const filePath = path.resolve(__dirname, `../../public/contenidos/${contenido.filepath}`)
                 const titleContenido = contenido.titulo as string
                 const fileName = `${titleContenido}${'.pdf'}`
                 if (fs.existsSync(filePath)) {
@@ -34,8 +34,8 @@ class EmailRepository {
                         path: filePath
                     })
                 }
-            } else if (!contenido.es_descargable && contenido.url) {
-                enlaces.push(`<li><a href="${contenido.url}" target="_blank">${contenido.titulo}</a></li>`)
+            } else if (!contenido.es_descargable && contenido.filepath) {
+                enlaces.push(`<li><a href="${contenido.filepath}" target="_blank">${contenido.titulo}</a></li>`)
             }
         })
     }
