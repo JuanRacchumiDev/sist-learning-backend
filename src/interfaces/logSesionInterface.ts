@@ -1,4 +1,4 @@
-import { IUsuario } from "./usuarioInterface"
+import { IUsuario } from '../app/interfaces/Usuario/IUsuario';
 
 export interface ILogSesion {
     id?: number
