@@ -6,8 +6,8 @@ class PersonaService {
         return await PersonaRepository.getAll()
     }
 
-    async getPersonasPaginado(page: number, limit: number, estado?: boolean) {
-        return await PersonaRepository.getAllWithPaginate(page, limit, estado)
+    async getPersonasPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await PersonaRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getPersonaPorId(id: number) {

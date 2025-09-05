@@ -6,8 +6,8 @@ class AlumnoService {
         return await AlumnoRepository.getAll()
     }
 
-    async getAlumnosPaginado(page: number, limit: number, estado?: boolean) {
-        return await AlumnoRepository.getAllWithPaginate(page, limit, estado)
+    async getAlumnosPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await AlumnoRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getAlumnosPorEstado(estado: boolean) {

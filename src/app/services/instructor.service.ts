@@ -6,8 +6,8 @@ class InstructorService {
         return await InstructorRepository.getAll()
     }
 
-    async getInstructoresPaginado(page: number, limit: number, estado?: boolean) {
-        return await InstructorRepository.getAllWithPaginate(page, limit, estado)
+    async getInstructoresPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await InstructorRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getInstructoresPorEstado(estado: boolean) {

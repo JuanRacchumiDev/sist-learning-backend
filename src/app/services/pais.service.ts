@@ -6,8 +6,8 @@ class PaisService {
         return await PaisRepository.getAll()
     }
 
-    async getPaisPaginado(page: number, limit: number, estado?: boolean) {
-        return await PaisRepository.getAllWithPaginate(page, limit, estado)
+    async getPaisPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await PaisRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getPaisesPorEstado(estado: boolean) {

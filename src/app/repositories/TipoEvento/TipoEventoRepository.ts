@@ -3,6 +3,7 @@ import HString from "../../../helpers/HString"
 import { ITipoEvento, ITipoEventoPaginate, TipoEventoResponse, TipoEventoResponsePaginate } from "../../interfaces/TipoEvento/ITipoEvento"
 import { TIPO_EVENTO_ATTRIBUTES } from '../../../constants/TipoEventoConstant'
 import HPagination from '../../../helpers/HPagination'
+import { Op } from 'sequelize'
 
 class TipoEventoRepository {
     async getAll(): Promise<TipoEventoResponse> {
@@ -21,16 +22,27 @@ class TipoEventoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<TipoEventoResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<TipoEventoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { titulo: { [Op.like]: `%${search}%` } },
+                    { descripcion: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await TipoEvento.findAndCountAll({
                 attributes: TIPO_EVENTO_ATTRIBUTES,
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

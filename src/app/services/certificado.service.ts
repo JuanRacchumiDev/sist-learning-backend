@@ -6,8 +6,8 @@ class CertificadoService {
         return await CertificadoRepository.getAll()
     }
 
-    async getCertificadosPaginado(page: number, limit: number, estado?: boolean) {
-        return await CertificadoRepository.getAllWithPaginate(page, limit, estado)
+    async getCertificadosPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await CertificadoRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getCertificadosPorAlumno(idAlumno?: number) {

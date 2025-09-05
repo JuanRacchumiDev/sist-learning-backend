@@ -6,8 +6,8 @@ class CargoService {
         return await CargoRepository.getAll()
     }
 
-    async getCargosPaginado(page: number, limit: number, estado?: boolean) {
-        return await CargoRepository.getAllWithPaginate(page, limit, estado)
+    async getCargosPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await CargoRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async gerCargosPorEstado(estado: boolean) {

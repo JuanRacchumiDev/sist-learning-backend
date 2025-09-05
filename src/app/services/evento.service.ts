@@ -6,8 +6,8 @@ class EventoService {
         return await EventoRepository.getAll()
     }
 
-    async getEventosPaginado(page: number, limit: number, estado?: boolean) {
-        return await EventoRepository.getAllWithPaginate(page, limit, estado)
+    async getEventosPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await EventoRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getEventosPorEstado(estado: boolean) {

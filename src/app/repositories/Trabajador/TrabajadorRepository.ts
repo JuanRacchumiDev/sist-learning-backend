@@ -7,6 +7,7 @@ import { CARGO_INCLUDE } from "../../../includes/CargoInclude";
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { PERSONA_ATTRIBUTES } from "../../../constants/PersonaConstant";
 import HPagination from "../../../helpers/HPagination";
+import { Op } from "sequelize";
 
 class TrabajadorRepository {
     async getAll(): Promise<TrabajadorResponse> {
@@ -29,12 +30,25 @@ class TrabajadorRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<TrabajadorResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<TrabajadorResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { numero_documento: { [Op.like]: `%${search}%` } },
+                    { apellido_paterno: { [Op.like]: `%${search}%` } },
+                    { apellido_materno: { [Op.like]: `%${search}%` } },
+                    { nombres: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Trabajador.findAndCountAll({
                 attributes: TRABAJADOR_ATTRIBUTES,
@@ -42,7 +56,7 @@ class TrabajadorRepository {
                     CARGO_INCLUDE,
                     TIPO_DOCUMENTO_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

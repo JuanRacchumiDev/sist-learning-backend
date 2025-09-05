@@ -6,8 +6,8 @@ class TrabajadorService {
         return await TrabajadorRepository.getAll()
     }
 
-    async getTrabajadoresPaginado(page: number, limit: number, estado?: boolean) {
-        return await TrabajadorRepository.getAllWithPaginate(page, limit, estado)
+    async getTrabajadoresPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await TrabajadorRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getTrabajadoresPorEstado(estado: boolean) {

@@ -9,6 +9,7 @@ import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 import { DEPARTAMENTO_INCLUDE } from "../../../includes/DepartamentoInclude";
 import HPagination from "../../../helpers/HPagination";
+import { Op } from "sequelize";
 
 class AlumnoRepository {
     async getAll(): Promise<AlumnoResponse> {
@@ -32,12 +33,28 @@ class AlumnoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<AlumnoResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<AlumnoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            // Construir la cláusula `where` dinámicamente
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { numero_documento: { [Op.like]: `%${search}%` } },
+                    { apellido_paterno: { [Op.like]: `%${search}%` } },
+                    { apellido_materno: { [Op.like]: `%${search}%` } },
+                    { nombres: { [Op.like]: `%${search}%` } },
+                    { nombre_capitalized: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Alumno.findAndCountAll({
                 attributes: ALUMNO_ATTRIBUTES,
@@ -46,7 +63,7 @@ class AlumnoRepository {
                     PAIS_INCLUDE,
                     DEPARTAMENTO_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

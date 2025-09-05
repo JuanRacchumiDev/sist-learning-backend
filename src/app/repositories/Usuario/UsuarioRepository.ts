@@ -11,6 +11,7 @@ import { INSTRUCTOR_INCLUDE } from "../../../includes/InstructorInclude";
 import { ALUMNO_INCLUDE } from "../../../includes/AlumnoInclude";
 import { PERFIL_INCLUDE } from "../../../includes/PerfilInclude";
 import HPagination from "../../../helpers/HPagination";
+import { Op } from "sequelize";
 
 class UsuarioRepository {
     async getAll(): Promise<UsuarioResponse> {
@@ -35,12 +36,22 @@ class UsuarioRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<UsuarioResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<UsuarioResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { username: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Usuario.findAndCountAll({
                 attributes: USUARIO_ATTRIBUTES,
@@ -50,7 +61,7 @@ class UsuarioRepository {
                     ALUMNO_INCLUDE,
                     PERFIL_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

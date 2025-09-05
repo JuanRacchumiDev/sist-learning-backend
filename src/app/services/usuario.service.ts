@@ -6,8 +6,8 @@ class UsuarioService {
         return await UsuarioRepository.getAll()
     }
 
-    async getUsuariosPaginado(page: number, limit: number, estado?: boolean) {
-        return await UsuarioRepository.getAllWithPaginate(page, limit, estado)
+    async getUsuariosPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await UsuarioRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getUsuariosPorEstado(estado: boolean) {

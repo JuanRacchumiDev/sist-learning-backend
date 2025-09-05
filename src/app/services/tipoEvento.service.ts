@@ -6,8 +6,8 @@ class TipoEventoService {
         return await TipoEventoRepository.getAll()
     }
 
-    async getTiposPaginado(page: number, limit: number, estado?: boolean) {
-        return await TipoEventoRepository.getAllWithPaginate(page, limit, estado)
+    async getTiposPaginado(page: number, limit: number, estado?: boolean, search?: string) {
+        return await TipoEventoRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
     async getTiposPorEstado(estado: boolean) {

@@ -23,13 +23,14 @@ class CertificadoController {
         const page = parseInt(req.query.page as string) || 1
         const limit = parseInt(req.query.limit as string) || 10
         const estadoParam = req.query.estado
+        const search = req.query.busqueda as string | undefined
         let estado: boolean | undefined
 
         if (typeof estadoParam === 'string') {
             estado = estadoParam.toLowerCase() === 'true'
         }
 
-        const response = await CertificadoService.getCertificadosPaginado(page, limit, estado)
+        const response = await CertificadoService.getCertificadosPaginado(page, limit, estado, search)
 
         const { result } = response
 

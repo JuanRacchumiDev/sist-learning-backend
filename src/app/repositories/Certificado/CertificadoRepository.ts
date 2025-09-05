@@ -14,6 +14,7 @@ import { ALUMNO_INCLUDE } from "../../../includes/AlumnoInclude";
 import { EVENTO_INCLUDE } from "../../../includes/EventoInclude";
 import { TCertificado, TResponseCertificado } from "../../../app/types/TCertificado";
 import HPagination from "../../../helpers/HPagination";
+import { Op } from "sequelize";
 
 class CertificadoRepository {
     async getAll(): Promise<CertificadoResponse> {
@@ -36,12 +37,23 @@ class CertificadoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CertificadoResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<CertificadoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { nombre_alumno_impresion: { [Op.like]: `%${search}%` } },
+                    { '$alumno.nombre_capitalized$': { [Op.like]: `%${search}%` } },
+                    { '$evento.titulo$': { [Op.like]: `%${search}%` } },
+                ]
+            }
 
             const { count, rows } = await Certificado.findAndCountAll({
                 attributes: CERTIFICADO_ATTRIBUTES,
@@ -49,7 +61,7 @@ class CertificadoRepository {
                     ALUMNO_INCLUDE,
                     EVENTO_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

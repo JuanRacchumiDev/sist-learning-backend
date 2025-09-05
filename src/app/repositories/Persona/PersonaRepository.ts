@@ -8,6 +8,7 @@ import { toZonedTime } from "date-fns-tz";
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { PERSONA_ATTRIBUTES } from "../../../constants/PersonaConstant";
 import HPagination from "../../../helpers/HPagination";
+import { Op } from "sequelize";
 
 class PersonaRepository {
     async getAll(): Promise<PersonaResponse> {
@@ -29,19 +30,33 @@ class PersonaRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PersonaResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<PersonaResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { numero: { [Op.like]: `%${search}%` } },
+                    { nombres: { [Op.like]: `%${search}%` } },
+                    { apellido_paterno: { [Op.like]: `%${search}%` } },
+                    { apellido_materno: { [Op.like]: `%${search}%` } },
+                    { nombre_completo: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Persona.findAndCountAll({
                 attributes: PERSONA_ATTRIBUTES,
                 include: [
                     TIPO_DOCUMENTO_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

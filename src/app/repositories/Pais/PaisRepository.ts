@@ -3,6 +3,7 @@ import { IPais, IPaisPaginate, PaisResponse, PaisResponsePaginate } from "../../
 import HString from '../../../helpers/HString'
 import { PAIS_ATTRIBUTES } from '../../../constants/PaisConstant'
 import HPagination from '../../../helpers/HPagination'
+import { Op } from 'sequelize'
 
 class PaisRepository {
     async getAll(): Promise<PaisResponse> {
@@ -21,16 +22,26 @@ class PaisRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PaisResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<PaisResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { nombre: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Pais.findAndCountAll({
                 attributes: PAIS_ATTRIBUTES,
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

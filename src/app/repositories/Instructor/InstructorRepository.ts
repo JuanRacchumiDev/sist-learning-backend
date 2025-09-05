@@ -5,6 +5,7 @@ import { Instructor } from "../../models/instructor.models"
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 import HPagination from "../../../helpers/HPagination";
+import { Op } from "sequelize";
 
 class InstructorRepository {
     async getAll(): Promise<InstructorResponse> {
@@ -27,12 +28,26 @@ class InstructorRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<InstructorResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<InstructorResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { numero_documento: { [Op.like]: `%${search}%` } },
+                    { apellido_paterno: { [Op.like]: `%${search}%` } },
+                    { apellido_materno: { [Op.like]: `%${search}%` } },
+                    { nombres: { [Op.like]: `%${search}%` } },
+                    { nombre_capitalized: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Instructor.findAndCountAll({
                 attributes: INSTRUCTOR_ATTRIBUTES,
@@ -40,7 +55,7 @@ class InstructorRepository {
                     TIPO_DOCUMENTO_INCLUDE,
                     PAIS_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],

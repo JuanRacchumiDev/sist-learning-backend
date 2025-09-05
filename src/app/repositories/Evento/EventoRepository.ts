@@ -6,6 +6,7 @@ import { TIPO_EVENTO_INCLUDE } from "../../../includes/TipoEventoInclude"
 import { CATEGORIA_EVENTO_INCLUDE } from "../../../includes/CategoriaEventoInclude"
 import { INSTRUCTOR_INCLUDE } from "../../../includes/InstructorInclude"
 import HPagination from "../../../helpers/HPagination"
+import { Op } from "sequelize"
 
 class EventoRepository {
     async getAll(): Promise<EventoResponse> {
@@ -29,12 +30,22 @@ class EventoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<EventoResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<EventoResponsePaginate> {
         try {
-            // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+            // Construir la cláusula `where` dinámicamente
+            const whereConditions: any = {}
+            if (typeof estado === 'boolean') {
+                whereConditions.estado = estado
+            }
+
+            if (search) {
+                whereConditions[Op.or] = [
+                    { titulo: { [Op.like]: `%${search}%` } },
+                    { descripcion: { [Op.like]: `%${search}%` } }
+                ]
+            }
 
             const { count, rows } = await Evento.findAndCountAll({
                 attributes: EVENTO_ATTRIBUTES,
@@ -43,7 +54,7 @@ class EventoRepository {
                     CATEGORIA_EVENTO_INCLUDE,
                     INSTRUCTOR_INCLUDE
                 ],
-                where: whereClause,
+                where: whereConditions,
                 order: [
                     ['id', 'DESC']
                 ],
@@ -70,7 +81,6 @@ class EventoRepository {
                 pagination,
                 status: 200
             }
-
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
