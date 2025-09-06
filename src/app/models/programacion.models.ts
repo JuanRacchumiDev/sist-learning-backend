@@ -105,9 +105,3 @@ Programacion.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Programacion.belongsTo(Trabajador, { foreignKey: 'id_trabajador' })
-
-// Programacion.belongsTo(Evento, { foreignKey: 'id_evento' })
-
-// export default Programacion

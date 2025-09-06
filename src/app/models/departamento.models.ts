@@ -69,7 +69,3 @@ Departamento.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Departamento.belongsTo(Pais, { foreignKey: 'id_pais' })
-
-// export default Departamento

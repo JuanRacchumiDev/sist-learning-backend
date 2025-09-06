@@ -103,5 +103,3 @@ TipoDocumento.init({
     sequelize,
     timestamps: true
 })
-
-// export default TipoDocumento;

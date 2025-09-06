@@ -348,7 +348,7 @@ class CertificadoRepository {
 
                 // Reemplazar el archivo anterior si existe
                 if (fs.existsSync(ruta as string)) {
-                    fs.unlinkSync(ruta as string); // Eliminar el archivo anterior
+                    fs.unlinkSync(ruta as string);
                 }
 
                 const nombreAlumnoImpresion = (data.nombre_alumno_impresion === undefined)

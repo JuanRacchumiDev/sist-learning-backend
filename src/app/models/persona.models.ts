@@ -142,7 +142,3 @@ Persona.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Persona.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento' })
-
-// export default Persona

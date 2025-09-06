@@ -3,9 +3,7 @@ import { IEmail } from "../../interfaces/Email/IEmail"
 
 class EmailRepository {
     async sendEmail({ to, subject, text, copyTo }: IEmail): Promise<any> {
-        // const recipient = `juan.racchumi.dev@gmail.com`
         const recipients = copyTo ? [to, copyTo].join(',') : to
-        console.log('recipients', recipients)
 
         const mailOptions = {
             from: process.env.EMAIL_USER_GMAIL,
@@ -16,7 +14,6 @@ class EmailRepository {
 
         try {
             const info = await transporter.sendMail(mailOptions)
-            console.log('info mailer', info)
             return info
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'

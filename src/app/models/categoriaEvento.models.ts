@@ -66,5 +66,3 @@ CategoriaEvento.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default CategoriaEvento

@@ -73,5 +73,3 @@ Temporal.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default Temporal

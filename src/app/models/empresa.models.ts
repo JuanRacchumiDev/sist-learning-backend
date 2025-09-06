@@ -87,5 +87,3 @@ Empresa.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default Empresa

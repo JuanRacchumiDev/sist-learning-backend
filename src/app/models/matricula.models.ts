@@ -147,9 +147,3 @@ Matricula.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Matricula.belongsTo(Alumno, { foreignKey: 'id_alumno' })
-
-// Matricula.belongsTo(Evento, { foreignKey: 'id_evento' })
-
-// export default Matricula

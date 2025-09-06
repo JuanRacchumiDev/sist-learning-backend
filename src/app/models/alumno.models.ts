@@ -152,11 +152,3 @@ Alumno.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Alumno.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento' })
-
-// Alumno.belongsTo(Pais, { foreignKey: 'id_pais' })
-
-// Alumno.belongsTo(Departamento, { foreignKey: 'id_departamento' })
-
-// export default Alumno

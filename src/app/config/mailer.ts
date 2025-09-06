@@ -4,7 +4,6 @@ import path from 'path'
 
 // Determina el entorno
 const env = process.env.NODE_ENV || 'development'
-console.log('env', env)
 
 // Carga el archivo .env correspondiente
 const envFilePath = path.resolve(process.cwd(), `.env.${env}`)

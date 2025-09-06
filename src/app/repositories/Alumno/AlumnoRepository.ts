@@ -38,8 +38,6 @@ class AlumnoRepository {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
-
             // Construir la cláusula `where` dinámicamente
             const whereConditions: any = {}
             if (typeof estado === 'boolean') {

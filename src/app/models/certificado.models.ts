@@ -113,9 +113,3 @@ Certificado.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Certificado.belongsTo(Alumno, { foreignKey: 'id_alumno' })
-
-// Certificado.belongsTo(Evento, { foreignKey: 'id_evento' })
-
-// export default Certificado

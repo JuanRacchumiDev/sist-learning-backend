@@ -126,9 +126,3 @@ Instructor.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Instructor.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento' })
-
-// Instructor.belongsTo(Pais, { foreignKey: 'id_pais' })
-
-// export default Instructor

@@ -113,23 +113,3 @@ setupDatabase();
 app.use('/v1', apiRoutes)
 
 export default app
-
-// import path from 'path'
-
-// const app = express()
-
-// const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '*'
-
-// app.use(cors({const router = Router()
-//     origin: allowedOrigin,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// }))
-
-// app.use('/uploads', express.static('src/uploads'))
-
-// app.use(express.json())
-
-// app.use('/img', express.static(path.join(path.resolve(), 'public/img')))
-
-// export default app;

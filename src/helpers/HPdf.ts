@@ -23,8 +23,6 @@ export default class HPdf {
 
             const { plantilla_certificado } = evento
 
-            console.log('plantilla certificado original', plantilla_certificado)
-
             if (!plantilla_certificado) {
                 return { result: false, message: `El evento no tiene una plantilla asignada` }
             }
@@ -37,15 +35,12 @@ export default class HPdf {
             data.templateName = templateCertificado
 
             const lugar = 'Lambayeque';
-            // const pathTemplate = path.resolve(__dirname, `../../public/pdf/${plantilla_certificado}`);
             const pathTemplate = path.resolve(__dirname, `../../public/pdf/${templateCertificado}`);
             const pathFontKuenstler = path.resolve(__dirname, '../../public/fonts/KUNSTLER.TTF')
             const pathFontKuenstlerBold = path.resolve(__dirname, "../../public/fonts/Kuenstler Script LT Std 2 Bold.otf");
             const pathFontBalooBold = path.resolve(__dirname, '../../public/fonts/BalooChettan2-Bold.ttf')
             const pathFontBalooMedium = path.resolve(__dirname, '../../public/fonts/BalooChettan2-Medium.ttf')
             const pathLogo = path.resolve(__dirname, '../../public/img/logo_transparente_small.png')
-
-            console.log('pathTemplate', pathTemplate)
 
             if (!fs.existsSync(pathTemplate)) {
                 return { result: false, message: `No existe la plantilla ${plantilla_certificado}` }
@@ -88,7 +83,6 @@ export default class HPdf {
             // Definiendo el nombre del archivo
             const sanitizedTitulo = HString.sanitizeFileName(titulo as string)
             const sanitizedAlumno = HString.sanitizeFileName(nombre_capitalized as string)
-            // const fileName = `certificado_${sanitizedAlumno}.pdf`
             const codEvento = `${evento.id}`.toString().padStart(5, "0");
             const codAlumno = `${alumno.id}`.toString().padStart(5, "0");
             const fileName = `certificado_e${codEvento}_a${codAlumno}.pdf`

@@ -65,5 +65,3 @@ TipoEvento.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default TipoEvento

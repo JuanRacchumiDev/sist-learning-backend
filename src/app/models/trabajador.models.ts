@@ -141,9 +141,3 @@ Trabajador.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Trabajador.belongsTo(Cargo, { foreignKey: 'id_cargo' })
-
-// Trabajador.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento' })
-
-// export default Trabajador

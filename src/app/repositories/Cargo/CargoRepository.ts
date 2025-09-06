@@ -27,7 +27,6 @@ class CargoRepository {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // const whereClause = typeof estado === 'boolean' ? { estado } : {}
             const whereConditions: any = {}
             if (typeof estado === 'boolean') {
                 whereConditions.estado = estado

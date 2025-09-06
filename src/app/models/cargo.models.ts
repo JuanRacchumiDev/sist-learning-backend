@@ -66,5 +66,3 @@ Cargo.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default Cargo

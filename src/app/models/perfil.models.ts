@@ -66,5 +66,3 @@ Perfil.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default Perfil

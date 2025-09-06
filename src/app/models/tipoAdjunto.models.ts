@@ -59,5 +59,3 @@ TipoAdjunto.init({
     sequelize,
     timestamps: true
 })
-
-// export default TipoAdjunto

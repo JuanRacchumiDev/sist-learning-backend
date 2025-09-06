@@ -53,7 +53,3 @@ LogSesion.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// LogSesion.belongsTo(Usuario, { foreignKey: 'id_usuario' })
-
-// export default LogSesion

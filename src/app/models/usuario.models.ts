@@ -118,13 +118,3 @@ Usuario.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Usuario.belongsTo(Trabajador, { foreignKey: 'id_trabajador' })
-
-// Usuario.belongsTo(Instructor, { foreignKey: 'id_instructor' })
-
-// Usuario.belongsTo(Alumno, { foreignKey: 'id_alumno' })
-
-// Usuario.belongsTo(Perfil, { foreignKey: 'id_perfil' })
-
-// export default Usuario;

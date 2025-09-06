@@ -30,7 +30,6 @@ export class Adjunto extends Model<IAdjunto, AdjuntoCreationAttributes> implemen
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
-    // public readonly deleted_at!: Date
 
     // Asociaciones
     public getTipoAdjunto?: () => Promise<TipoAdjunto>
@@ -134,11 +133,3 @@ Adjunto.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Adjunto.belongsTo(TipoAdjunto, { foreignKey: 'id_tipoadjunto' })
-
-// Adjunto.belongsTo(GrupoAdjunto, { foreignKey: 'id_grupoadjunto' })
-
-// Adjunto.belongsTo(Evento, { foreignKey: 'id_evento' })
-
-// export default Adjunto

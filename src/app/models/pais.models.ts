@@ -67,5 +67,3 @@ Pais.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default Pais

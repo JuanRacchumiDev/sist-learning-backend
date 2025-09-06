@@ -66,5 +66,3 @@ GrupoAdjunto.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// export default GrupoAdjunto

@@ -146,11 +146,3 @@ Evento.init({
     timestamps: true,
     freezeTableName: true
 })
-
-// Evento.belongsTo(TipoEvento, { foreignKey: 'id_tipoevento' })
-
-// Evento.belongsTo(CategoriaEvento, { foreignKey: 'id_categoriaevento' })
-
-// Evento.belongsTo(Instructor, { foreignKey: 'id_instructor' })
-
-// export default Evento

@@ -8,8 +8,6 @@ class EmailController {
         try {
             const responseEmail = await EmailService.sendEmail({ to, subject, text, copyTo })
 
-            console.log('responseEmail', responseEmail)
-
             // Validar si responseEmail existe y tiene messageId
             if (responseEmail && typeof responseEmail.messageId === 'string') {
                 res.status(200).json(
