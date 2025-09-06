@@ -36,7 +36,7 @@ app.use(express.static('public'))
 
 app.use(cors({
     origin: allowedOrigin,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
@@ -110,7 +110,7 @@ const setupDatabase = async () => {
 setupDatabase();
 
 // Agregamos API rutas principales
-app.use('/api', apiRoutes)
+app.use('/v1', apiRoutes)
 
 export default app
 

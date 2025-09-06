@@ -1,7 +1,7 @@
 import app from "./app"
 import dotenv from "dotenv"
 
-dotenv.config()
+console.log('environment', dotenv.config())
 
 const PORT = process.env.PORT || 3000
 
