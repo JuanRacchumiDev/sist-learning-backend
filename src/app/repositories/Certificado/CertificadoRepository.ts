@@ -204,7 +204,7 @@ class CertificadoRepository {
 
                 const certificado = data as ICertificado
 
-                const { ruta, filename } = certificado
+                const { ruta, filename, id, id_alumno } = certificado
 
                 const path = ruta as string
 
@@ -215,14 +215,73 @@ class CertificadoRepository {
                         message: 'Certificado encontrado',
                         outputPath: path,
                         filename,
+                        id,
+                        id_alumno,
                         status: 200
                     }
                     return result
                 }
 
-                return { result: false, message: 'Certificado no encontrado', outputPath: null, filename: null, status: 200 }
+                return {
+                    result: false,
+                    message: 'Certificado no encontrado',
+                    outputPath: null,
+                    filename: null,
+                    status: 404
+                }
             } else {
-                return { result: false, error, outputPath: null, filename: null, status: 500 }
+                return {
+                    result: false,
+                    error,
+                    outputPath: null,
+                    filename: null,
+                    status: 500
+                }
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async downloadByName(filename: string) {
+        try {
+            const certificado = await Certificado.findOne({
+                where: { filename }
+            })
+
+            if (!certificado) {
+                return {
+                    result: false,
+                    message: 'Certificado no encontrado',
+                    outputPath: null,
+                    filename: null,
+                    status: 404
+                }
+            }
+
+            const { id, id_alumno, ruta } = certificado
+
+            const pathFilename = ruta as string
+
+            if (fs.existsSync(pathFilename)) {
+                return {
+                    result: true,
+                    message: 'Certificado encontrado con éxito',
+                    outputPath: pathFilename,
+                    filename,
+                    id,
+                    id_alumno,
+                    status: 200
+                }
+            } else {
+                return {
+                    result: false,
+                    message: 'Archivo de certificado no encontrado en el sistema de archivos',
+                    outputPath: null,
+                    filename: null,
+                    status: 404
+                };
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';

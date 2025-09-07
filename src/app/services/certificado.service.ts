@@ -30,6 +30,10 @@ class CertificadoService {
         return await CertificadoRepository.downloadById(id)
     }
 
+    async downloadPorFilename(filename: string) {
+        return await CertificadoRepository.downloadByName(filename)
+    }
+
     async createCertificado(data: ICertificado) {
         return await CertificadoRepository.create(data)
     }

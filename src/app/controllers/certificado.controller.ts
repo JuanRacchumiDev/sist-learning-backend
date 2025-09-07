@@ -5,6 +5,7 @@ import { ICertificado } from '../interfaces/Certificado/ICertificado'
 import { IAlumno } from '../interfaces/Alumno/IAlumno'
 import { Temporal } from '../models/temporal.models'
 import { ITemporal } from '../interfaces/Temporal/ITemporal'
+import fs from 'fs';
 
 class CertificadoController {
     async getCertificados(req: Request, res: Response) {
@@ -111,29 +112,55 @@ class CertificadoController {
         }
     }
 
-    async downloadCertificado(req: Request, res: Response) {
-        const { id } = req.params
+    public async downloadPorFilename(req: Request, res: Response) {
+        const { params } = req
 
-        const response = await CertificadoService.downloadPorId(+id)
+        const { filename } = params
 
-        const { result, outputPath, filename, message } = response
+        const response = await CertificadoService.downloadPorFilename(filename);
 
-        if (result) {
-            const outputPathParam = outputPath as string
-            const filenameParam = filename as string
+        const { result, status, outputPath, error, message } = response;
 
-            res.download(outputPathParam, filenameParam, (err) => {
+        if (result && outputPath) {
+            // res.setHeader('Content-Type', 'application/pdf');
+            // res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+            // const fileStream = fs.createReadStream(outputPath);
+            // fileStream.pipe(res);
+            // return res.status(status);
+            // res.status(status);
+
+            res.download(outputPath, filename, (err) => {
                 if (err) {
-                    console.error(err)
+                    // Aquí podrías manejar el error de la descarga si el archivo no se encuentra
+                    console.error(err);
+                    // Si la descarga falla, envía un error.
+                    // Es importante que esto sea una respuesta de fallback
+                    res.status(500).json({ result: false, message: 'Error al descargar el archivo', error: err.message });
                 }
-            })
+            });
         } else {
-            if (message) {
-                res.status(404).send(response)
-            } else {
-                res.status(500).send(response)
-            }
+            res.status(status).json({ result, message, error });
         }
+    }
+
+    public async downloadPorId(req: Request, res: Response) {
+        const { params } = req
+
+        const { id } = params
+
+        const response = await CertificadoService.downloadPorId(+id);
+
+        const { result, status, outputPath, message, filename } = response;
+
+        if (result && outputPath) {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+            const fileStream = fs.createReadStream(outputPath);
+            fileStream.pipe(res);
+            res.status(status);
+        }
+
+        res.status(status).json({ result, message });
     }
 
     async createCertificado(req: Request, res: Response) {
