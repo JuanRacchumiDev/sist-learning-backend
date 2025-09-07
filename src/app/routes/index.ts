@@ -21,6 +21,8 @@ import usuarioRoutes from './usuario.routes'
 import reporteRoutes from './reporte.routes'
 import instructorRoutes from './instructor.routes'
 import paisRoutes from './pais.routes'
+import plantillaRoutes from './plantilla.routes'
+import tipoCertificadoRoutes from './tipoCertificado.routes'
 import emailRoutes from './email.routes'
 
 router.use('/alumno', alumnoRoutes)
@@ -43,6 +45,8 @@ router.use('/usuario', usuarioRoutes)
 router.use('/reporte', reporteRoutes)
 router.use('/instructor', instructorRoutes)
 router.use('/pais', paisRoutes)
+router.use('/plantilla', plantillaRoutes)
+router.use('/tipo-certificado', tipoCertificadoRoutes)
 router.use('/email', emailRoutes)
 
 export default router

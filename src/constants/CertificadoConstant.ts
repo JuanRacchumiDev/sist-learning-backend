@@ -3,6 +3,7 @@ export const CERTIFICADO_ATTRIBUTES = [
     'id_alumno',
     'id_evento',
     'id_tipocertificado',
+    'id_plantilla',
     'codigo',
     'codigo_qr',
     'ruta',

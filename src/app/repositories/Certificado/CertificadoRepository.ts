@@ -235,30 +235,43 @@ class CertificadoRepository {
             const { id_alumno, id_evento, nombre_impresion } = data
 
             const idAlumno = id_alumno as number
+
             const idEvento = id_evento as number
 
             const alumnoResponse = await AlumnoService.getAlumnoPorId(idAlumno)
 
-            const { result: resultAlumno, error: errorAlumno, message: messageAlumno, data: dataAlumno } = alumnoResponse
+            const {
+                result: resultAlumno,
+                error: errorAlumno,
+                message: messageAlumno,
+                data: dataAlumno,
+                status: statusAlumno
+            } = alumnoResponse
 
-            if (!resultAlumno) {
-                if (errorAlumno) {
-                    return { result: false, error: errorAlumno, status: 500 }
+            if (!resultAlumno && !dataAlumno) {
+                return {
+                    result: !resultAlumno,
+                    message: messageAlumno,
+                    status: statusAlumno || 500
                 }
-
-                return { result: false, message: messageAlumno, status: 200 }
             }
 
             const eventoResponse = await EventoService.getEventoPorId(idEvento)
 
-            const { result: resultEvento, error: errorEvento, message: messageEvento, data: dataEvento } = eventoResponse
+            const {
+                result: resultEvento,
+                error: errorEvento,
+                message: messageEvento,
+                data: dataEvento,
+                status: statusEvento
+            } = eventoResponse
 
-            if (!resultEvento) {
-                if (errorEvento) {
-                    return { result: false, error: errorEvento, status: 500 }
+            if (!resultEvento && !dataEvento) {
+                return {
+                    result: !resultEvento,
+                    message: messageEvento,
+                    status: statusEvento || 500
                 }
-
-                return { result: false, message: messageEvento, status: 200 }
             }
 
             const alumno = dataAlumno as IAlumno
@@ -267,11 +280,11 @@ class CertificadoRepository {
 
             const { nombre_capitalized } = alumno
 
-            const nombreAlumnoImpresion = (nombre_impresion === undefined)
+            const nombreImpresion = (nombre_impresion === undefined)
                 ? `${nombre_capitalized}`
                 : HString.capitalizeNames(nombre_impresion)
 
-            data.nombre_impresion = nombreAlumnoImpresion
+            data.nombre_impresion = nombreImpresion
 
             // Generar un nuevo certificado
             const responseCertificado = await HPdf.generarCertificado(data, alumno, evento)
@@ -358,7 +371,7 @@ class CertificadoRepository {
                     fs.unlinkSync(ruta as string);
                 }
 
-                const nombreAlumnoImpresion = (data.nombre_impresion === undefined)
+                const nombreImpresion = (data.nombre_impresion === undefined)
                     ? `${nombre_capitalized}`
                     : HString.capitalizeNames(data.nombre_impresion)
 
@@ -366,7 +379,7 @@ class CertificadoRepository {
                 data.codigo = certificado.codigo
                 data.codigo_qr = certificado.codigo_qr
                 data.ruta = ruta
-                data.nombre_impresion = nombreAlumnoImpresion
+                data.nombre_impresion = nombreImpresion
 
                 // Generar un nuevo archivo PDF
                 const { result: resultCertificado, message: messageCertificado, dataResult } = await HPdf.generarCertificado(data, alumno, evento)

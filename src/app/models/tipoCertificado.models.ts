@@ -53,6 +53,5 @@ TipoCertificado.init({
     modelName: 'TipoCertificado',
     sequelize,
     timestamps: true,
-    paranoid: true,
-    underscored: true
+    freezeTableName: true
 })

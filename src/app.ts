@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import apiRoutes from './app/routes'
+
 import sequelize from './config/database'
 
 import { Adjunto } from './app/models/adjunto.models'
@@ -55,6 +56,7 @@ const setupDatabase = async () => {
         Certificado.belongsTo(Alumno, { foreignKey: 'id_alumno', as: 'alumno' })
         Certificado.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
         Certificado.belongsTo(TipoCertificado, { foreignKey: 'id_tipocertificado', as: 'tipoCertificado' })
+        Certificado.belongsTo(Plantilla, { foreignKey: 'id_plantilla', as: 'plantilla' })
 
         Departamento.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
         Departamento.hasMany(Alumno, { foreignKey: 'id_departamento', as: 'alumnos' })
@@ -79,6 +81,7 @@ const setupDatabase = async () => {
         Pais.hasMany(Instructor, { foreignKey: 'id_pais', as: 'instructores' })
 
         Plantilla.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+        Plantilla.hasMany(Certificado, { foreignKey: 'id_plantilla', as: 'certificados' })
 
         Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
 

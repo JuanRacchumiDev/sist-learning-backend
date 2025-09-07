@@ -73,6 +73,5 @@ Plantilla.init({
     modelName: 'Plantilla',
     sequelize,
     timestamps: true,
-    paranoid: true,
     underscored: true
 })

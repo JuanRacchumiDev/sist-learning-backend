@@ -1,5 +1,6 @@
 import { IAlumno } from "../Alumno/IAlumno"
 import { IEvento } from "../Evento/IEvento"
+import { IPlantilla } from "../Plantilla/IPlantilla"
 import { ITipoCertificado } from "../TipoCertificado/ITipoCertificado"
 
 export interface ICertificado {
@@ -7,6 +8,7 @@ export interface ICertificado {
     id_alumno?: number
     id_evento?: number
     id_tipocertificado?: number
+    id_plantilla?: number
     nombre_impresion?: string
     codigo?: string
     codigo_qr?: string
@@ -25,6 +27,7 @@ export interface ICertificado {
     alumno?: IAlumno
     evento?: IEvento
     tipoCertificado?: ITipoCertificado
+    plantilla?: IPlantilla
 }
 
 export interface CertificadoResponse {

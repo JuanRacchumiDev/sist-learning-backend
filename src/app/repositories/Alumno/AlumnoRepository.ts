@@ -10,6 +10,7 @@ import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 import { DEPARTAMENTO_INCLUDE } from "../../../includes/DepartamentoInclude";
 import HPagination from "../../../helpers/HPagination";
 import { Op } from "sequelize";
+import { TIMEZONES } from "../../../constants/TimeZoneConstant";
 
 class AlumnoRepository {
     async getAll(): Promise<AlumnoResponse> {
@@ -192,7 +193,7 @@ class AlumnoRepository {
 
     async create(data: IAlumno): Promise<AlumnoResponse> {
         const options = {
-            timeZone: 'America/Lima',
+            timeZone: TIMEZONES.LIMA,
             hour12: false
         }
 

@@ -6,6 +6,7 @@ import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 import HPagination from "../../../helpers/HPagination";
 import { Op } from "sequelize";
+import { TIMEZONES } from "../../../constants/TimeZoneConstant";
 
 class InstructorRepository {
     async getAll(): Promise<InstructorResponse> {
@@ -187,7 +188,7 @@ class InstructorRepository {
             const nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`
 
             const options = {
-                timeZone: 'America/Lima',
+                timeZone: TIMEZONES.LIMA,
                 hour12: false
             }
 
