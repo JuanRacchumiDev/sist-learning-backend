@@ -17,6 +17,7 @@ export class TipoAdjunto extends Model<ITipoAdjunto, TipoAdjuntoAttributes> impl
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getAdjuntos?: () => Promise<Adjunto[]>
@@ -55,7 +56,8 @@ TipoAdjunto.init({
     }
 }, {
     modelName: 'TipoAdjunto',
-    tableName: 'tipoadjunto',
+    tableName: 'tipo_adjunto',
     sequelize,
-    timestamps: true
+    timestamps: true,
+    freezeTableName: true
 })

@@ -61,14 +61,14 @@ class AdjuntoController {
 
         const response = await AdjuntoService.downloadPorId(+id)
 
-        const { result, outputPath, fileName, message } = response
+        const { result, outputPath, filename, message } = response
 
         if (result) {
             const outputPathParam = outputPath as string
 
-            const fileNameParam = fileName as string
+            const filenameParam = filename as string
 
-            res.download(outputPathParam, fileNameParam, (err) => {
+            res.download(outputPathParam, filenameParam, (err) => {
                 if (err) {
                     console.error(err)
                 }

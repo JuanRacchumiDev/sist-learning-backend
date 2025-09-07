@@ -32,6 +32,7 @@ export class Trabajador extends Model<ITrabajador, TrabajadorAttributes> impleme
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getCargo?: () => Promise<Cargo>

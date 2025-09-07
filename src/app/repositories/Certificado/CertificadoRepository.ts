@@ -15,6 +15,7 @@ import { EVENTO_INCLUDE } from "../../../includes/EventoInclude";
 import { TCertificado, TResponseCertificado } from "../../../app/types/TCertificado";
 import HPagination from "../../../helpers/HPagination";
 import { Op } from "sequelize";
+import { TIPO_CERTIFICADO_INCLUDE } from "../../../includes/TipoCertificadoInclude";
 
 class CertificadoRepository {
     async getAll(): Promise<CertificadoResponse> {
@@ -23,7 +24,8 @@ class CertificadoRepository {
                 attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
                     ALUMNO_INCLUDE,
-                    EVENTO_INCLUDE
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
                 ],
                 order: [
                     ['id', 'DESC']
@@ -49,7 +51,7 @@ class CertificadoRepository {
 
             if (search) {
                 whereConditions[Op.or] = [
-                    { nombre_alumno_impresion: { [Op.like]: `%${search}%` } },
+                    { nombre_impresion: { [Op.like]: `%${search}%` } },
                     { '$alumno.nombre_capitalized$': { [Op.like]: `%${search}%` } },
                     { '$evento.titulo$': { [Op.like]: `%${search}%` } },
                 ]
@@ -59,7 +61,8 @@ class CertificadoRepository {
                 attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
                     ALUMNO_INCLUDE,
-                    EVENTO_INCLUDE
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
                 ],
                 where: whereConditions,
                 order: [
@@ -104,7 +107,8 @@ class CertificadoRepository {
                 attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
                     ALUMNO_INCLUDE,
-                    EVENTO_INCLUDE
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
                 ],
                 order: [
                     ['id', 'desc']
@@ -125,7 +129,8 @@ class CertificadoRepository {
                 attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
                     ALUMNO_INCLUDE,
-                    EVENTO_INCLUDE
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
                 ]
             })
 
@@ -146,7 +151,8 @@ class CertificadoRepository {
                 attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
                     ALUMNO_INCLUDE,
-                    EVENTO_INCLUDE
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
                 ]
             })
 
@@ -171,7 +177,8 @@ class CertificadoRepository {
                 attributes: CERTIFICADO_ATTRIBUTES,
                 include: [
                     ALUMNO_INCLUDE,
-                    EVENTO_INCLUDE
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
                 ]
             })
 
@@ -197,7 +204,7 @@ class CertificadoRepository {
 
                 const certificado = data as ICertificado
 
-                const { ruta, fileName } = certificado
+                const { ruta, filename } = certificado
 
                 const path = ruta as string
 
@@ -207,15 +214,15 @@ class CertificadoRepository {
                         result: true,
                         message: 'Certificado encontrado',
                         outputPath: path,
-                        fileName,
+                        filename,
                         status: 200
                     }
                     return result
                 }
 
-                return { result: false, message: 'Certificado no encontrado', outputPath: null, fileName: null, status: 200 }
+                return { result: false, message: 'Certificado no encontrado', outputPath: null, filename: null, status: 200 }
             } else {
-                return { result: false, error, outputPath: null, fileName: null, status: 500 }
+                return { result: false, error, outputPath: null, filename: null, status: 500 }
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
@@ -225,7 +232,7 @@ class CertificadoRepository {
 
     async create(data: ICertificado): Promise<CertificadoResponse> {
         try {
-            const { id_alumno, id_evento, nombre_alumno_impresion } = data
+            const { id_alumno, id_evento, nombre_impresion } = data
 
             const idAlumno = id_alumno as number
             const idEvento = id_evento as number
@@ -260,22 +267,22 @@ class CertificadoRepository {
 
             const { nombre_capitalized } = alumno
 
-            const nombreAlumnoImpresion = (nombre_alumno_impresion === undefined)
+            const nombreAlumnoImpresion = (nombre_impresion === undefined)
                 ? `${nombre_capitalized}`
-                : HString.capitalizeNames(nombre_alumno_impresion)
+                : HString.capitalizeNames(nombre_impresion)
 
-            data.nombre_alumno_impresion = nombreAlumnoImpresion
+            data.nombre_impresion = nombreAlumnoImpresion
 
             // Generar un nuevo certificado
             const responseCertificado = await HPdf.generarCertificado(data, alumno, evento)
 
             const { dataResult } = responseCertificado as TResponseCertificado
 
-            const { outputPath, fileName, codigoQR, codigo } = dataResult as TCertificado
+            const { outputPath, filename, codigo_qr, codigo } = dataResult as TCertificado
 
             data.ruta = outputPath
-            data.fileName = fileName
-            data.codigoQR = codigoQR
+            data.filename = filename
+            data.codigo_qr = codigo_qr
             data.codigo = codigo
 
             const newCertificado = await Certificado.create(data as ICertificado)
@@ -305,7 +312,7 @@ class CertificadoRepository {
             const {
                 id_alumno,
                 id_evento,
-                nombre_alumno_impresion,
+                nombre_impresion,
                 fecha_envio,
                 ruta
             } = certificado
@@ -313,7 +320,7 @@ class CertificadoRepository {
             if (
                 data.id_alumno !== id_alumno ||
                 data.id_evento !== id_evento ||
-                data.nombre_alumno_impresion !== nombre_alumno_impresion ||
+                data.nombre_impresion !== nombre_impresion ||
                 data.fecha_envio !== fecha_envio
             ) {
                 const alumnoResponse = await AlumnoService.getAlumnoPorId(data.id_alumno as number)
@@ -351,15 +358,15 @@ class CertificadoRepository {
                     fs.unlinkSync(ruta as string);
                 }
 
-                const nombreAlumnoImpresion = (data.nombre_alumno_impresion === undefined)
+                const nombreAlumnoImpresion = (data.nombre_impresion === undefined)
                     ? `${nombre_capitalized}`
-                    : HString.capitalizeNames(data.nombre_alumno_impresion)
+                    : HString.capitalizeNames(data.nombre_impresion)
 
                 data.id = certificado.id
                 data.codigo = certificado.codigo
-                data.codigoQR = certificado.codigoQR
+                data.codigo_qr = certificado.codigo_qr
                 data.ruta = ruta
-                data.nombre_alumno_impresion = nombreAlumnoImpresion
+                data.nombre_impresion = nombreAlumnoImpresion
 
                 // Generar un nuevo archivo PDF
                 const { result: resultCertificado, message: messageCertificado, dataResult } = await HPdf.generarCertificado(data, alumno, evento)
@@ -368,12 +375,12 @@ class CertificadoRepository {
                     return { result: resultCertificado, message: messageCertificado }
                 }
 
-                const { outputPath, fileName, codigoQR, codigo } = dataResult as TCertificado
+                const { outputPath, filename, codigo_qr, codigo } = dataResult as TCertificado
 
                 // Actualizar la base de datos con la nueva ruta y los nuevos datos
                 data.ruta = outputPath;
-                data.fileName = fileName;
-                data.codigoQR = codigoQR;
+                data.filename = filename;
+                data.codigo_qr = codigo_qr;
                 data.codigo = codigo;
 
                 const dataCertificado: Partial<ICertificado> = data

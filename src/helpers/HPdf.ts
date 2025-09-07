@@ -32,7 +32,7 @@ export default class HPdf {
             // Actualizando la plantilla del certificado
             const templateCertificado = this.validateFirma(plantilla_certificado, withFirma)
 
-            data.templateName = templateCertificado
+            data.template_name = templateCertificado
 
             const lugar = 'Lambayeque';
             const pathTemplate = path.resolve(__dirname, `../../public/pdf/${templateCertificado}`);
@@ -66,27 +66,25 @@ export default class HPdf {
                 return { result: false, message: `No existe el logo` }
             }
 
-            const { nombre_alumno_impresion, firmado } = data
+            const { nombre_impresion, firmado } = data
 
-            const { titulo, temario, fecha, fecha_fin } = evento
+            const { titulo, temario, fecha_inicio, fecha_fin } = evento
 
             const { nombre_capitalized } = alumno
 
-            const nombreImpresion = nombre_alumno_impresion as string;
+            const nombreImpresion = nombre_impresion as string;
             const tituloEvento = titulo as string
-            const fechaEvento = HDate.convertDateToString(fecha as Date)
             const temarioEvento = temario?.split('\n') as String[]
 
-            const fechaInicio = toZonedTime(fecha as Date, 'America/Lima')
-            const fechaInicioStr = format(fechaInicio, "dd 'de' MMMM 'del' yyyy", { locale: es })
+            const fechaInicioStr = format(fecha_inicio as string, "dd 'de' MMMM 'del' yyyy", { locale: es })
 
             // Definiendo el nombre del archivo
             const sanitizedTitulo = HString.sanitizeFileName(titulo as string)
             const sanitizedAlumno = HString.sanitizeFileName(nombre_capitalized as string)
             const codEvento = `${evento.id}`.toString().padStart(5, "0");
             const codAlumno = `${alumno.id}`.toString().padStart(5, "0");
-            const fileName = `certificado_e${codEvento}_a${codAlumno}.pdf`
-            const outputPath = path.resolve(__dirname, `../../public/certificados/${sanitizedTitulo}/${fileName}`)
+            const filename = `certificado_e${codEvento}_a${codAlumno}.pdf`
+            const outputPath = path.resolve(__dirname, `../../public/certificados/${sanitizedTitulo}/${filename}`)
 
             let lugarFechaEmision = ''
 
@@ -599,7 +597,7 @@ export default class HPdf {
                     y -= 36
 
                     // Dibujar la fecha del evento centrado
-                    pagina.drawText(fechaEvento, {
+                    pagina.drawText(fechaInicioStr, {
                         x,
                         y,
                         size: fontSizeForFechaEvento,
@@ -934,13 +932,13 @@ export default class HPdf {
 
             let qrCodeImage: PDFImage
 
-            // const qrCodeFilePath = data.codigoQR as string
+            // const qrCodeFilePath = data.codigo_qr as string
             let qrCodeFilePath: string = ""
 
             // Validando si existe el QR
             try {
                 if (data.id) {
-                    qrCodeFilePath = data.codigoQR as string
+                    qrCodeFilePath = data.codigo_qr as string
                     // Usamos fs.promises.access para evitar bloqueos sincrónicos
                     await fs.promises.access(qrCodeFilePath, fs.constants.F_OK)
 
@@ -970,8 +968,8 @@ export default class HPdf {
             fs.writeFileSync(outputPath, pdfBytes);
 
             // Guardar la ruta del QR como imagen
-            const qrFileName = `qrcode_${sanitizedAlumno}.png`
-            const qrOutputPath = path.resolve(__dirname, `../../public/qrcodes/${sanitizedTitulo}/${qrFileName}`)
+            const qrFilename = `qrcode_${sanitizedAlumno}.png`
+            const qrOutputPath = path.resolve(__dirname, `../../public/qrcodes/${sanitizedTitulo}/${qrFilename}`)
 
             // Verificando que el directorio de salida exista, sino se crea
             const outputDirQRCode = path.dirname(qrOutputPath)
@@ -994,8 +992,8 @@ export default class HPdf {
 
             const dataResult = {
                 outputPath,
-                fileName,
-                codigoQR: qrOutputPath,
+                filename,
+                codigo_qr: qrOutputPath,
                 codigo
             }
 

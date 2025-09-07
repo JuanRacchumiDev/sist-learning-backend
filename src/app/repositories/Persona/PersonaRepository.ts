@@ -187,7 +187,6 @@ class PersonaRepository {
             const [dia, mes, anio] = fechaNacimiento.split("/")
 
             const fechaNacimientoStr = `${anio}-${mes}-${dia}`
-            const fechaNacimientoDate = toZonedTime(fechaNacimientoStr as string, 'America/Lima')
 
             // Validamos si existe un alumno con el número de documento
             const responseAlumno = await AlumnoService.getAlumnoPorNumDoc(numero_documento as string)
@@ -203,8 +202,7 @@ class PersonaRepository {
                     nombres,
                     apellido_paterno,
                     apellido_materno,
-                    fecha_nacimiento_str: fechaNacimientoStr,
-                    fecha_nacimiento: fechaNacimientoDate
+                    fecha_nacimiento: fechaNacimientoStr
                 })
 
                 if (!updatedAlumno.result) {

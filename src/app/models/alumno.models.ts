@@ -20,8 +20,7 @@ export class Alumno extends Model<IAlumno, AlumnoCreationAttributes> implements 
     public telefono?: string | undefined
     public direccion?: string | undefined
     public email?: string | undefined
-    public fecha_nacimiento?: Date | undefined
-    public fecha_nacimiento_str?: string | undefined
+    public fecha_nacimiento?: string | undefined
     public sexo?: string | undefined
     public nombre_pais?: string | undefined
     public nombre_departamento?: string | undefined
@@ -34,6 +33,7 @@ export class Alumno extends Model<IAlumno, AlumnoCreationAttributes> implements 
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getTipoDocumento?: () => Promise<TipoDocumento>
@@ -104,12 +104,8 @@ Alumno.init({
         allowNull: true
     },
     fecha_nacimiento: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    fecha_nacimiento_str: {
         type: DataTypes.STRING(12),
-        allowNull: true
+        allowNull: false
     },
     sexo: {
         type: DataTypes.CHAR(1),

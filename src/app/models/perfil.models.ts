@@ -18,6 +18,7 @@ export class Perfil extends Model<IPerfil, PerfilAttributes> implements IPerfil 
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociacione
     public getUsuarios?: () => Promise<Usuario>

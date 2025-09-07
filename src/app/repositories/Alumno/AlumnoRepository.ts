@@ -201,20 +201,14 @@ class AlumnoRepository {
                 nombres,
                 apellido_paterno,
                 apellido_materno,
-                fecha_nacimiento_str,
+                fecha_nacimiento,
                 nombre_capitalized,
-                fecha_nacimiento
             } = data
 
             if (!nombre_capitalized) {
                 const nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`
                 const nombreCapitalized = HString.capitalizeNames(nombreCompleto)
                 data.nombre_capitalized = nombreCapitalized
-            }
-
-            if (!fecha_nacimiento_str) {
-                const fechaNacimientoStr = fecha_nacimiento?.toLocaleString('es-PE', options)
-                data.fecha_nacimiento_str = fechaNacimientoStr
             }
 
             data.apellido_paterno = apellido_paterno?.trim()
@@ -247,11 +241,6 @@ class AlumnoRepository {
             }
 
             const fechaNacimiento = (data.fecha_nacimiento == undefined) ? alumno.fecha_nacimiento : data.fecha_nacimiento
-            const options = {
-                timeZone: 'America/Lima',
-                hour12: false
-            }
-            const fechaNacimientoStr = fechaNacimiento?.toLocaleString('es-PE', options)
 
             const apellidoPaterno = (data.apellido_paterno === undefined) ? alumno.apellido_paterno?.trim() : data.apellido_paterno?.trim()
             const apellidoMaterno = (data.apellido_materno === undefined) ? alumno.apellido_materno?.trim() : data.apellido_materno?.trim()
@@ -264,7 +253,6 @@ class AlumnoRepository {
             data.apellido_materno = apellidoMaterno
             data.nombres = nombres
             data.fecha_nacimiento = fechaNacimiento
-            data.fecha_nacimiento_str = fechaNacimientoStr
             data.nombre_capitalized = nombreCapitalized
 
             const dataAlumno: Partial<IAlumno> = data

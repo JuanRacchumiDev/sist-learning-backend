@@ -1,27 +1,21 @@
-import { IPais } from "../Pais/IPais"
-
-export interface IDepartamento {
+export interface ITipoCertificado {
     id?: number
-    id_pais?: number
     nombre?: string
-    nombre_url?: string
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
-    sistema?: boolean
     estado?: boolean
-    pais?: IPais
 }
 
-export interface DepartamentoResponse {
+export interface TipoCertificadoResponse {
     result: boolean
     message?: string
-    data?: IDepartamento | IDepartamento[]
+    data?: ITipoCertificado | ITipoCertificado[]
     error?: string
     status?: number
 }
 
-export interface IPaisPaginate {
+export interface ITipoCertificadoPaginate {
     currentPage: number
     limit: number
     totalPages: number
@@ -30,11 +24,11 @@ export interface IPaisPaginate {
     previousPage: number | null
 }
 
-export interface PaisResponsePaginate {
+export interface TipoCertificadoResponsePaginate {
     result: boolean
     message?: string
-    data?: IPais[]
-    pagination?: IPaisPaginate
+    data?: ITipoCertificado[]
+    pagination?: ITipoCertificadoPaginate
     error?: string
     status?: number
 }

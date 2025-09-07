@@ -1,27 +1,27 @@
-import { IPais } from "../Pais/IPais"
+import { IEvento } from "../Evento/IEvento"
 
-export interface IDepartamento {
+export interface IPlantilla {
     id?: number
-    id_pais?: number
+    id_evento?: number
     nombre?: string
-    nombre_url?: string
+    file?: Buffer
+    path?: string
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
-    sistema?: boolean
     estado?: boolean
-    pais?: IPais
+    evento?: IEvento
 }
 
-export interface DepartamentoResponse {
+export interface PlantillaResponse {
     result: boolean
     message?: string
-    data?: IDepartamento | IDepartamento[]
+    data?: IPlantilla | IPlantilla[]
     error?: string
     status?: number
 }
 
-export interface IPaisPaginate {
+export interface IPlantillaPaginate {
     currentPage: number
     limit: number
     totalPages: number
@@ -30,11 +30,11 @@ export interface IPaisPaginate {
     previousPage: number | null
 }
 
-export interface PaisResponsePaginate {
+export interface PlantillaResponsePaginate {
     result: boolean
     message?: string
-    data?: IPais[]
-    pagination?: IPaisPaginate
+    data?: IPlantilla[]
+    pagination?: IPlantillaPaginate
     error?: string
     status?: number
 }

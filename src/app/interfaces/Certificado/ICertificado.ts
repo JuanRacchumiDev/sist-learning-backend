@@ -1,16 +1,18 @@
 import { IAlumno } from "../Alumno/IAlumno"
 import { IEvento } from "../Evento/IEvento"
+import { ITipoCertificado } from "../TipoCertificado/ITipoCertificado"
 
 export interface ICertificado {
     id?: number
     id_alumno?: number
     id_evento?: number
-    nombre_alumno_impresion?: string
+    id_tipocertificado?: number
+    nombre_impresion?: string
     codigo?: string
-    codigoQR?: string
+    codigo_qr?: string
     ruta?: string
-    fileName?: string
-    templateName?: string
+    filename?: string
+    template_name?: string
     fecha_registro?: Date
     fecha_descarga?: Date
     fecha_envio?: Date
@@ -22,6 +24,7 @@ export interface ICertificado {
     estado?: boolean
     alumno?: IAlumno
     evento?: IEvento
+    tipoCertificado?: ITipoCertificado
 }
 
 export interface CertificadoResponse {

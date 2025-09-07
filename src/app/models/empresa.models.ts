@@ -22,6 +22,7 @@ export class Empresa extends Model<IEmpresa, EmpresaCreationAttributes> implemen
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 }
 
 Empresa.init({

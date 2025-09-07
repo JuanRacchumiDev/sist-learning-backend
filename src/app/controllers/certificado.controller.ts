@@ -116,13 +116,13 @@ class CertificadoController {
 
         const response = await CertificadoService.downloadPorId(+id)
 
-        const { result, outputPath, fileName, message } = response
+        const { result, outputPath, filename, message } = response
 
         if (result) {
             const outputPathParam = outputPath as string
-            const fileNameParam = fileName as string
+            const filenameParam = filename as string
 
-            res.download(outputPathParam, fileNameParam, (err) => {
+            res.download(outputPathParam, filenameParam, (err) => {
                 if (err) {
                     console.error(err)
                 }
@@ -145,12 +145,12 @@ class CertificadoController {
             if (result) {
                 const dataParam = data as ICertificado
 
-                const { ruta, fileName } = dataParam
+                const { ruta, filename } = dataParam
 
                 const outputPathParam = ruta as string
-                const fileNameParam = fileName as string
+                const filenameParam = filename as string
 
-                res.download(outputPathParam, fileNameParam, (err) => {
+                res.download(outputPathParam, filenameParam, (err) => {
                     if (err) {
                         console.error(err);
                     }
@@ -178,13 +178,13 @@ class CertificadoController {
         if (result) {
             const dataParam = data as ICertificado
 
-            const { ruta, fileName } = dataParam
+            const { ruta, filename } = dataParam
 
             const outputPath = ruta as string
 
-            const fileNameParam = fileName as string
+            const filenameParam = filename as string
 
-            res.download(outputPath, fileNameParam, (err) => {
+            res.download(outputPath, filenameParam, (err) => {
                 if (err) {
                     console.error(err);
                 }
@@ -294,7 +294,7 @@ class CertificadoController {
                         const certificado: ICertificado = {
                             id_alumno: id,
                             id_evento,
-                            nombre_alumno_impresion: (nombre_impresion ? nombre_impresion : nombre_capitalized),
+                            nombre_impresion: (nombre_impresion ? nombre_impresion : nombre_capitalized),
                             fecha_envio: new Date(fecha_envio)
                         }
 

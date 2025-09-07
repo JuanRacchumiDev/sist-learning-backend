@@ -18,6 +18,7 @@ export class TipoEvento extends Model<ITipoEvento, TipoEventoAttributes> impleme
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getEventos?: () => Promise<Evento[]>
@@ -60,7 +61,7 @@ TipoEvento.init({
     }
 }, {
     modelName: 'TipoEvento',
-    tableName: 'tipoevento',
+    tableName: 'tipo_evento',
     sequelize,
     timestamps: true,
     freezeTableName: true

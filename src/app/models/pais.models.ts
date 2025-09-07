@@ -19,6 +19,7 @@ export class Pais extends Model<IPais, PaisAttributes> implements IPais {
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getAlumnos?: () => Promise<Alumno[]>

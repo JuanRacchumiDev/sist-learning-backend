@@ -25,6 +25,7 @@ export class Programacion extends Model<IProgramacion, ProgramacionAttributes> i
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getTrabajador?: () => Promise<Trabajador>

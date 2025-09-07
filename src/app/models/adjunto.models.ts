@@ -25,11 +25,13 @@ export class Adjunto extends Model<IAdjunto, AdjuntoCreationAttributes> implemen
     public user_crea?: string | undefined
     public user_actualiza?: string | undefined
     public user_elimina?: string | undefined
+    public sistema?: boolean | undefined
     public estado?: boolean | undefined
 
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getTipoAdjunto?: () => Promise<TipoAdjunto>
@@ -120,6 +122,11 @@ Adjunto.init({
     user_elimina: {
         type: DataTypes.STRING(10),
         allowNull: true
+    },
+    sistema: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     },
     estado: {
         type: DataTypes.BOOLEAN,

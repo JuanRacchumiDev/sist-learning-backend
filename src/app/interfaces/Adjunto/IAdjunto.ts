@@ -20,6 +20,7 @@ export interface IAdjunto {
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
+    sistema?: boolean
     estado?: boolean
     tipoAdjunto?: ITipoAdjunto
     grupoAdjunto?: IGrupoAdjunto

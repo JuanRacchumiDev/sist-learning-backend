@@ -160,11 +160,11 @@ class EventoRepository {
 
     async create(data: IEvento): Promise<EventoResponse> {
         try {
-            const plantillaCertificado = `plantillas/${data.plantilla_certificado}.pdf`
+            // const plantillaCertificado = `plantillas/${data.plantilla_certificado}.pdf`
 
             const { titulo } = data
 
-            data.plantilla_certificado = plantillaCertificado
+            // data.plantilla_certificado = plantillaCertificado
             data.titulo_url = HString.convertToUrlString(titulo as String)
 
             const newEvento = await Evento.create(data as IEvento)
@@ -185,12 +185,12 @@ class EventoRepository {
 
     async update(id: number, data: IEvento): Promise<EventoResponse> {
         try {
-            const { titulo, plantilla_certificado } = data
+            const { titulo } = data
 
             if (titulo) {
-                const plantillaCertificado = `plantillas/${plantilla_certificado}.pdf`
+                // const plantillaCertificado = `plantillas/${plantilla_certificado}.pdf`
 
-                data.plantilla_certificado = plantillaCertificado
+                // data.plantilla_certificado = plantillaCertificado
                 data.titulo_url = HString.convertToUrlString(titulo as String)
             }
 

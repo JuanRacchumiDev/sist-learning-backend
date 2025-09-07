@@ -1,7 +1,7 @@
 export type TCertificado = {
     outputPath?: string
-    fileName?: string
-    codigoQR?: string
+    filename?: string
+    codigo_qr?: string
     codigo?: string
 }
 

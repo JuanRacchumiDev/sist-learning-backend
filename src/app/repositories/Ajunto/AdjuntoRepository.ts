@@ -181,25 +181,21 @@ class AdjuntoRepository {
 
                 const { filepath, filename } = adjunto
 
-                const path = filepath as string
-
-                const fileName = filename as string
-
                 // Verificar si el archivo existe antes de descargarlo
-                if (fs.existsSync(path)) {
+                if (fs.existsSync(filepath as string)) {
                     const result = {
                         result: true,
                         message,
-                        outputPath: path,
-                        fileName,
+                        outputPath: filepath,
+                        filename,
                         status: 200
                     }
                     return result
                 }
 
-                return { result: false, message: 'Adjunto no encontrado', outputPath: null, fileName: null, status: 200 }
+                return { result: false, message: 'Adjunto no encontrado', outputPath: null, filename: null, status: 200 }
             } else {
-                return { result: false, error, outputPath: null, fileName: null, status: 500 }
+                return { result: false, error, outputPath: null, filename: null, status: 500 }
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'

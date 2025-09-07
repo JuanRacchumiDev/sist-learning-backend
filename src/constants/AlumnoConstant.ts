@@ -12,7 +12,6 @@ export const ALUMNO_ATTRIBUTES = [
     'direccion',
     'email',
     'fecha_nacimiento',
-    'fecha_nacimiento_str',
     'sexo',
     'sistema',
     'estado'

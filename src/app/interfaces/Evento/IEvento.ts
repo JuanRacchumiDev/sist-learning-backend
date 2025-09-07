@@ -14,7 +14,7 @@ export interface IEvento {
     descripcion?: string
     temario?: string
     plantilla_certificado?: string
-    fecha?: Date
+    fecha_inicio?: string
     fecha_fin?: string
     modalidad?: EModalidad
     precio?: number

@@ -29,6 +29,7 @@ export class Instructor extends Model<IInstructor, InstructorAttributes> impleme
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getTipoDocumento?: () => Promise<TipoDocumento>

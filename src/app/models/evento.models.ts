@@ -19,7 +19,7 @@ export class Evento extends Model<IEvento, EventoCreationAttributes> implements 
     public descripcion?: string | undefined
     public temario?: string | undefined
     public plantilla_certificado?: string | undefined
-    public fecha?: Date | undefined
+    public fecha_inicio?: string | undefined
     public fecha_fin?: string | undefined
     public modalidad?: EModalidad | undefined
     public precio?: number | undefined
@@ -33,6 +33,7 @@ export class Evento extends Model<IEvento, EventoCreationAttributes> implements 
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getCategoriaEvento?: () => Promise<CategoriaEvento>
@@ -98,8 +99,8 @@ Evento.init({
         type: DataTypes.STRING(120),
         allowNull: true
     },
-    fecha: {
-        type: DataTypes.DATE,
+    fecha_inicio: {
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_fin: {

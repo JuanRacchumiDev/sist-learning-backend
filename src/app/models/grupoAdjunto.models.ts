@@ -18,6 +18,7 @@ export class GrupoAdjunto extends Model<IGrupoAdjunto, GrupoAdjuntoAttributes> i
     // Timestamps
     public readonly createdA!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getAdjuntos?: () => Promise<Adjunto[]>
@@ -61,7 +62,7 @@ GrupoAdjunto.init({
     }
 }, {
     modelName: 'GrupoAdjunto',
-    tableName: 'grupoadjunto',
+    tableName: 'grupo_adjunto',
     sequelize,
     timestamps: true,
     freezeTableName: true

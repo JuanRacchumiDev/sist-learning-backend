@@ -27,10 +27,10 @@ class EmailRepository {
             if (contenido.es_descargable && contenido.filepath?.endsWith('.pdf')) {
                 const filePath = path.resolve(__dirname, `../../public/contenidos/${contenido.filepath}`)
                 const titleContenido = contenido.titulo as string
-                const fileName = `${titleContenido}${'.pdf'}`
+                const filename = `${titleContenido}${'.pdf'}`
                 if (fs.existsSync(filePath)) {
                     adjuntos.push({
-                        filename: fileName,
+                        filename,
                         path: filePath
                     })
                 }

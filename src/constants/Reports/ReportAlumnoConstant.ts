@@ -12,7 +12,6 @@ export const REPORT_ALUMNO_ATTRIBUTES = [
     'email',
     'fecha_nacimiento',
     'nombre_capitalized',
-    'fecha_nacimiento_str',
     'sexo',
     'sistema',
     'estado'

@@ -255,10 +255,6 @@ class AlumnoController {
                     const nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`
                     const nombreCapitalized = HString.capitalizeNames(nombreCompleto)
 
-                    const fechaNacimientoStr = fecha_nacimiento as string
-                    const partsFechaNacimiento = fechaNacimientoStr.split("/")
-                    const fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`
-
                     // Creando un alumno
                     const alumno: IAlumno = {
                         id_tipodocumento,
@@ -267,10 +263,7 @@ class AlumnoController {
                         apellido_materno,
                         nombres: nombres,
                         nombre_capitalized: nombreCapitalized,
-                        fecha_nacimiento_str: fechaNacimiento,
-                        fecha_nacimiento: fechaNacimiento && !isNaN(Date.parse(fechaNacimiento))
-                            ? new Date(fechaNacimiento)
-                            : undefined,
+                        fecha_nacimiento,
                         sexo,
                         telefono: "--"
                     }

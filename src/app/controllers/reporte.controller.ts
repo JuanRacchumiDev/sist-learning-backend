@@ -32,7 +32,7 @@ class ReporteController {
                         apellido_materno,
                         nombres,
                         telefono,
-                        fecha_nacimiento_str,
+                        fecha_nacimiento,
                     } = alumno
 
                     if (id_tipodocumento) {
@@ -50,7 +50,7 @@ class ReporteController {
                         ApellidoMaterno: apellido_materno,
                         Nombres: nombres,
                         Telefono: telefono,
-                        FechaNacimiento: fecha_nacimiento_str
+                        FechaNacimiento: fecha_nacimiento
                     }
                 }))
 
@@ -110,7 +110,7 @@ class ReporteController {
                         apellido_materno,
                         nombres,
                         telefono,
-                        fecha_nacimiento_str
+                        fecha_nacimiento
                     } = alumno
 
                     if (id_tipodocumento) {
@@ -128,7 +128,7 @@ class ReporteController {
                         ApellidoMaterno: apellido_materno,
                         Nombres: nombres,
                         Telefono: telefono,
-                        FechaNacimiento: fecha_nacimiento_str
+                        FechaNacimiento: fecha_nacimiento
                     }
                 }))
 

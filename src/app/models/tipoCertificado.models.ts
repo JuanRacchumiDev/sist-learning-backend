@@ -1,18 +1,16 @@
-import { Model, DataTypes, Optional } from 'sequelize'
+import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from '../../config/database'
-import { ICargo } from '../interfaces/Cargo/ICargo'
-import { Trabajador } from './trabajador.models'
+import { ITipoCertificado } from "../interfaces/TipoCertificado/ITipoCertificado";
+import { Certificado } from "./certificado.models";
 
-interface CargoCreationAttributes extends Optional<ICargo, 'id'> { }
+interface TipoCertificadoAttributes extends Optional<ITipoCertificado, 'id'> { }
 
-export class Cargo extends Model<ICargo, CargoCreationAttributes> implements ICargo {
-    public id?: number | undefined
-    public nombre?: string | undefined
-    public nombre_url?: string | undefined
+export class TipoCertificado extends Model<ITipoCertificado, TipoCertificadoAttributes> implements ITipoCertificado {
+    public id?: number | undefined;
+    public nombre?: string | undefined;
     public user_crea?: string | undefined
     public user_actualiza?: string | undefined
     public user_elimina?: string | undefined
-    public sistema?: boolean | undefined
     public estado?: boolean | undefined
 
     // Timestamps
@@ -20,22 +18,17 @@ export class Cargo extends Model<ICargo, CargoCreationAttributes> implements ICa
     public readonly updatedAt!: Date
     public readonly deletedAt?: Date
 
-    // Asociaciones
-    public getTrabajadores?: () => Promise<Trabajador[]>
+    public getCertificados?: () => Promise<Certificado>
 }
 
-Cargo.init({
+TipoCertificado.init({
     id: {
         type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
     },
     nombre: {
         type: DataTypes.STRING(50),
-        allowNull: false
-    },
-    nombre_url: {
-        type: DataTypes.STRING(70),
         allowNull: false
     },
     user_crea: {
@@ -50,20 +43,16 @@ Cargo.init({
         type: DataTypes.STRING(10),
         allowNull: true
     },
-    sistema: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-    },
     estado: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
     }
 }, {
-    tableName: 'cargo',
-    modelName: 'Cargo',
+    tableName: 'tipo_certificado',
+    modelName: 'TipoCertificado',
     sequelize,
     timestamps: true,
-    freezeTableName: true
+    paranoid: true,
+    underscored: true
 })

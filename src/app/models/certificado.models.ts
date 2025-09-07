@@ -10,12 +10,12 @@ export class Certificado extends Model<ICertificado, CertificadoAttributes> impl
     public id?: number | undefined
     public id_alumno?: number | undefined
     public id_evento?: number | undefined
-    public nombre_alumno_impresion?: string | undefined
+    public nombre_impresion?: string | undefined
     public codigo?: string | undefined
-    public codigoQR?: string | undefined
+    public codigo_qr?: string | undefined
     public ruta?: string | undefined
-    public fileName?: string | undefined
-    public templateName?: string | undefined
+    public filename?: string | undefined
+    public template_name?: string | undefined
     public fecha_registro?: Date | undefined
     public fecha_descarga?: Date | undefined
     public fecha_envio?: Date | undefined
@@ -48,7 +48,7 @@ Certificado.init({
             key: 'id'
         }
     },
-    nombre_alumno_impresion: {
+    nombre_impresion: {
         type: DataTypes.STRING(100),
         allowNull: true
     },
@@ -56,7 +56,7 @@ Certificado.init({
         type: DataTypes.STRING(12),
         allowNull: true
     },
-    codigoQR: {
+    codigo_qr: {
         type: DataTypes.STRING(350),
         allowNull: true
     },
@@ -64,11 +64,11 @@ Certificado.init({
         type: DataTypes.STRING(350),
         allowNull: true
     },
-    fileName: {
+    filename: {
         type: DataTypes.STRING(300),
         allowNull: false
     },
-    templateName: {
+    template_name: {
         type: DataTypes.STRING(120),
         allowNull: true
     },

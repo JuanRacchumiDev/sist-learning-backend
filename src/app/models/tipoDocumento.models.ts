@@ -26,6 +26,7 @@ export class TipoDocumento extends Model<ITipoDocumento, TipoDocumentoAttributes
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getPersonas?: () => Promise<Persona[]>
@@ -99,7 +100,8 @@ TipoDocumento.init({
     }
 }, {
     modelName: 'TipoDocumento',
-    tableName: 'tipodocumentos',
+    tableName: 'tipo_documento',
     sequelize,
-    timestamps: true
+    timestamps: true,
+    freezeTableName: true
 })

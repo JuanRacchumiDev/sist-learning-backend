@@ -33,6 +33,7 @@ export class Persona extends Model<IPersona, PersonaAttributes> implements IPers
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getTipoDocumento?: () => Promise<TipoDocumento>

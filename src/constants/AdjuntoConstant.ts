@@ -13,5 +13,6 @@ export const ADJUNTO_ATTRIBUTES = [
     'size',
     'es_descargable',
     'es_visible',
+    'sistema',
     'estado'
 ];

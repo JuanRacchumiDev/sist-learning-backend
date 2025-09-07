@@ -25,6 +25,8 @@ import { TipoDocumento } from './app/models/tipoDocumento.models'
 import { TipoEvento } from './app/models/tipoEvento.models'
 import { Trabajador } from './app/models/trabajador.models'
 import { Usuario } from './app/models/usuario.models'
+import { Plantilla } from './app/models/plantilla.models'
+import { TipoCertificado } from './app/models/tipoCertificado.models'
 
 const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '*'
 
@@ -52,6 +54,7 @@ const setupDatabase = async () => {
 
         Certificado.belongsTo(Alumno, { foreignKey: 'id_alumno', as: 'alumno' })
         Certificado.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+        Certificado.belongsTo(TipoCertificado, { foreignKey: 'id_tipocertificado', as: 'tipoCertificado' })
 
         Departamento.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
         Departamento.hasMany(Alumno, { foreignKey: 'id_departamento', as: 'alumnos' })
@@ -60,6 +63,7 @@ const setupDatabase = async () => {
         Evento.belongsTo(CategoriaEvento, { foreignKey: 'id_categoriaevento', as: 'categoriaEvento' })
         Evento.belongsTo(Instructor, { foreignKey: 'id_instructor', as: 'instructor' })
         Evento.hasMany(Certificado, { foreignKey: 'id_evento', as: 'certificados' })
+        Evento.hasMany(Plantilla, { foreignKey: 'id_evento', as: 'plantillas' })
 
         GrupoAdjunto.hasMany(Adjunto, { foreignKey: 'id_grupoadjunto', as: 'adjuntos' })
 
@@ -74,6 +78,8 @@ const setupDatabase = async () => {
         Pais.hasMany(Alumno, { foreignKey: 'id_pais', as: 'alumnos' })
         Pais.hasMany(Instructor, { foreignKey: 'id_pais', as: 'instructores' })
 
+        Plantilla.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+
         Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
 
         Persona.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
@@ -87,6 +93,8 @@ const setupDatabase = async () => {
         Temporal.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
 
         TipoAdjunto.hasMany(Adjunto, { foreignKey: 'id_tipoadjunto', as: 'adjuntos' })
+
+        TipoCertificado.hasMany(Certificado, { foreignKey: 'id_tipocertificado', as: 'certificados' })
 
         TipoDocumento.hasMany(Alumno, { foreignKey: 'id_tipodocumento', as: 'alumnos' })
         TipoDocumento.hasMany(Persona, { foreignKey: 'id_tipodocumento', as: 'personas' })

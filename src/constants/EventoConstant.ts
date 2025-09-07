@@ -9,7 +9,7 @@ export const EVENTO_ATTRIBUTES = [
     'descripcion',
     'temario',
     'plantilla_certificado',
-    'fecha',
+    'fecha_inicio',
     'fecha_fin',
     'modalidad',
     'duracion',

@@ -18,6 +18,7 @@ export class CategoriaEvento extends Model<ICategoriaEvento, CategoriaEventoAttr
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
 
     // Asociaciones
     public getEventos?: () => Promise<Evento[]>
@@ -61,7 +62,7 @@ CategoriaEvento.init({
     }
 }, {
     modelName: 'CategoriaEvento',
-    tableName: 'categoriaevento',
+    tableName: 'categoria_evento',
     sequelize,
     timestamps: true,
     freezeTableName: true
