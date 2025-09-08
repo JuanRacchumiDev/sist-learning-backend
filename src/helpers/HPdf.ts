@@ -86,7 +86,7 @@ export default class HPdf {
 
             const nombreTipoEvento: string = nombre_url as string
 
-            console.log({ nombreTipoEvento })
+            // console.log({ nombreTipoEvento })
 
             const { nombre_capitalized } = alumno
 
@@ -303,20 +303,29 @@ export default class HPdf {
                     break
                 case "plantillas/diploma_especializacion.pdf":
                     // Configurar el texto del nombre del alumno
-                    fontSizeForAlumno = 54;
 
                     y = 320;  // Posición Y
 
-                    maxWidth = 540; // Ancho máximo disponible para el texto
+                    fontSizeForAlumno = 50
 
-                    // Distancia entre líneas para el nombre del alumno
-                    lineHeightAlumno = 0.8 * fontSizeForAlumno;
+                    maxWidth = 480; // Ancho máximo disponible para el texto
 
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
                     linesAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForAlumno);
 
+                    // fontSizeForAlumno = (linesAlumno.length > 1) ? 48 : 54;
+
+                    lineHeightAlumno = 0.8 * fontSizeForAlumno;
+
+                    console.log({ linesAlumno })
+
+                    console.log({ maxWidth })
+
+                    console.log({ fontSizeForAlumno })
+
+                    console.log({ lineHeightAlumno })
+
                     if (linesAlumno.length > 1) {
-                        fontSizeForAlumno = 50;
                         y += 20;
                     }
 
@@ -349,15 +358,15 @@ export default class HPdf {
             const cellWidth = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 270
             const cellHeight = (nombreTipoEvento !== 'diploma-de-especializacion') ? 50 : 155
 
-            console.log('newPage.getHeight()', newPage.getHeight())
+            // console.log('newPage.getHeight()', newPage.getHeight())
 
-            console.log({ startX })
+            // console.log({ startX })
 
-            console.log({ startY })
+            // console.log({ startY })
 
-            console.log({ cellWidth })
+            // console.log({ cellWidth })
 
-            console.log({ cellHeight })
+            // console.log({ cellHeight })
 
             newPage.drawRectangle({
                 x: startX,
@@ -373,12 +382,12 @@ export default class HPdf {
             let texto: string = ""
 
             if (nombreTipoEvento !== 'diploma-de-especializacion') {
-                console.log('texto a')
+                // console.log('texto a')
                 texto = `Esta es una copia auténtica imprimible de un documento electrónico archivado por PerúAgro, `
                 texto += `aplicando lo dispuesto por el Art. 25 de D.S. 070-2013-PCM y `
                 texto += `la Tercera Disposición Complementaria Final del D.S. 026-2016-PCM.`
             } else {
-                console.log('texto b')
+                // console.log('texto b')
                 texto = `Esta es una copia auténtica imprimible de un documento `
                 texto += `electrónico archivado por PerúAgro, aplicando lo dispuesto `
                 texto += `por el Art. 25 de D.S. 070-2013-PCM y la Tercera Disposición `
@@ -411,11 +420,11 @@ export default class HPdf {
             const cellWidthTemario = (nombreTipoEvento !== 'diploma-de-especializacion') ? 350 : 300
             const cellHeightTemario = 20
 
-            console.log({ startTemarioX })
+            // console.log({ startTemarioX })
 
-            console.log({ startTemarioY })
+            // console.log({ startTemarioY })
 
-            console.log({ cellWidthTemario })
+            // console.log({ cellWidthTemario })
 
             // Dibujar celda para el título del temario
             newPage.drawRectangle({
@@ -474,8 +483,8 @@ export default class HPdf {
             let cellWidthQR = 240
             let cellHeightQR = 20
 
-            console.log({ startQRX })
-            console.log({ startQRY })
+            // console.log({ startQRX })
+            // console.log({ startQRY })
 
             newPage.drawRectangle({
                 x: startQRX,
