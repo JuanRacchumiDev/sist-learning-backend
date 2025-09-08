@@ -97,6 +97,26 @@ class PlantillaRepository {
         }
     }
 
+    async getAllByEvento(id_evento: number): Promise<PlantillaResponse> {
+        try {
+            const plantillas = await Plantilla.findAll({
+                where: {
+                    id_evento
+                },
+                attributes: PLANTILLA_ATTRIBUTES,
+                include: [EVENTO_INCLUDE],
+                order: [
+                    ['nombre', 'ASC']
+                ]
+            })
+
+            return { result: true, data: plantillas, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getById(id: number): Promise<PlantillaResponse> {
         try {
             const plantilla = await Plantilla.findByPk(id, {

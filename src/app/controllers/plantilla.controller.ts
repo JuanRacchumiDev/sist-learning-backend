@@ -58,6 +58,24 @@ class PlantillaController {
         }
     }
 
+    async getPlantillasPorEvento(req: Request, res: Response) {
+        const { idEvento } = req.params
+
+        const response = await PlantillaService.getPlantillasPorEvento(+idEvento)
+
+        const { result, error } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            if (error) {
+                res.status(500).json(response)
+            } else {
+                res.status(404).json(response)
+            }
+        }
+    }
+
     async getPlantillaPorId(req: Request, res: Response) {
         const { id } = req.params
 
@@ -93,50 +111,6 @@ class PlantillaController {
             }
         }
     }
-
-    // async createPlantilla(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { file, body } = req
-
-    //         if (!file) {
-    //             return res.status(422).json({
-    //                 result: false,
-    //                 message: 'No se ha agregado ningún archivo',
-    //                 status: 422
-    //             })
-    //         }
-
-    //         const { id_evento, nombre } = body
-
-    //         const { path } = file
-
-    //         const fileData: IPlantilla = {
-    //             id_evento,
-    //             nombre,
-    //             file: file.buffer,
-    //             path
-    //         }
-
-    //         // const response = await PlantillaService.createPlantilla(req.body);
-    //         const response = await PlantillaService.createPlantilla(fileData)
-
-    //         // const { result, error } = response
-
-    //         res.status(response.status || 201).json(response);
-
-    //         // if (result) {
-    //         //     res.status(201).json(response);
-    //         // } else {
-    //         //     if (error) {
-    //         //         res.status(500).json(response);
-    //         //     } else {
-    //         //         res.status(200).json(response);
-    //         //     }
-    //         // }
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
 
     async updatePlantilla(req: Request, res: Response) {
         const { id } = req.params;

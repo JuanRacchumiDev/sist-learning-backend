@@ -14,6 +14,10 @@ class PlantillaService {
         return await PlantillaRepository.getAllByEstado(estado)
     }
 
+    async getPlantillasPorEvento(idEvento: number) {
+        return await PlantillaRepository.getAllByEvento(idEvento)
+    }
+
     async getPlantillaPorId(id: number) {
         return await PlantillaRepository.getById(id)
     }

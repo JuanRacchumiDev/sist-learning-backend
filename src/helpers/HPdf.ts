@@ -20,7 +20,7 @@ import { TIMEZONES } from "../constants/TimeZoneConstant";
 export default class HPdf {
     static async generarCertificado(data: ICertificado, alumno: IAlumno, evento: IEvento): Promise<TResponseCertificado> {
         try {
-            const lugar: string = 'Lambayeque';
+            // const lugar: string = 'Lambayeque';
 
             let getCodigo: string = ""
 
@@ -28,7 +28,7 @@ export default class HPdf {
 
             // let lugarFechaEmision: string = `${lugar}`
 
-            const { id_plantilla, nombre_impresion, fecha_envio, id: idCertificado, codigo } = data
+            const { id_plantilla, nombre_impresion, id: idCertificado, codigo } = data
 
             const idPlantilla = id_plantilla as number
 
@@ -42,14 +42,6 @@ export default class HPdf {
 
             const { path: pathPlantilla } = dataPlantilla as IPlantilla
 
-            // const withFirma = (data.firmado === undefined) ? true : (!data.firmado ? false : true)
-
-            // Actualizando la plantilla del certificado
-            // const templateCertificado = this.validateFirma(plantilla_certificado, withFirma)
-
-            // data.template_name = templateCertificado
-
-            // const pathTemplate = path.resolve(__dirname, `../../public/pdf/${templateCertificado}`);
             const pathAbsoluteTemplate = path.resolve(__dirname, `../../public/pdf/${pathPlantilla}`)
 
             const pathFontKuenstler = path.resolve(__dirname, '../../public/fonts/KUNSTLER.TTF')
@@ -115,13 +107,6 @@ export default class HPdf {
                 getCodigo = codigo as string
             }
 
-            // Código del certificado
-            // if (idCertificado) {
-            //     codigo = data.codigo as string
-            // } else {
-            //     codigo = HString.generateCodigo()
-            // }
-
             const filename = `certificado_e${codEvento}_a${codAlumno}_${getCodigo}.pdf`
 
             const outputPath = path.resolve(__dirname, `../../public/certificados/${sanitizedTitulo}/${filename}`)
@@ -148,6 +133,7 @@ export default class HPdf {
 
             // Verificando que el directorio de salida exista, sino se crea
             const outputDir = path.dirname(outputPath)
+
             if (!fs.existsSync(outputDir)) {
                 fs.mkdirSync(outputDir, { recursive: true })
             }
@@ -196,82 +182,118 @@ export default class HPdf {
             // Obtener el ancho de la página
             const pageWidth = pagina.getWidth()
 
-            // Configurar el texto del nombre del alumno
-            fontSizeForAlumno = 48;
+            switch (pathPlantilla) {
+                case "plantillas/plantilla_d.pdf":
+                    // Configurar el texto del nombre del alumno
+                    fontSizeForAlumno = 48;
 
-            y = 345;  // Posición Y
-            maxWidth = 720; // Ancho máximo disponible para el texto
+                    y = 345;  // Posición Y
+                    maxWidth = 720; // Ancho máximo disponible para el texto
 
-            // Distancia entre líneas para el nombre del alumno
-            lineHeightAlumno = 0.8 * fontSizeForAlumno;
+                    // Distancia entre líneas para el nombre del alumno
+                    lineHeightAlumno = 0.8 * fontSizeForAlumno;
 
-            // Dividir el nombre del alumno en líneas si excede el ancho máximo
-            linesAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForAlumno);
+                    // Dividir el nombre del alumno en líneas si excede el ancho máximo
+                    linesAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForAlumno);
 
-            if (linesAlumno.length > 1) {
-                fontSizeForAlumno = 44;
-            }
+                    if (linesAlumno.length > 1) {
+                        fontSizeForAlumno = 44;
+                    }
 
-            // Dibujar el nombre del alumno centrado
-            for (let i = 0; i < linesAlumno.length; i++) {
-                lineWidthAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesAlumno[i], fontSizeForAlumno);
-                const nombrePositionX = (pageWidth - lineWidthAlumno) / 2;  // Centrado horizontal
+                    // Dibujar el nombre del alumno centrado
+                    for (let i = 0; i < linesAlumno.length; i++) {
+                        lineWidthAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesAlumno[i], fontSizeForAlumno);
+                        const nombrePositionX = (pageWidth - lineWidthAlumno) / 2;  // Centrado horizontal
 
-                pagina.drawText(linesAlumno[i], {
-                    x: nombrePositionX,
-                    y: y - i * lineHeightAlumno,
-                    size: fontSizeForAlumno,
-                    font: customFontKuenstlerBold,
-                    color: rgb(0, 0, 0),
-                });
-            }
+                        pagina.drawText(linesAlumno[i], {
+                            x: nombrePositionX,
+                            y: y - i * lineHeightAlumno,
+                            size: fontSizeForAlumno,
+                            font: customFontKuenstlerBold,
+                            color: rgb(0, 0, 0),
+                        });
+                    }
 
-            // Configurar el texto del título del evento
-            fontSizeForEvento = 30;
+                    // Configurar el texto del título del evento
+                    fontSizeForEvento = 30;
 
-            maxWidth = 480
+                    maxWidth = 480
 
-            y -= 90; // Ajustar la posición Y para el siguiente texto
+                    y -= 90; // Ajustar la posición Y para el siguiente texto
 
-            // Distancia entre líneas para el nombre del evento
-            lineHeightEvento = 0.8 * fontSizeForEvento;
+                    // Distancia entre líneas para el nombre del evento
+                    lineHeightEvento = 0.8 * fontSizeForEvento;
 
-            // Dividir el título del evento si es necesario
-            linesEvento = this.splitTextIntoLines(tituloEvento, maxWidth, customFontBalooBold, fontSizeForEvento);
+                    // Dividir el título del evento si es necesario
+                    linesEvento = this.splitTextIntoLines(tituloEvento, maxWidth, customFontBalooBold, fontSizeForEvento);
 
+                    for (let i = 0; i < linesEvento.length; i++) {
+                        lineWidthEvento = customFontBalooBold.widthOfTextAtSize(linesEvento[i], fontSizeForEvento);
 
-            for (let i = 0; i < linesEvento.length; i++) {
-                lineWidthEvento = customFontBalooBold.widthOfTextAtSize(linesEvento[i], fontSizeForEvento);
+                        const tituloEventoPositionX = (pageWidth - lineWidthEvento) / 2;  // Centrado horizontal
 
-                const tituloEventoPositionX = (pageWidth - lineWidthEvento) / 2;  // Centrado horizontal
+                        // Dibujar el título del evento centrado
+                        pagina.drawText(linesEvento[i], {
+                            x: tituloEventoPositionX,
+                            y: y - i * lineHeightEvento,
+                            size: fontSizeForEvento,
+                            font: customFontBalooBold,
+                            color: rgb(0 / 255, 32 / 255, 58 / 255),
+                        });
+                    }
 
-                // Dibujar el título del evento centrado
-                pagina.drawText(linesEvento[i], {
-                    x: tituloEventoPositionX,
-                    y: y - i * lineHeightEvento,
-                    size: fontSizeForEvento,
-                    font: customFontBalooBold,
-                    color: rgb(0 / 255, 32 / 255, 58 / 255),
-                });
-            }
+                    // Configurar el texto de la fecha del evento
+                    fontSizeForFechaEvento = 24;
 
-            // Configurar el texto de la fecha del evento
-            fontSizeForFechaEvento = 24;
+                    y -= 60
 
-            y -= 60
+                    for (let i = 0; i < fechasEvento.length; i++) {
+                        lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(fechasEvento[i], fontSizeForFechaEvento);
 
-            for (let i = 0; i < fechasEvento.length; i++) {
-                lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(fechasEvento[i], fontSizeForFechaEvento);
+                        fechaEventoPositionX = (pageWidth - lineWidthFechaEvento) / 2;
 
-                fechaEventoPositionX = (pageWidth - lineWidthFechaEvento) / 2;
+                        pagina.drawText(fechasEvento[i], {
+                            x: fechaEventoPositionX,
+                            y: y - i * lineHeightEvento, // Ajustar la posición vertical para cada línea
+                            size: fontSizeForFechaEvento,
+                            font: customFontBalooMedium,
+                            color: rgb(222 / 255, 148 / 255, 40 / 255),
+                        });
+                    }
+                    break;
+                case "plantillas/plantilla_primer_congreso_internacional_2025.pdf":
+                case "plantillas/plantilla_primer_congreso_internacional_2025_sin_firma.pdf":
+                    // Configurar el texto del nombre del alumno
+                    fontSizeForAlumno = 56;
 
-                pagina.drawText(fechasEvento[i], {
-                    x: fechaEventoPositionX,
-                    y: y - i * lineHeightEvento, // Ajustar la posición vertical para cada línea
-                    size: fontSizeForFechaEvento,
-                    font: customFontBalooMedium,
-                    color: rgb(222 / 255, 148 / 255, 40 / 255),
-                });
+                    y = 280;  // Posición Y
+                    maxWidth = 540; // Ancho máximo disponible para el texto
+
+                    // Distancia entre líneas para el nombre del alumno
+                    lineHeightAlumno = 0.8 * fontSizeForAlumno;
+
+                    // Dividir el nombre del alumno en líneas si excede el ancho máximo
+                    linesAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForAlumno);
+
+                    if (linesAlumno.length > 1) {
+                        fontSizeForAlumno = 52;
+                        y += 20;
+                    }
+
+                    // Dibujar el nombre del alumno centrado
+                    for (let i = 0; i < linesAlumno.length; i++) {
+                        lineWidthAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesAlumno[i], fontSizeForAlumno);
+                        const nombrePositionX = (pageWidth - lineWidthAlumno) / 2;  // Centrado horizontal
+
+                        pagina.drawText(linesAlumno[i], {
+                            x: nombrePositionX,
+                            y: y - i * lineHeightAlumno,
+                            size: fontSizeForAlumno,
+                            font: customFontKuenstlerBold,
+                            color: rgb(0, 0, 0),
+                        });
+                    }
+                    break
             }
 
             // Crear nueva página para el logo, código QR y tabla
@@ -506,6 +528,7 @@ export default class HPdf {
             }
 
             const qrCodeDimensions = qrCodeImage.scale(0.8)
+
             newPage.drawImage(qrCodeImage, {
                 x: startQRX + 60,
                 y: startQRY - 190,
@@ -544,7 +567,7 @@ export default class HPdf {
                 outputPath,
                 filename,
                 codigo_qr: qrOutputPath,
-                codigo
+                codigo: getCodigo
             }
 
             return { result: true, message: 'Certificado generado con éxito', dataResult }

@@ -122,13 +122,6 @@ class CertificadoController {
         const { result, status, outputPath, error, message } = response;
 
         if (result && outputPath) {
-            // res.setHeader('Content-Type', 'application/pdf');
-            // res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-            // const fileStream = fs.createReadStream(outputPath);
-            // fileStream.pipe(res);
-            // return res.status(status);
-            // res.status(status);
-
             res.download(outputPath, filename, (err) => {
                 if (err) {
                     // Aquí podrías manejar el error de la descarga si el archivo no se encuentra
