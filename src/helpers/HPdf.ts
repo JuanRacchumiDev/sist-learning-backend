@@ -345,9 +345,9 @@ export default class HPdf {
 
             // Crear un rectángulo para texto introductorio
             const startX = 20
-            const startY = newPage.getHeight() - 190
+            const startY = newPage.getHeight() - 170
             const cellWidth = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 270
-            const cellHeight = (nombreTipoEvento !== 'diploma-de-especializacion') ? 50 : 140
+            const cellHeight = (nombreTipoEvento !== 'diploma-de-especializacion') ? 50 : 155
 
             console.log('newPage.getHeight()', newPage.getHeight())
 
@@ -364,8 +364,8 @@ export default class HPdf {
                 y: startY,
                 width: cellWidth,
                 height: cellHeight,
-                borderColor: rgb(0, 0, 0),
-                borderWidth: 1,
+                // borderColor: rgb(0, 0, 0),
+                // borderWidth: 1,
                 color: rgb(1, 1, 1),
             });
 
@@ -470,7 +470,7 @@ export default class HPdf {
 
             // Crear un rectángulo para la sección del código QR
             let startQRX = (nombreTipoEvento !== 'diploma-de-especializacion') ? 570 : startX
-            let startQRY = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 370
+            let startQRY = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 400
             let cellWidthQR = 240
             let cellHeightQR = 20
 
@@ -545,7 +545,7 @@ export default class HPdf {
 
             newPage.drawText('VERIFICACIÓN EN LÍNEA', {
                 x: startQRX + 5,
-                y: startQRY - 48,
+                y: startQRY - 43,
                 size: 12,
                 color: rgb(0, 0, 0),
             });
@@ -553,7 +553,7 @@ export default class HPdf {
             // Dibujar nuevo rectángulo para el código QR
             newPage.drawRectangle({
                 x: startQRX,
-                y: startQRY - 180,
+                y: startQRY - 170,
                 width: cellWidthQR,
                 height: (cellHeightQR * 6),
                 borderColor: rgb(0, 0, 0),
@@ -596,23 +596,24 @@ export default class HPdf {
                 qrCodeImage = await pdfDoc.embedPng(qrCodeDataUrl)
             }
 
-            const qrCodeDimensions = qrCodeImage.scale(0.8)
+            const qrCodeDimensions = qrCodeImage.scale(0.7)
 
             // Dibujando el código QR en la página
             newPage.drawImage(qrCodeImage, {
                 x: startQRX + 60,
-                y: startQRY - 150,
+                y: startQRY - 168,
                 width: qrCodeDimensions.width,
                 height: qrCodeDimensions.height
             })
 
             // Dibujando el detalle de horas académicas, notas
             if (nombreTipoEvento === 'diploma-de-especializacion') {
-                const startNotaY = startQRY - 250
+                const startNotaY = startQRY - 300
                 const widthNota = cellWidthQR
                 const heightNota = cellHeightQR
                 const textDuracion = `Duración: 12 módulos - 100% virtual`
                 const textCertificacion = `720 horas académicas`
+                const textModalidad = `Modalidad: Virtual`
                 const textCIP = `Avalado por: Colegio de Ingenieros del Perú - CIP`
 
                 newPage.drawRectangle({
@@ -620,50 +621,68 @@ export default class HPdf {
                     y: startNotaY,
                     width: widthNota,
                     height: heightNota,
-                    borderColor: rgb(0, 0, 0),
-                    borderWidth: 1,
+                    // borderColor: rgb(0, 0, 0),
+                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
                 newPage.drawText(textDuracion, {
                     x: startQRX + 5,
-                    y: startNotaY + 5,
+                    y: startNotaY + 10,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
 
                 newPage.drawRectangle({
                     x: startQRX,
-                    y: startNotaY - 23,
+                    y: startNotaY + 20,
                     width: widthNota,
                     height: heightNota,
-                    borderColor: rgb(0, 0, 0),
-                    borderWidth: 1,
+                    // borderColor: rgb(0, 0, 0),
+                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
                 // Dibujar el título en la celda
                 newPage.drawText(textCertificacion, {
                     x: startQRX + 5,
-                    y: startNotaY - 20,
+                    y: startNotaY + 30,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
 
                 newPage.drawRectangle({
                     x: startQRX,
-                    y: startNotaY - 46,
+                    y: startNotaY + 40,
                     width: widthNota,
                     height: heightNota,
-                    borderColor: rgb(0, 0, 0),
-                    borderWidth: 1,
+                    // borderColor: rgb(0, 0, 0),
+                    // borderWidth: 1,
+                    color: rgb(1, 1, 1),
+                });
+
+                // Dibujar el título en la celda
+                newPage.drawText(textModalidad, {
+                    x: startQRX + 5,
+                    y: startNotaY + 50,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                });
+
+                newPage.drawRectangle({
+                    x: startQRX,
+                    y: startNotaY + 60,
+                    width: widthNota,
+                    height: heightNota,
+                    // borderColor: rgb(0, 0, 0),
+                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
                 // Dibujar el título en la celda
                 newPage.drawText(textCIP, {
                     x: startQRX + 5,
-                    y: startNotaY - 40,
+                    y: startNotaY + 65,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
