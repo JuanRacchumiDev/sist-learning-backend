@@ -10,7 +10,7 @@ class CertificadoService {
         return await CertificadoRepository.getAllWithPaginate(page, limit, estado, search)
     }
 
-    async getCertificadosPorAlumno(idAlumno?: number) {
+    async getCertificadosPorAlumno(idAlumno: number) {
         return await CertificadoRepository.getByAlumnoId(idAlumno)
     }
 

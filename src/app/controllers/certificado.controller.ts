@@ -45,7 +45,7 @@ class CertificadoController {
     async getCertificadosPorAlumno(req: Request, res: Response) {
         const { id_alumno } = req.query
 
-        const idAlumno = id_alumno ? Number(id_alumno) : undefined
+        const idAlumno = Number(id_alumno)
 
         const response = await CertificadoService.getCertificadosPorAlumno(idAlumno)
 

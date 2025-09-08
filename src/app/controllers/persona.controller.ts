@@ -60,7 +60,7 @@ class PersonaController {
     async getPersonaPorIdTipoAndNumDoc(req: Request, res: Response) {
         const { idtipodoc, numdoc } = req.params
 
-        const response = await PersonaService.getPersonaPorIdTipoDocAndNumDoc(Number(idtipodoc), numdoc)
+        const response = await PersonaService.getPersonaPorIdTipoDocAndNumDoc(+idtipodoc, numdoc)
 
         const { result, error } = response
 

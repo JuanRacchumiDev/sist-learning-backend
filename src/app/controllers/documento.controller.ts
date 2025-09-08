@@ -5,9 +5,7 @@ class DocumentoController {
     async getDocumentoInfo(req: Request, res: Response) {
         const { idtipodoc, numdoc } = req.params
 
-        const idTipoDocNumber = Number(idtipodoc)
-
-        const response = await DocumentoService.getDocumentoInfo(idTipoDocNumber, numdoc)
+        const response = await DocumentoService.getDocumentoInfo(+idtipodoc, numdoc)
 
         const { result, status } = response
 
