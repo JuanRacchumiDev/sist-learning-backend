@@ -27,6 +27,37 @@ export default class HPdf {
 
             let fechasEvento: string[] = []
 
+            // Variables para los textos en el documento
+            let fontSizeForAlumno = 0
+
+            let y = 0
+
+            let x = 0
+
+            let maxWidth = 0
+
+            let fontSizeForEvento = 0
+
+            let fontSizeForFechaEvento = 0
+
+            let fontSizeForFechaEmision = 0
+
+            let linesAlumno = []
+
+            let lineWidthAlumno = 0
+
+            let lineHeightAlumno = 0
+
+            let linesEvento = []
+
+            let lineWidthEvento = 0
+
+            let lineHeightEvento = 0
+
+            let lineWidthFechaEvento = 0
+
+            let fechaEventoPositionX = 0
+
             // let lugarFechaEmision: string = `${lugar}`
 
             const { id_plantilla, nombre_impresion, id: idCertificado, codigo } = data
@@ -85,8 +116,6 @@ export default class HPdf {
             const { nombre_url } = tipoEvento as ITipoEvento
 
             const nombreTipoEvento: string = nombre_url as string
-
-            // console.log({ nombreTipoEvento })
 
             const { nombre_capitalized } = alumno
 
@@ -169,22 +198,6 @@ export default class HPdf {
 
             // Obtener la primera página
             const pagina = pdfDoc.getPage(0)
-
-            let fontSizeForAlumno = 0
-            let y = 0
-            let x = 0
-            let maxWidth = 0
-            let fontSizeForEvento = 0
-            let fontSizeForFechaEvento = 0
-            let fontSizeForFechaEmision = 0
-            let linesAlumno = []
-            let lineWidthAlumno = 0
-            let lineHeightAlumno = 0
-            let linesEvento = []
-            let lineWidthEvento = 0
-            let lineHeightEvento = 0
-            let lineWidthFechaEvento = 0
-            let fechaEventoPositionX = 0
 
             // Obtener el ancho de la página
             const pageWidth = pagina.getWidth()
@@ -304,35 +317,30 @@ export default class HPdf {
                 case "plantillas/diploma_especializacion.pdf":
                     // Configurar el texto del nombre del alumno
 
-                    y = 320;  // Posición Y
+                    y = 330;  // Posición Y
 
-                    fontSizeForAlumno = 50
+                    fontSizeForAlumno = 46
 
-                    maxWidth = 480; // Ancho máximo disponible para el texto
+                    maxWidth = 520; // Ancho máximo disponible para el texto
+
+                    lineHeightAlumno = 0.8 * fontSizeForAlumno;
 
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
                     linesAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForAlumno);
 
                     // fontSizeForAlumno = (linesAlumno.length > 1) ? 48 : 54;
 
-                    lineHeightAlumno = 0.8 * fontSizeForAlumno;
-
-                    console.log({ linesAlumno })
-
-                    console.log({ maxWidth })
-
-                    console.log({ fontSizeForAlumno })
-
-                    console.log({ lineHeightAlumno })
-
-                    if (linesAlumno.length > 1) {
-                        y += 20;
+                    if (linesAlumno.length === 1) {
+                        fontSizeForAlumno = 50
+                    } else {
+                        y = 340
                     }
 
                     // Dibujar el nombre del alumno centrado
                     for (let i = 0; i < linesAlumno.length; i++) {
                         lineWidthAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesAlumno[i], fontSizeForAlumno);
-                        const nombrePositionX = ((pageWidth - lineWidthAlumno) / 2) + 100;  // Centrado horizontal
+
+                        const nombrePositionX = ((pageWidth - lineWidthAlumno) / 2) + 110;  // Centrado horizontal
 
                         pagina.drawText(linesAlumno[i], {
                             x: nombrePositionX,
@@ -342,6 +350,25 @@ export default class HPdf {
                             color: rgb(0, 0, 0),
                         });
                     }
+
+                    // Configurar el texto del título del evento
+                    fontSizeForEvento = 26;
+
+                    const tituloEventoPositionX = ((pageWidth - lineWidthEvento) / 2) - 60
+
+                    if (linesAlumno.length === 1) {
+                        y -= 70
+                    } else {
+                        y -= 78
+                    }
+
+                    pagina.drawText(tituloEvento, {
+                        x: tituloEventoPositionX,
+                        y,
+                        size: fontSizeForEvento,
+                        font: customFontBalooBold,
+                        color: rgb(0 / 255, 32 / 255, 58 / 255),
+                    });
                     break
             }
 
@@ -354,19 +381,12 @@ export default class HPdf {
 
             // Crear un rectángulo para texto introductorio
             const startX = 20
+
             const startY = newPage.getHeight() - 170
+
             const cellWidth = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 270
+
             const cellHeight = (nombreTipoEvento !== 'diploma-de-especializacion') ? 50 : 155
-
-            // console.log('newPage.getHeight()', newPage.getHeight())
-
-            // console.log({ startX })
-
-            // console.log({ startY })
-
-            // console.log({ cellWidth })
-
-            // console.log({ cellHeight })
 
             newPage.drawRectangle({
                 x: startX,
@@ -382,12 +402,10 @@ export default class HPdf {
             let texto: string = ""
 
             if (nombreTipoEvento !== 'diploma-de-especializacion') {
-                // console.log('texto a')
                 texto = `Esta es una copia auténtica imprimible de un documento electrónico archivado por PerúAgro, `
                 texto += `aplicando lo dispuesto por el Art. 25 de D.S. 070-2013-PCM y `
                 texto += `la Tercera Disposición Complementaria Final del D.S. 026-2016-PCM.`
             } else {
-                // console.log('texto b')
                 texto = `Esta es una copia auténtica imprimible de un documento `
                 texto += `electrónico archivado por PerúAgro, aplicando lo dispuesto `
                 texto += `por el Art. 25 de D.S. 070-2013-PCM y la Tercera Disposición `
@@ -416,15 +434,31 @@ export default class HPdf {
             })
 
             const startTemarioX = (nombreTipoEvento !== 'diploma-de-especializacion') ? 20 : 300
-            const startTemarioY = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : (startY + 135)
+            let startTemarioY = (nombreTipoEvento !== 'diploma-de-especializacion') ? 440 : (startY + 135)
             const cellWidthTemario = (nombreTipoEvento !== 'diploma-de-especializacion') ? 350 : 300
             const cellHeightTemario = 20
 
-            // console.log({ startTemarioX })
+            // Dibujar celda para el título del evento
+            newPage.drawRectangle({
+                x: startTemarioX,
+                y: startTemarioY,
+                width: cellWidthTemario + 50,
+                height: cellHeightTemario,
+                // borderColor: rgb(0, 0, 0),
+                // borderWidth: 1,
+                color: rgb(1, 1, 1),
+            });
 
-            // console.log({ startTemarioY })
+            // Dibujar el título del evento en la celda
+            newPage.drawText(tituloEvento, {
+                x: startTemarioX + 5,
+                y: startTemarioY + 5,
+                size: 14,
+                font: customFontBalooBold,
+                color: rgb(0 / 255, 32 / 255, 58 / 255)
+            });
 
-            // console.log({ cellWidthTemario })
+            startTemarioY = startTemarioY - 30
 
             // Dibujar celda para el título del temario
             newPage.drawRectangle({
@@ -437,7 +471,6 @@ export default class HPdf {
                 color: rgb(1, 1, 1),
             });
 
-            // Dibujar el título en la celda
             newPage.drawText('Temario', {
                 x: startTemarioX + 5,
                 y: startTemarioY + 5,
@@ -482,9 +515,6 @@ export default class HPdf {
             let startQRY = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 400
             let cellWidthQR = 240
             let cellHeightQR = 20
-
-            // console.log({ startQRX })
-            // console.log({ startQRY })
 
             newPage.drawRectangle({
                 x: startQRX,
@@ -617,13 +647,14 @@ export default class HPdf {
 
             // Dibujando el detalle de horas académicas, notas
             if (nombreTipoEvento === 'diploma-de-especializacion') {
-                const startNotaY = startQRY - 300
-                const widthNota = cellWidthQR
-                const heightNota = cellHeightQR
-                const textDuracion = `Duración: 12 módulos - 100% virtual`
-                const textCertificacion = `720 horas académicas`
-                const textModalidad = `Modalidad: Virtual`
-                const textCIP = `Avalado por: Colegio de Ingenieros del Perú - CIP`
+                let startNotaY: number = startQRY - 250
+                const widthNota: number = cellWidthQR
+                const heightNota: number = cellHeightQR
+                const textDuracion: string = `Duración: 12 módulos - 100% virtual`
+                const textCertificacion: string = `720 horas académicas`
+                const textModalidad: string = `Modalidad: Virtual`
+                const textCIP: string = `Avalado por: Colegio de Ingenieros del Perú - CIP`
+                const textNotaPromedio: string = `Promedio obtenido: 18.5`
 
                 newPage.drawRectangle({
                     x: startQRX,
@@ -635,52 +666,64 @@ export default class HPdf {
                     color: rgb(1, 1, 1),
                 });
 
+                startNotaY += 5
+
                 newPage.drawText(textDuracion, {
                     x: startQRX + 5,
-                    y: startNotaY + 10,
+                    y: startNotaY,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
 
+                startNotaY -= 20
+
                 newPage.drawRectangle({
                     x: startQRX,
-                    y: startNotaY + 20,
+                    y: startNotaY,
                     width: widthNota,
                     height: heightNota,
                     // borderColor: rgb(0, 0, 0),
                     // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
+
+                startNotaY += 5
 
                 // Dibujar el título en la celda
                 newPage.drawText(textCertificacion, {
                     x: startQRX + 5,
-                    y: startNotaY + 30,
+                    y: startNotaY,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
 
+                startNotaY -= 20
+
                 newPage.drawRectangle({
                     x: startQRX,
-                    y: startNotaY + 40,
+                    y: startNotaY,
                     width: widthNota,
                     height: heightNota,
                     // borderColor: rgb(0, 0, 0),
                     // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
+
+                startNotaY += 5
 
                 // Dibujar el título en la celda
                 newPage.drawText(textModalidad, {
                     x: startQRX + 5,
-                    y: startNotaY + 50,
+                    y: startNotaY,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
 
+                startNotaY -= 20
+
                 newPage.drawRectangle({
                     x: startQRX,
-                    y: startNotaY + 60,
+                    y: startNotaY,
                     width: widthNota,
                     height: heightNota,
                     // borderColor: rgb(0, 0, 0),
@@ -688,10 +731,34 @@ export default class HPdf {
                     color: rgb(1, 1, 1),
                 });
 
+                startNotaY += 5
+
                 // Dibujar el título en la celda
                 newPage.drawText(textCIP, {
                     x: startQRX + 5,
-                    y: startNotaY + 65,
+                    y: startNotaY,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                });
+
+                startNotaY -= 20
+
+                newPage.drawRectangle({
+                    x: startQRX,
+                    y: startNotaY,
+                    width: widthNota,
+                    height: heightNota,
+                    // borderColor: rgb(0, 0, 0),
+                    // borderWidth: 1,
+                    color: rgb(1, 1, 1),
+                });
+
+                startNotaY += 5
+
+                // Dibujar el título en la celda
+                newPage.drawText(textNotaPromedio, {
+                    x: startQRX + 5,
+                    y: startNotaY,
                     size: 12,
                     color: rgb(0, 0, 0),
                 });
