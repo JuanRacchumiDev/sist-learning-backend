@@ -16,7 +16,7 @@ class DocumentoRepository {
             // Verificando si existe una persona
             const responsePersona = await PersonaService.getPersonaPorIdTipoDocAndNumDoc(idTipoDocumento, numeroDocumento)
 
-            console.log({ responsePersona })
+            // console.log({ responsePersona })
 
             const getTipoDocumento = await TipoDocumentoService.getTipoPorId(idTipoDocumento);
 
@@ -32,18 +32,18 @@ class DocumentoRepository {
                     ? `${API_DNI}${numeroDocumento}`
                     : `${API_CEE}${numeroDocumento}`
 
-                console.log({ urlApiDoc })
+                // console.log({ urlApiDoc })
 
                 // Determina el ambiente
                 const env = process.env.NODE_ENV || 'development'
 
-                console.log({ env })
+                // console.log({ env })
 
                 dotenv.config({ path: `.env.${env}` })
 
                 const token = process.env.TOKEN_API_DOCS
 
-                console.log({ token })
+                // console.log({ token })
 
                 const response = await axios.get(`${urlApiDoc}`, {
                     headers: {

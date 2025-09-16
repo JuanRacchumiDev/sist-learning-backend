@@ -26,7 +26,7 @@ export interface IUsuarioPaginate {
     previousPage: number | null
 }
 
-export interface UsuaarioResponsePaginate {
+export interface UsuarioResponsePaginate {
     result: boolean
     message?: string
     data?: IUsuario[]

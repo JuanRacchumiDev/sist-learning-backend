@@ -81,6 +81,7 @@ const setupDatabase = async () => {
         Pais.hasMany(Instructor, { foreignKey: 'id_pais', as: 'instructores' })
 
         Plantilla.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+        Plantilla.belongsTo(TipoEvento, { foreignKey: 'id_tipoevento', as: 'tipoEvento' })
         Plantilla.hasMany(Certificado, { foreignKey: 'id_plantilla', as: 'certificados' })
 
         Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })

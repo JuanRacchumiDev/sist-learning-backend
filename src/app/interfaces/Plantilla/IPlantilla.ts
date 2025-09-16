@@ -1,7 +1,9 @@
 import { IEvento } from "../Evento/IEvento"
+import { ITipoEvento } from "../TipoEvento/ITipoEvento"
 
 export interface IPlantilla {
     id?: number
+    id_tipoevento?: number
     id_evento?: number
     nombre?: string
     file?: Buffer
@@ -10,6 +12,7 @@ export interface IPlantilla {
     user_actualiza?: string
     user_elimina?: string
     estado?: boolean
+    tipoEvento?: ITipoEvento
     evento?: IEvento
 }
 

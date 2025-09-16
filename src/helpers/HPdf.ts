@@ -603,12 +603,19 @@ export default class HPdf {
             // Determina el ambiente
             const env = process.env.NODE_ENV || 'development'
 
+            // console.log({ env })
+
             // Carga el archivo de configuración correspondiente
-            dotenv.config({ path: `.env.${env}` })
+            const pathEnv = `.env.${env}`
+            // console.log({ pathEnv })
+            dotenv.config({ path: pathEnv })
 
             const baseUrl = process.env.CORS_ALLOWED_ORIGIN
 
-            const dataUrlQR = `${baseUrl}/web/certificado/${codigo}`
+            const dataUrlQR = `${baseUrl}/web/certificado/${getCodigo}`
+
+            // console.log({ baseUrl })
+            // console.log({ dataUrlQR })
 
             let qrCodeImage: PDFImage
 

@@ -2,11 +2,13 @@ import { Model, DataTypes, Optional } from "sequelize";
 import sequelize from '../../config/database'
 import { IPlantilla } from "../interfaces/Plantilla/IPlantilla";
 import { Evento } from "./evento.models";
+import { TipoEvento } from "./tipoEvento.models";
 
 interface PlantillaAttributes extends Optional<IPlantilla, 'id'> { }
 
 export class Plantilla extends Model<IPlantilla, PlantillaAttributes> implements IPlantilla {
     public id?: number | undefined;
+    public id_tipoevento?: number | undefined;
     public id_evento?: number | undefined;
     public nombre?: string | undefined;
     public file?: Buffer | undefined;
@@ -22,6 +24,7 @@ export class Plantilla extends Model<IPlantilla, PlantillaAttributes> implements
     public readonly deletedAt?: Date
 
     // Asociaciones
+    public getTipoEvento?: () => Promise<TipoEvento>
     public getEvento?: () => Promise<Evento>
 }
 
@@ -30,6 +33,14 @@ Plantilla.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
+    },
+    id_tipoevento: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: TipoEvento,
+            key: 'id'
+        }
     },
     id_evento: {
         type: DataTypes.INTEGER,

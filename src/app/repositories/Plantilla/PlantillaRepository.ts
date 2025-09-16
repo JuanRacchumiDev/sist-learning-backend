@@ -4,7 +4,8 @@ import { IPlantilla, PlantillaResponse, IPlantillaPaginate, PlantillaResponsePag
 import { Plantilla } from "../../models/plantilla.models";
 import HPagination from "../../../helpers/HPagination";
 import { Op } from "sequelize";
-import { EVENTO_INCLUDE } from "../../..//includes/EventoInclude";
+import { EVENTO_INCLUDE } from "../../../includes/EventoInclude";
+import { TIPO_EVENTO_INCLUDE } from "../../../includes/TipoEventoInclude";
 
 class PlantillaRepository {
     async getAll(): Promise<PlantillaResponse> {
@@ -105,6 +106,26 @@ class PlantillaRepository {
                 },
                 attributes: PLANTILLA_ATTRIBUTES,
                 include: [EVENTO_INCLUDE],
+                order: [
+                    ['nombre', 'ASC']
+                ]
+            })
+
+            return { result: true, data: plantillas, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllByTipoEvento(id_tipoevento: number): Promise<PlantillaResponse> {
+        try {
+            const plantillas = await Plantilla.findAll({
+                where: {
+                    id_tipoevento
+                },
+                attributes: PLANTILLA_ATTRIBUTES,
+                include: [TIPO_EVENTO_INCLUDE],
                 order: [
                     ['nombre', 'ASC']
                 ]

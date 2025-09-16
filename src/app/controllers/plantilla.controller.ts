@@ -76,6 +76,24 @@ class PlantillaController {
         }
     }
 
+    async getPlantillasPorTipoEvento(req: Request, res: Response) {
+        const { idTipoEvento } = req.params
+
+        const response = await PlantillaService.getPlantillasPorTipoEvento(+idTipoEvento)
+
+        const { result, error } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            if (error) {
+                res.status(500).json(response)
+            } else {
+                res.status(404).json(response)
+            }
+        }
+    }
+
     async getPlantillaPorId(req: Request, res: Response) {
         const { id } = req.params
 
