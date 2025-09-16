@@ -2,21 +2,23 @@ import { Router } from 'express'
 import CertificadoController from '../controllers/certificado.controller'
 import { authToken } from '../middleware/authMiddleware'
 
-const router = Router()
+const publicRouter = Router();
+const protectedRouter = Router();
 
-router.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)
-router.get('/codigo/:codigo', CertificadoController.getCertificadoPorCodigo)
-router.get('/download/:id', authToken, CertificadoController.downloadPorId)
-router.get('/download-web/:id', CertificadoController.downloadPorId)
-router.get('/download/name/:filename', authToken, CertificadoController.downloadPorFilename)
-router.get('/', authToken, CertificadoController.getCertificados)
-router.get('/alumno', authToken, CertificadoController.getCertificadosPorAlumno)
-router.get('/:id', authToken, CertificadoController.getCertificadoPorId)
-router.post('/', authToken, CertificadoController.createCertificado)
-router.patch('/:id', authToken, CertificadoController.updateCertificado)
-router.patch('/cambiar-estado/:id', authToken, CertificadoController.updateEstado)
-router.delete('/:id', authToken, CertificadoController.deleteCertificado)
+publicRouter.get('/codigo/:codigo', CertificadoController.getCertificadoPorCodigo)
+publicRouter.get('/download-web/:id', CertificadoController.downloadPorId)
+publicRouter.post('/load-data', CertificadoController.loadData)
 
-router.post('/load-data', CertificadoController.loadData)
+protectedRouter.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)
+protectedRouter.get('/download/:id', authToken, CertificadoController.downloadPorId)
+protectedRouter.get('/download/name/:filename', authToken, CertificadoController.downloadPorFilename)
+protectedRouter.get('/', authToken, CertificadoController.getCertificados)
+protectedRouter.get('/alumno', authToken, CertificadoController.getCertificadosPorAlumno)
+protectedRouter.get('/:id', authToken, CertificadoController.getCertificadoPorId)
+protectedRouter.post('/', authToken, CertificadoController.createCertificado)
+protectedRouter.patch('/:id', authToken, CertificadoController.updateCertificado)
+protectedRouter.patch('/cambiar-estado/:id', authToken, CertificadoController.updateEstado)
+protectedRouter.delete('/:id', authToken, CertificadoController.deleteCertificado)
 
-export default router
+// export default router
+export { publicRouter, protectedRouter };
