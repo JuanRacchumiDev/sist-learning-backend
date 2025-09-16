@@ -6,7 +6,7 @@ const publicRouter = Router();
 const protectedRouter = Router();
 
 publicRouter.get('/codigo/:codigo', CertificadoController.getCertificadoPorCodigo)
-publicRouter.get('/download-web/:id', CertificadoController.downloadPorId)
+publicRouter.get('/download/:id', CertificadoController.downloadPorId)
 publicRouter.post('/load-data', CertificadoController.loadData)
 
 protectedRouter.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)
