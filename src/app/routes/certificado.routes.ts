@@ -5,7 +5,7 @@ import { authToken } from '../middleware/authMiddleware'
 const router = Router()
 
 router.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)
-router.get('/codigo/:codigo', authToken, CertificadoController.getCertificadoPorCodigo)
+router.get('/codigo/:codigo', CertificadoController.getCertificadoPorCodigo)
 router.get('/download/:id', authToken, CertificadoController.downloadPorId)
 router.get('/download/name/:filename', authToken, CertificadoController.downloadPorFilename)
 router.get('/', authToken, CertificadoController.getCertificados)
