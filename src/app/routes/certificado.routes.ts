@@ -9,6 +9,7 @@ publicRouter.get('/:id', CertificadoController.getCertificadoPorId)
 publicRouter.get('/codigo/:codigo', CertificadoController.getCertificadoPorCodigo)
 publicRouter.get('/download/:id', CertificadoController.downloadPorId)
 publicRouter.post('/load-data', CertificadoController.loadData)
+publicRouter.get('/download/name/:filename', CertificadoController.downloadPorFilename)
 
 protectedRouter.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)
 protectedRouter.get('/codigo/:codigo', authToken, CertificadoController.getCertificadoPorCodigo)
