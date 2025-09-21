@@ -1,5 +1,5 @@
 import { IAdjunto } from "../interfaces/Adjunto/IAdjunto"
-import AdjuntoRepository from "../repositories/Ajunto/AdjuntoRepository"
+import AdjuntoRepository from "../repositories/Adjunto/AdjuntoRepository"
 import { File } from 'node:buffer'
 
 class AdjuntoService {

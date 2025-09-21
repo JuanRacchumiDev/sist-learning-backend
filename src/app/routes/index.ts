@@ -11,7 +11,16 @@ import perfilRoutes from './perfil.routes'
 import trabajadorRoutes from './trabajador.routes'
 import empresaRoutes from './empresa.routes'
 import eventoRoutes from './evento.routes'
-import { publicRouter, protectedRouter } from './certificado.routes'
+
+import {
+    publicRouter as publicRouterCreate,
+    protectedRouter as protectedRouterCreate
+} from './certificado.routes'
+
+import {
+    protectedRouter as protectedRouterExisting
+} from './certificadoUpload.routes'
+
 import adjuntoRoutes from './adjunto.routes'
 import authRoutes from './auth.routes'
 import cargoRoutes from './cargo.routes'
@@ -35,8 +44,11 @@ router.use('/perfil', perfilRoutes)
 router.use('/trabajador', trabajadorRoutes)
 router.use('/empresa', empresaRoutes)
 router.use('/evento', eventoRoutes)
-router.use('/certificado/web', publicRouter)
-router.use('/certificado', protectedRouter)
+
+router.use('/certificado/web', publicRouterCreate)
+router.use('/certificado', protectedRouterCreate)
+router.use('/certificado-upload', protectedRouterExisting)
+
 router.use('/adjunto', adjuntoRoutes)
 router.use('/auth', authRoutes)
 router.use('/cargo', cargoRoutes)

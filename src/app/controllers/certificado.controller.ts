@@ -6,6 +6,7 @@ import { IAlumno } from '../interfaces/Alumno/IAlumno'
 import { Temporal } from '../models/temporal.models'
 import { ITemporal } from '../interfaces/Temporal/ITemporal'
 import fs from 'fs';
+import CertificadoUploadService from '../services/certificadoUpload.service'
 
 class CertificadoController {
     async getCertificados(req: Request, res: Response) {
@@ -117,22 +118,49 @@ class CertificadoController {
 
         const { filename } = params
 
-        const response = await CertificadoService.downloadPorFilename(filename);
+        // Obtenemos el certificado subido
+        const responseUploaded = await CertificadoUploadService.downloadPorFilename(filename)
 
-        const { result, status, outputPath, error, message } = response;
+        const {
+            result: resultUploaded,
+            outputPath: outputPathUploaded,
+        } = responseUploaded
 
-        if (result && outputPath) {
-            res.download(outputPath, filename, (err) => {
+        // Validamos si existe un certificado subido
+        if (resultUploaded && outputPathUploaded) {
+            res.download(outputPathUploaded, filename, (err) => {
                 if (err) {
                     // Aquí podrías manejar el error de la descarga si el archivo no se encuentra
                     console.error(err);
                     // Si la descarga falla, envía un error.
                     // Es importante que esto sea una respuesta de fallback
-                    res.status(500).json({ result: false, message: 'Error al descargar el archivo', error: err.message });
+                    res.status(500).json({
+                        result: false,
+                        message: 'Error al descargar el archivo',
+                        error: err.message
+                    });
                 }
             });
         } else {
-            res.status(status).json({ result, message, error });
+            // Obtenemos el certificado generado
+            const response = await CertificadoService.downloadPorFilename(filename);
+
+            const { result, status, outputPath, error, message } = response;
+
+            // Validamos si existe el certificado generado
+            if (result && outputPath) {
+                res.download(outputPath, filename, (err) => {
+                    if (err) {
+                        // Aquí podrías manejar el error de la descarga si el archivo no se encuentra
+                        console.error(err);
+                        // Si la descarga falla, envía un error.
+                        // Es importante que esto sea una respuesta de fallback
+                        res.status(500).json({ result: false, message: 'Error al descargar el archivo', error: err.message });
+                    }
+                });
+            } else {
+                res.status(status).json({ result, message, error });
+            }
         }
     }
 

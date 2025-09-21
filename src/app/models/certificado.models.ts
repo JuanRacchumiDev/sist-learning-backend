@@ -28,6 +28,16 @@ export class Certificado extends Model<ICertificado, CertificadoAttributes> impl
     public user_elimina?: string | undefined
     public sistema?: boolean | undefined
     public estado?: boolean | undefined
+
+    // Timestamps
+    public readonly createdAt!: Date
+    public readonly updatedAt!: Date
+    public readonly deletedAt?: Date
+
+    // Asociaciones
+    public getAlumno?: () => Promise<Alumno>
+    public getEvento?: () => Promise<Evento>
+    public getTipoCertificado?: () => Promise<TipoCertificado>
 }
 
 Certificado.init({
