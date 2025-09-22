@@ -173,7 +173,7 @@ class CertificadoUploadService {
             // const qrX = secondPage.getWidth() - qrSize - 50; // Ejemplo: en la esquina superior derecha
             // const qrY = 50;
 
-            const qrDimensions = qrImage.scale(2.51)
+            const qrDimensions = qrImage.scale(2.54)
 
             // console.log('secondPage.getWidth()')
             // console.log(secondPage.getWidth())
@@ -183,8 +183,8 @@ class CertificadoUploadService {
 
             // console.log({ qrDimensions })
 
-            const qrX = secondPage.getWidth() * 0.40
-            const qrY = secondPage.getHeight() * 0.78
+            const qrX = secondPage.getWidth() * 0.41
+            const qrY = secondPage.getHeight() * 0.76
 
             const qrFilename: string = `qrcode_${sanitizedAlumno}.png`
 
