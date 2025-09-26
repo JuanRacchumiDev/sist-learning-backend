@@ -12,6 +12,7 @@ import HString from "../../helpers/HString";
 import { IEvento } from "../interfaces/Evento/IEvento";
 import { IAlumno } from "../interfaces/Alumno/IAlumno";
 import { ICertificado } from "../interfaces/Certificado/ICertificado"
+import { Request, Response } from 'express'
 
 class CertificadoUploadService {
     async downloadPorFilename(filename: string) {
@@ -27,9 +28,11 @@ class CertificadoUploadService {
 
         // const qrY = 400
 
-        const { file_path, id_alumno, id_evento } = data
+        const { file_path, id_alumno, id_evento, codigo: paramCodigo } = data
 
         const originalFilePath = file_path as string;
+
+        let codigoQR: string = ""
 
         // console.log({ originalFilePath })
 
@@ -108,11 +111,25 @@ class CertificadoUploadService {
                 id_alumno as number,
                 id_evento as number
             )
+
             const { data: dataCertificado } = responseCertificado
             // console.log(dataCertificado)
-            const certificado = dataCertificado as ICertificado
-            const { codigo } = certificado
-            const codigoQR = codigo as string
+
+            if (paramCodigo) {
+                codigoQR = paramCodigo
+            } else {
+                if (dataCertificado) {
+                    const certificado = dataCertificado as ICertificado
+                    const { codigo } = certificado
+                    codigoQR = codigo as string
+                }
+            }
+
+            // console.log({ codigoQR })
+
+            // const certificado = dataCertificado as ICertificado
+            // const { codigo } = certificado
+            // const codigoQR = codigo as string
 
             // console.log({ codigoQR })
 
@@ -246,6 +263,10 @@ class CertificadoUploadService {
         }
 
         // return await CertificadoUploadRepository.upload(data)
+    }
+
+    async getCertificadoPorAlumnoPorEvento(id_alumno: number, id_evento: number) {
+        return await CertificadoUploadRepository.getByAlumnoIdEventoId(id_alumno, id_evento)
     }
 }
 

@@ -116,7 +116,7 @@ class DocumentoRepository {
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            console.log('errorMessage getInfo API', errorMessage)
+            // console.log('errorMessage getInfo API', errorMessage)
 
             if (errorMessage === 'Request failed with status code 404') {
                 const message = `No se encontró información con el número de documento: ${numeroDocumento}`

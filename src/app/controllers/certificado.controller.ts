@@ -96,7 +96,11 @@ class CertificadoController {
     }
 
     async getCertificadoPorAlumnoPorEvento(req: Request, res: Response) {
-        const { idAlumno, idEvento } = req.params
+        const { id_alumno, id_evento } = req.query
+
+        const idAlumno = Number(id_alumno)
+
+        const idEvento = Number(id_evento)
 
         const response = await CertificadoService.getCertificadoPorAlumnoPorEvento(+idAlumno, +idEvento)
 
@@ -113,7 +117,7 @@ class CertificadoController {
         }
     }
 
-    public async downloadPorFilename(req: Request, res: Response) {
+    async downloadPorFilename(req: Request, res: Response) {
         const { params } = req
 
         const { filename } = params
@@ -164,7 +168,7 @@ class CertificadoController {
         }
     }
 
-    public async downloadPorId(req: Request, res: Response) {
+    async downloadPorId(req: Request, res: Response) {
         const { params } = req
 
         const { id } = params

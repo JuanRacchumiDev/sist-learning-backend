@@ -20,7 +20,8 @@ class CertificadoUploadController {
             const {
                 id_alumno,
                 id_evento,
-                id_tipocertificado
+                id_tipocertificado,
+                codigo
             } = body
 
             const {
@@ -37,6 +38,7 @@ class CertificadoUploadController {
                 id_alumno,
                 id_evento,
                 id_tipocertificado,
+                codigo,
                 file_name: originalname,
                 file_type: mimetype,
                 file_data: file.buffer,
@@ -49,6 +51,28 @@ class CertificadoUploadController {
             // next(error)
             console.error('Error inesperado:', error);
             res.status(500).send(error)
+        }
+    }
+
+    async getCertificadoPorAlumnoPorEvento(req: Request, res: Response) {
+        const { id_alumno, id_evento } = req.query
+
+        const idAlumno = Number(id_alumno)
+
+        const idEvento = Number(id_evento)
+
+        const response = await CertificadoUploadService.getCertificadoPorAlumnoPorEvento(+idAlumno, +idEvento)
+
+        const { result, error } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            if (error) {
+                res.status(500).json(response)
+            } else {
+                res.status(200).json(response)
+            }
         }
     }
 }

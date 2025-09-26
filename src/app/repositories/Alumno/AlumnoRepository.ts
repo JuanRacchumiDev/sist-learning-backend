@@ -227,7 +227,7 @@ class AlumnoRepository {
             return { result: false, message: 'Error al registrar al alumno', data: [], status: 500 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            console.log('errorMessage', errorMessage)
+            // console.log('errorMessage', errorMessage)
 
             return { result: false, error: errorMessage, status: 500 }
         }

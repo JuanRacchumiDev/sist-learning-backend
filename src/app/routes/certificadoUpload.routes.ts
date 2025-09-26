@@ -9,5 +9,6 @@ const protectedRouter = Router();
 // const router = Router()
 
 protectedRouter.post('/', authToken, upload.single('file'), CertificadoUploadController.upload)
+protectedRouter.get('/busqueda/', authToken, CertificadoUploadController.getCertificadoPorAlumnoPorEvento)
 
 export { protectedRouter }

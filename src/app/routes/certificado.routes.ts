@@ -11,6 +11,7 @@ publicRouter.get('/download/:id', CertificadoController.downloadPorId)
 publicRouter.post('/load-data', CertificadoController.loadData)
 publicRouter.get('/download/name/:filename', CertificadoController.downloadPorFilename)
 
+protectedRouter.get('/busqueda/', authToken, CertificadoController.getCertificadoPorAlumnoPorEvento)
 protectedRouter.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)
 protectedRouter.get('/codigo/:codigo', authToken, CertificadoController.getCertificadoPorCodigo)
 protectedRouter.get('/download/:id', authToken, CertificadoController.downloadPorId)
