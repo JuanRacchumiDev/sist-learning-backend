@@ -23,11 +23,8 @@ class EmailController {
                 });
             }
         } catch (error: unknown) {
-            // console.error('Error al enviar el correo:', error)
-            // res.status(500).json({ success: false, error: error.message });
             console.error('Error al enviar el correo:', error);
 
-            // Type guard para asegurar que error es un Error
             if (error instanceof Error) {
                 res.status(500).json({ success: false, error: error.message });
             } else {

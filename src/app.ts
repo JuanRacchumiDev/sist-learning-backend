@@ -9,6 +9,7 @@ import { Alumno } from './app/models/alumno.models'
 import { Cargo } from './app/models/cargo.models'
 import { CategoriaEvento } from './app/models/categoriaEvento.models'
 import { Certificado } from './app/models/certificado.models'
+import { CertificadoUpload } from './app/models/certificadoUpload.models'
 import { Departamento } from './app/models/departamento.models'
 import { Empresa } from './app/models/empresa.models'
 import { Evento } from './app/models/evento.models'
@@ -57,6 +58,10 @@ const setupDatabase = async () => {
         Certificado.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
         Certificado.belongsTo(TipoCertificado, { foreignKey: 'id_tipocertificado', as: 'tipoCertificado' })
         Certificado.belongsTo(Plantilla, { foreignKey: 'id_plantilla', as: 'plantilla' })
+
+        CertificadoUpload.belongsTo(Alumno, { foreignKey: 'id_alumno', as: 'alumno' })
+        CertificadoUpload.belongsTo(Evento, { foreignKey: 'id_evento', as: 'evento' })
+        CertificadoUpload.belongsTo(TipoCertificado, { foreignKey: 'id_tipocertificado', as: 'tipoCertificado' })
 
         Departamento.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
         Departamento.hasMany(Alumno, { foreignKey: 'id_departamento', as: 'alumnos' })

@@ -2,6 +2,9 @@ import fs from 'fs';
 import { CertificadoUploadResponse, ICertificadoUpload } from "../../../app/interfaces/CertificadoUpload/ICertificadoUpload";
 import { CertificadoUpload } from "../../../app/models/certificadoUpload.models";
 import { CERTIFICADO_UPLOAD_ATTRIBUTES } from "../../../constants/CertificadoUploadConstant";
+import { ALUMNO_INCLUDE } from '../../../includes/AlumnoInclude';
+import { EVENTO_INCLUDE } from '../../../includes/EventoInclude';
+import { TIPO_CERTIFICADO_INCLUDE } from '../../../includes/TipoCertificadoInclude';
 
 class CertificadoUploadRepository {
     async getByAlumnoIdEventoId(idAlumno: number, idEvento: number): Promise<CertificadoUploadResponse> {
@@ -11,6 +14,29 @@ class CertificadoUploadRepository {
                     id_alumno: idAlumno,
                     id_evento: idEvento
                 }
+            })
+
+            if (!certificado) {
+                return { result: false, data: [], message: 'Certificado no encontrado', status: 200 }
+            }
+
+            return { result: true, data: certificado, message: 'Certificado encontrado', status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getByCodigo(codigo: string): Promise<CertificadoUploadResponse> {
+        try {
+            const certificado = await CertificadoUpload.findOne({
+                where: { codigo },
+                attributes: CERTIFICADO_UPLOAD_ATTRIBUTES,
+                include: [
+                    ALUMNO_INCLUDE,
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
+                ]
             })
 
             if (!certificado) {

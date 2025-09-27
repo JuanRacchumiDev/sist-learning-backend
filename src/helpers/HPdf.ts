@@ -21,8 +21,6 @@ import { ITipoEvento } from "../app/interfaces/TipoEvento/ITipoEvento";
 export default class HPdf {
     static async generarCertificado(data: ICertificado, alumno: IAlumno, evento: IEvento): Promise<TResponseCertificado> {
         try {
-            // const lugar: string = 'Lambayeque';
-
             let getCodigo: string = ""
 
             let fechasEvento: string[] = []
@@ -57,8 +55,6 @@ export default class HPdf {
             let lineWidthFechaEvento = 0
 
             let fechaEventoPositionX = 0
-
-            // let lugarFechaEmision: string = `${lugar}`
 
             const { id_plantilla, nombre_impresion, id: idCertificado, codigo } = data
 
@@ -147,14 +143,6 @@ export default class HPdf {
 
             const outputPath = path.resolve(__dirname, `../../public/certificados/${sanitizedTitulo}/${filename}`)
 
-            // if (fecha_envio) {
-            //     const fechaEnvio = toZonedTime(fecha_envio, TIMEZONES.LIMA)
-
-            //     const fechaEmision = format(fechaEnvio, "dd 'de' MMMM 'del' yyyy", { locale: es })
-
-            //     // lugarFechaEmision = `${lugar}, ${fechaEmision}`
-            // }
-
             if (fecha_fin) {
                 const fechaFinal = toZonedTime(fecha_fin, TIMEZONES.LIMA)
 
@@ -204,6 +192,7 @@ export default class HPdf {
 
             switch (pathPlantilla) {
                 case "plantillas/plantilla_d.pdf":
+
                     // Configurar el texto del nombre del alumno
                     fontSizeForAlumno = 48;
 
@@ -328,8 +317,6 @@ export default class HPdf {
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
                     linesAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForAlumno);
 
-                    // fontSizeForAlumno = (linesAlumno.length > 1) ? 48 : 54;
-
                     if (linesAlumno.length === 1) {
                         fontSizeForAlumno = 50
                     } else {
@@ -393,8 +380,6 @@ export default class HPdf {
                 y: startY,
                 width: cellWidth,
                 height: cellHeight,
-                // borderColor: rgb(0, 0, 0),
-                // borderWidth: 1,
                 color: rgb(1, 1, 1),
             });
 
@@ -444,8 +429,6 @@ export default class HPdf {
                 y: startTemarioY,
                 width: cellWidthTemario + 50,
                 height: cellHeightTemario,
-                // borderColor: rgb(0, 0, 0),
-                // borderWidth: 1,
                 color: rgb(1, 1, 1),
             });
 
@@ -603,19 +586,14 @@ export default class HPdf {
             // Determina el ambiente
             const env = process.env.NODE_ENV || 'development'
 
-            // console.log({ env })
-
             // Carga el archivo de configuración correspondiente
             const pathEnv = `.env.${env}`
-            // console.log({ pathEnv })
+
             dotenv.config({ path: pathEnv })
 
             const baseUrl = process.env.CORS_ALLOWED_ORIGIN
 
             const dataUrlQR = `${baseUrl}/web/certificado/${getCodigo}`
-
-            // console.log({ baseUrl })
-            // console.log({ dataUrlQR })
 
             let qrCodeImage: PDFImage
 
@@ -626,6 +604,7 @@ export default class HPdf {
             try {
                 if (data.id) {
                     qrCodeFilePath = data.codigo_qr as string
+
                     // Usamos fs.promises.access para evitar bloqueos sincrónicos
                     await fs.promises.access(qrCodeFilePath, fs.constants.F_OK)
 
@@ -668,8 +647,6 @@ export default class HPdf {
                     y: startNotaY,
                     width: widthNota,
                     height: heightNota,
-                    // borderColor: rgb(0, 0, 0),
-                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
@@ -689,8 +666,6 @@ export default class HPdf {
                     y: startNotaY,
                     width: widthNota,
                     height: heightNota,
-                    // borderColor: rgb(0, 0, 0),
-                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
@@ -711,8 +686,6 @@ export default class HPdf {
                     y: startNotaY,
                     width: widthNota,
                     height: heightNota,
-                    // borderColor: rgb(0, 0, 0),
-                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
@@ -733,8 +706,6 @@ export default class HPdf {
                     y: startNotaY,
                     width: widthNota,
                     height: heightNota,
-                    // borderColor: rgb(0, 0, 0),
-                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
@@ -755,8 +726,6 @@ export default class HPdf {
                     y: startNotaY,
                     width: widthNota,
                     height: heightNota,
-                    // borderColor: rgb(0, 0, 0),
-                    // borderWidth: 1,
                     color: rgb(1, 1, 1),
                 });
 
@@ -786,6 +755,7 @@ export default class HPdf {
             try {
                 await fs.promises.access(outputDirQRCode, fs.constants.F_OK)
             } catch (err) {
+
                 // Si el directorio no existe, se crea
                 await fs.promises.mkdir(outputDirQRCode, { recursive: true })
             }
@@ -837,19 +807,4 @@ export default class HPdf {
 
         return lines;
     }
-
-    // static validateFirma(template: string, tieneFirma: boolean): string {
-    //     if (tieneFirma) return template
-
-    //     const parts = template.split("/")
-    //     const nombreArchivo = parts.pop(); // Extrae el nombre del archivo
-
-    //     if (!nombreArchivo) {
-    //         throw new Error("Nombre de archivo no encontrado en la ruta de la plantilla")
-    //     }
-
-    //     const nuevoNombre = nombreArchivo.replace(/\.pdf$/, '_sin_firma.pdf')
-
-    //     return [...parts, nuevoNombre].join('/')
-    // }
 }

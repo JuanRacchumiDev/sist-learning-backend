@@ -16,8 +16,6 @@ class DocumentoRepository {
             // Verificando si existe una persona
             const responsePersona = await PersonaService.getPersonaPorIdTipoDocAndNumDoc(idTipoDocumento, numeroDocumento)
 
-            // console.log({ responsePersona })
-
             const getTipoDocumento = await TipoDocumentoService.getTipoPorId(idTipoDocumento);
 
             const dataTipoDocumento = getTipoDocumento.data as ITipoDocumento
@@ -32,18 +30,12 @@ class DocumentoRepository {
                     ? `${API_DNI}${numeroDocumento}`
                     : `${API_CEE}${numeroDocumento}`
 
-                // console.log({ urlApiDoc })
-
                 // Determina el ambiente
                 const env = process.env.NODE_ENV || 'development'
-
-                // console.log({ env })
 
                 dotenv.config({ path: `.env.${env}` })
 
                 const token = process.env.TOKEN_API_DOCS
-
-                // console.log({ token })
 
                 const response = await axios.get(`${urlApiDoc}`, {
                     headers: {
@@ -116,7 +108,6 @@ class DocumentoRepository {
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            // console.log('errorMessage getInfo API', errorMessage)
 
             if (errorMessage === 'Request failed with status code 404') {
                 const message = `No se encontró información con el número de documento: ${numeroDocumento}`

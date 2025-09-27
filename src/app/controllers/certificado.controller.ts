@@ -136,6 +136,7 @@ class CertificadoController {
                 if (err) {
                     // Aquí podrías manejar el error de la descarga si el archivo no se encuentra
                     console.error(err);
+
                     // Si la descarga falla, envía un error.
                     // Es importante que esto sea una respuesta de fallback
                     res.status(500).json({

@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import PlantillaController from '../controllers/plantilla.controller'
 import { authToken } from '../middleware/authMiddleware'
-// import { upload } from '../../config/multer';
 
 const router = Router()
 

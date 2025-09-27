@@ -24,5 +24,4 @@ protectedRouter.patch('/:id', authToken, CertificadoController.updateCertificado
 protectedRouter.patch('/cambiar-estado/:id', authToken, CertificadoController.updateEstado)
 protectedRouter.delete('/:id', authToken, CertificadoController.deleteCertificado)
 
-// export default router
 export { publicRouter, protectedRouter };

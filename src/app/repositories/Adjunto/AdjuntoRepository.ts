@@ -123,8 +123,6 @@ class AdjuntoRepository {
 
             if (adjunto.filepath) {
                 try {
-                    // fileContent = await fs.readFile(adjunto.filepath)
-                    // adjunto.fil
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
                     return { result: false, error: errorMessage, status: 500 }

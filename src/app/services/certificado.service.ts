@@ -1,5 +1,6 @@
 import { ICertificado } from "../interfaces/Certificado/ICertificado"
 import CertificadoRepository from "../repositories/Certificado/CertificadoRepository"
+import CertificadoUploadRepository from "../repositories/CertificadoUpload/CertificadoUploadRepository"
 
 class CertificadoService {
     async getCertificados() {
@@ -15,7 +16,17 @@ class CertificadoService {
     }
 
     async getCertificadoPorCodigo(codigo: string) {
-        return await CertificadoRepository.getByCodigo(codigo)
+        const responseUpload = await CertificadoUploadRepository.getByCodigo(codigo)
+
+        const { result: resultUpload, data: dataUpload } = responseUpload
+
+        if (resultUpload && dataUpload) {
+            return responseUpload
+        }
+
+        const responseCreate = await CertificadoRepository.getByCodigo(codigo)
+
+        return responseCreate
     }
 
     async getCertificadoPorId(id: number) {

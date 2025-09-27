@@ -34,7 +34,6 @@ class EventoRepository {
         try {
             const offset = HPagination.getOffset(page, limit)
 
-            // Construir la cláusula `where` dinámicamente
             const whereConditions: any = {}
             if (typeof estado === 'boolean') {
                 whereConditions.estado = estado
@@ -160,11 +159,8 @@ class EventoRepository {
 
     async create(data: IEvento): Promise<EventoResponse> {
         try {
-            // const plantillaCertificado = `plantillas/${data.plantilla_certificado}.pdf`
-
             const { titulo } = data
 
-            // data.plantilla_certificado = plantillaCertificado
             data.titulo_url = HString.convertToUrlString(titulo as String)
 
             const newEvento = await Evento.create(data as IEvento)
@@ -188,9 +184,6 @@ class EventoRepository {
             const { titulo } = data
 
             if (titulo) {
-                // const plantillaCertificado = `plantillas/${plantilla_certificado}.pdf`
-
-                // data.plantilla_certificado = plantillaCertificado
                 data.titulo_url = HString.convertToUrlString(titulo as String)
             }
 

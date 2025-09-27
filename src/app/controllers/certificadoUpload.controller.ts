@@ -30,10 +30,6 @@ class CertificadoUploadController {
                 path,
             } = file
 
-            // console.log({ body })
-
-            // console.log({ file })
-
             const fileData: ICertificadoUpload = {
                 id_alumno,
                 id_evento,
@@ -48,7 +44,6 @@ class CertificadoUploadController {
             const result = await CertificadoUploadService.upload(fileData)
             res.status(result.status || 201).json(result)
         } catch (error) {
-            // next(error)
             console.error('Error inesperado:', error);
             res.status(500).send(error)
         }
