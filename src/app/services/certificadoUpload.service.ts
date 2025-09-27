@@ -39,6 +39,8 @@ class CertificadoUploadService {
                 id_evento as number
             )
 
+            console.log({ certificadoExistingResponse })
+
             const {
                 result: resultCertificadoExisting,
                 data: dataCertificadoExisting
@@ -48,13 +50,17 @@ class CertificadoUploadService {
 
                 const certificadoExisting = dataCertificadoExisting as ICertificadoUpload
 
+                console.log({ certificadoExisting })
+
                 const { id, file_path, codigo_qr } = certificadoExisting
 
                 if (file_path && await fs.pathExists(file_path)) {
+                    console.log('archivo eliminado')
                     await fs.remove(file_path);
                 }
 
                 if (codigo_qr && await fs.pathExists(codigo_qr)) {
+                    console.log('qr eliminado')
                     await fs.remove(codigo_qr);
                 }
 
@@ -134,11 +140,11 @@ class CertificadoUploadService {
 
             // Define la posición y tamaño del QR. DEBES AJUSTAR ESTOS VALORES
             // para que coincidan con la plantilla de tu certificado.
-            const qrDimensions = qrImage.scale(2.54)
+            const qrDimensions = qrImage.scale(2.56)
 
-            const qrX = secondPage.getWidth() * 0.41
+            const qrX = secondPage.getWidth() * 0.408
 
-            const qrY = secondPage.getHeight() * 0.76
+            const qrY = secondPage.getHeight() * 0.77
 
             const qrFilename: string = `qrcode_${sanitizedAlumno}.png`
 
