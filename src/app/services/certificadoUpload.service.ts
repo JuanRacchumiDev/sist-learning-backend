@@ -39,7 +39,7 @@ class CertificadoUploadService {
                 id_evento as number
             )
 
-            console.log({ certificadoExistingResponse })
+            // console.log({ certificadoExistingResponse })
 
             const {
                 result: resultCertificadoExisting,
@@ -50,17 +50,17 @@ class CertificadoUploadService {
 
                 const certificadoExisting = dataCertificadoExisting as ICertificadoUpload
 
-                console.log({ certificadoExisting })
+                // console.log({ certificadoExisting })
 
                 const { id, file_path, codigo_qr } = certificadoExisting
 
                 if (file_path && await fs.pathExists(file_path)) {
-                    console.log('archivo eliminado')
+                    // console.log('archivo eliminado')
                     await fs.remove(file_path);
                 }
 
                 if (codigo_qr && await fs.pathExists(codigo_qr)) {
-                    console.log('qr eliminado')
+                    // console.log('qr eliminado')
                     await fs.remove(codigo_qr);
                 }
 

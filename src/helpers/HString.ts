@@ -52,4 +52,16 @@ export default class HString {
         const nombreCapitalized = partsMayusculas.join(' ')
         return nombreCapitalized
     }
+
+    static completarConHoras(texto: string): string {
+        // limpiamos el texto y convertimos a minúscula
+        const textCleaned = texto.trim().toLowerCase()
+
+        // Verificamos si la cadena incluye 'horas'
+        if (textCleaned.includes(' horas')) {
+            return textCleaned
+        } else {
+            return `${textCleaned.trim()} horas`
+        }
+    }
 }
