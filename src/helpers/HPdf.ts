@@ -240,6 +240,8 @@ export default class HPdf {
 
             // console.log({ pageWidth })
 
+            console.log({ pathPlantilla })
+
             switch (pathPlantilla) {
                 case "plantillas/plantilla_d.pdf":
 
@@ -584,8 +586,9 @@ export default class HPdf {
                     // Configurar el texto del título del evento
                     fontSizeForTituloEvento = 26;
 
-                    linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth, customFontKuenstlerBold, fontSizeForTituloEvento);
+                    linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth - 80, customFontKuenstlerBold, fontSizeForTituloEvento);
 
+                    // console.log({ tituloEvento })
                     // console.log({ linesTituloEvento })
 
                     if (linesTituloEvento.length === 1) {
@@ -598,24 +601,22 @@ export default class HPdf {
                         y -= 80
                     }
 
-                    // console.log({ y })
-
-                    // console.log({ fontSizeForTituloEvento })
-
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
 
                     // Dibujar el nombre del evento centrado
                     for (let i = 0; i < linesTituloEvento.length; i++) {
+                        const getItemTitulo = linesTituloEvento[i]
+                        console.log({ getItemTitulo })
                         // lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
 
                         // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
                         // nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100;
-                        lineWidthTituloEvento = customFontKuenstlerBold.widthOfTextAtSize(linesTituloEvento[i], fontSizeForTituloEvento);
+                        lineWidthTituloEvento = customFontKuenstlerBold.widthOfTextAtSize(getItemTitulo, fontSizeForTituloEvento);
 
                         tituloEventoPositionX = (pageWidth - lineWidthTituloEvento) - 230;
 
-                        pagina.drawText(linesTituloEvento[i], {
+                        pagina.drawText(getItemTitulo, {
                             x: tituloEventoPositionX,
                             y: y - i * lineHeightTituloEvento,
                             size: fontSizeForTituloEvento,
@@ -624,36 +625,18 @@ export default class HPdf {
                         });
                     }
 
-                    // tituloEventoPositionX = ((pageWidth - lineWidthTituloEvento) / 2) - 60
-
-                    // if (linesNombreAlumno.length === 1) {
-                    //     y -= 70
-                    // } else {
-                    //     y -= 78
-                    // }
-
-                    // pagina.drawText(tituloEvento, {
-                    //     x: tituloEventoPositionX,
-                    //     y,
-                    //     size: fontSizeForTituloEvento,
-                    //     font: customFontBalooBold,
-                    //     color: rgb(0 / 255, 32 / 255, 58 / 255),
-                    // });
-
                     fontSizeForFechaEvento = 22;
 
                     maxWidth += 60
 
-                    // console.log({ maxWidth })
-
-                    // console.log({ fontSizeForFechaEvento })
-
-                    // console.log({ textoFechasEvento })
-
                     // Dividir el título del evento si es necesario
                     linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
 
-                    y -= 120
+                    if (linesTituloEvento.length > 1) {
+                        y -= 130
+                    } else {
+                        y -= 120
+                    }
 
                     if (linesFechasEvento.length > 1) {
                         y += 20
@@ -1105,6 +1088,7 @@ export default class HPdf {
 
     static splitTextIntoLines(text: string, maxWidth: number, font: any, fontSize: number) {
         const words = text.split(' '); // Dividir el texto por palabras
+        // console.log({ words })
         let lines: string[] = [];
         let currentLine = '';
 
