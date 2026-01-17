@@ -33,7 +33,8 @@ export default class HDate {
 
         const formatterDate = formatter.format(date)
 
-        return formatterDate.replace('de ', 'del ');
+        return formatterDate
+        // return formatterDate.replace('de ', 'del ');
 
         // const meses = [
         //     "Enero",
