@@ -584,7 +584,7 @@ export default class HPdf {
                     }
 
                     // Configurar el texto del título del evento
-                    fontSizeForTituloEvento = 26;
+                    fontSizeForTituloEvento = 28;
 
                     linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth - 80, customFontKuenstlerBold, fontSizeForTituloEvento);
 
@@ -633,9 +633,9 @@ export default class HPdf {
                     linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
 
                     if (linesTituloEvento.length > 1) {
-                        y -= 130
+                        y -= 140
                     } else {
-                        y -= 120
+                        y -= 130
                     }
 
                     if (linesFechasEvento.length > 1) {
@@ -644,6 +644,133 @@ export default class HPdf {
                     }
 
                     // console.log({ linesFechasEvento })
+
+                    for (let i = 0; i < linesFechasEvento.length; i++) {
+                        lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(linesFechasEvento[i], fontSizeForFechaEvento);
+
+                        // tituloEventoPositionX = ((pageWidth - lineWidthTituloEvento) / 2) - 20;  // Centrado horizontal
+                        fechaEventoPositionX = 310
+
+                        // Dibujar el título del evento centrado
+                        pagina.drawText(linesFechasEvento[i], {
+                            x: fechaEventoPositionX,
+                            y: y - i * lineHeightTituloEvento,
+                            size: fontSizeForFechaEvento,
+                            font: customFontBalooMedium,
+                            color: rgb(222 / 255, 148 / 255, 40 / 255),
+                        });
+                    }
+                    break
+                case "plantillas/certificado_Diploma_de_Especializacion_Tacna.pdf":
+                    // Configurar el texto del nombre del alumno
+
+                    y = 340;  // Posición Y
+
+                    fontSizeForNombreAlumno = 38
+
+                    maxWidth = 440; // Ancho máximo disponible para el texto
+
+                    // Dividir el nombre del alumno en líneas si excede el ancho máximo
+                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForNombreAlumno);
+
+                    // console.log({ linesNombreAlumno })
+
+                    if (linesNombreAlumno.length === 1) {
+                        fontSizeForNombreAlumno = 50
+                    } else {
+                        y = 350
+                    }
+
+                    console.log('---- posición y inicial ----')
+                    console.log({ y })
+
+                    console.log({ fontSizeForNombreAlumno })
+
+                    lineHeightNombreAlumno = 0.8 * fontSizeForNombreAlumno;
+
+                    // Dibujar el nombre del alumno centrado
+                    for (let i = 0; i < linesNombreAlumno.length; i++) {
+                        lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
+
+                        // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
+                        nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120;
+
+                        pagina.drawText(linesNombreAlumno[i], {
+                            x: nombreAlumnoPositionX,
+                            y: y - i * lineHeightNombreAlumno,
+                            size: fontSizeForNombreAlumno,
+                            font: customFontKuenstlerBold,
+                            color: rgb(0, 0, 0),
+                        });
+                    }
+
+                    // Configurar el texto del título del evento
+                    fontSizeForTituloEvento = 28;
+
+                    linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth - 100, customFontKuenstlerBold, fontSizeForTituloEvento);
+                    console.log({ linesTituloEvento })
+
+                    // console.log({ tituloEvento })
+                    // console.log({ linesTituloEvento })
+
+                    if (linesTituloEvento.length === 1) {
+                        fontSizeForTituloEvento = 30
+                    }
+
+                    if (linesTituloEvento.length > 1) {
+                        y -= 70
+                    } else {
+                        y -= 80
+                    }
+
+                    // Distancia entre líneas para el nombre del evento
+                    lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
+
+                    // Dibujar el nombre del evento centrado
+                    for (let i = 0; i < linesTituloEvento.length; i++) {
+                        const getItemTitulo = linesTituloEvento[i]
+                        console.log({ getItemTitulo })
+                        // lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
+
+                        // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
+                        // nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100;
+                        lineWidthTituloEvento = customFontKuenstlerBold.widthOfTextAtSize(getItemTitulo, fontSizeForTituloEvento);
+
+                        tituloEventoPositionX = (pageWidth - lineWidthTituloEvento) - 230;
+
+                        pagina.drawText(getItemTitulo, {
+                            x: tituloEventoPositionX,
+                            y: y - i * lineHeightTituloEvento,
+                            size: fontSizeForTituloEvento,
+                            font: customFontBalooBold,
+                            color: rgb(0 / 255, 32 / 255, 58 / 255)
+                        });
+                    }
+
+                    fontSizeForFechaEvento = 22;
+
+                    maxWidth += 60
+
+                    // Dividir el título del evento si es necesario
+                    linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
+
+                    console.log({ linesFechasEvento })
+
+                    if (linesTituloEvento.length > 1) {
+                        console.log('---- a ----')
+                        y -= 140
+                    } else {
+                        console.log('---- b ----')
+                        y -= 130
+                    }
+
+                    console.log('---- posición y linesTituloEvento ----')
+                    console.log({ y })
+
+                    if (linesFechasEvento.length > 1) {
+                        y += 20
+                        fontSizeForFechaEvento = 20
+                    }
 
                     for (let i = 0; i < linesFechasEvento.length; i++) {
                         lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(linesFechasEvento[i], fontSizeForFechaEvento);
