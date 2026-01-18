@@ -546,33 +546,45 @@ export default class HPdf {
 
                     y = 340;  // Posición Y
 
-                    fontSizeForNombreAlumno = 38
+                    fontSizeForNombreAlumno = 36
 
                     maxWidth = 440; // Ancho máximo disponible para el texto
 
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
-                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForNombreAlumno);
+                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth + 100, customFontKuenstlerBold, fontSizeForNombreAlumno);
 
-                    // console.log({ linesNombreAlumno })
+                    console.log({ linesNombreAlumno })
 
                     if (linesNombreAlumno.length === 1) {
-                        fontSizeForNombreAlumno = 50
+                        fontSizeForNombreAlumno = 44
                     } else {
-                        y = 350
+                        y = 360
                     }
 
-                    // console.log({ y })
+                    console.log({ y })
 
-                    // console.log({ fontSizeForNombreAlumno })
+                    console.log({ fontSizeForNombreAlumno })
 
-                    lineHeightNombreAlumno = 0.8 * fontSizeForNombreAlumno;
+                    lineHeightNombreAlumno = 0.9 * fontSizeForNombreAlumno;
+
+                    console.log({ lineHeightNombreAlumno })
 
                     // Dibujar el nombre del alumno centrado
                     for (let i = 0; i < linesNombreAlumno.length; i++) {
                         lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
 
+                        let nombreAlumnoPositionX = 0
+
+                        if (linesNombreAlumno.length > 1) {
+                            nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120
+                        } else {
+                            nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100
+                        }
+
                         // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
-                        nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120;
+                        // const nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100;
+
+                        console.log({ nombreAlumnoPositionX })
 
                         pagina.drawText(linesNombreAlumno[i], {
                             x: nombreAlumnoPositionX,
@@ -588,18 +600,23 @@ export default class HPdf {
 
                     linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth - 80, customFontKuenstlerBold, fontSizeForTituloEvento);
 
-                    // console.log({ tituloEvento })
-                    // console.log({ linesTituloEvento })
-
                     if (linesTituloEvento.length === 1) {
                         fontSizeForTituloEvento = 30
                     }
 
-                    if (linesTituloEvento.length > 1) {
-                        y -= 70
+                    if (linesNombreAlumno.length > 1) {
+                        console.log('aa')
+                        // y -= 70
+                        y -= 90
                     } else {
+                        console.log('bb')
                         y -= 80
+                        // y -= 90
                     }
+
+                    console.log({ tituloEvento })
+                    console.log({ linesTituloEvento })
+                    console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
@@ -632,9 +649,13 @@ export default class HPdf {
                     // Dividir el título del evento si es necesario
                     linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
 
+                    console.log({ linesFechasEvento })
+
                     if (linesTituloEvento.length > 1) {
+                        console.log('cc')
                         y -= 140
                     } else {
+                        console.log('dd')
                         y -= 130
                     }
 
@@ -666,19 +687,19 @@ export default class HPdf {
 
                     y = 340;  // Posición Y
 
-                    fontSizeForNombreAlumno = 38
+                    fontSizeForNombreAlumno = 36
 
                     maxWidth = 440; // Ancho máximo disponible para el texto
 
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
-                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForNombreAlumno);
+                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth + 100, customFontKuenstlerBold, fontSizeForNombreAlumno);
 
                     // console.log({ linesNombreAlumno })
 
                     if (linesNombreAlumno.length === 1) {
-                        fontSizeForNombreAlumno = 50
+                        fontSizeForNombreAlumno = 44
                     } else {
-                        y = 350
+                        y = 360
                     }
 
                     console.log('---- posición y inicial ----')
@@ -686,14 +707,22 @@ export default class HPdf {
 
                     console.log({ fontSizeForNombreAlumno })
 
-                    lineHeightNombreAlumno = 0.8 * fontSizeForNombreAlumno;
+                    lineHeightNombreAlumno = 0.9 * fontSizeForNombreAlumno;
 
                     // Dibujar el nombre del alumno centrado
                     for (let i = 0; i < linesNombreAlumno.length; i++) {
                         lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
 
+                        let nombreAlumnoPositionX = 0
+
+                        if (linesNombreAlumno.length > 1) {
+                            nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120
+                        } else {
+                            nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100
+                        }
+
                         // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
-                        nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120;
+                        // const nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120;
 
                         pagina.drawText(linesNombreAlumno[i], {
                             x: nombreAlumnoPositionX,
@@ -717,11 +746,19 @@ export default class HPdf {
                         fontSizeForTituloEvento = 30
                     }
 
-                    if (linesTituloEvento.length > 1) {
-                        y -= 70
+                    if (linesNombreAlumno.length > 1) {
+                        console.log('aa')
+                        // y -= 70
+                        y -= 90
                     } else {
+                        console.log('bb')
                         y -= 80
+                        // y -= 90
                     }
+
+                    console.log({ tituloEvento })
+                    console.log({ linesTituloEvento })
+                    console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
