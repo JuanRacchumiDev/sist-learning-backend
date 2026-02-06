@@ -291,8 +291,8 @@ class CertificadoRepository {
 
     async create(data: ICertificado): Promise<CertificadoResponse> {
         try {
-            console.log('---- payload certificado ----')
-            console.log({ data })
+            // console.log('---- payload certificado ----')
+            // console.log({ data })
 
             const { id_alumno, id_evento, nombre_impresion } = data
 

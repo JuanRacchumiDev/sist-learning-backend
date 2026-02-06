@@ -80,6 +80,8 @@ export default class HPdf {
             // Obteniendo respuesta de la plantilla
             const responsePlantilla = await PlantillaRepository.getById(idPlantilla)
 
+            console.log({ responsePlantilla })
+
             const {
                 result: resultPlantilla,
                 data: dataPlantilla,
@@ -95,6 +97,8 @@ export default class HPdf {
 
             // Obteniendo ruta absoluta de la plantilla
             const pathAbsoluteTemplate: string = path.resolve(__dirname, `../../public/pdf/${pathPlantilla}`)
+
+            console.log({ pathAbsoluteTemplate })
 
             // Obteniendo ruta absoluta de las fuentes
             const pathFontKuenstler: string = path.resolve(__dirname, '../../public/fonts/KUNSTLER.TTF')
@@ -144,6 +148,12 @@ export default class HPdf {
                 duracion
             } = evento
 
+            console.log({ fecha_inicio })
+
+            console.log({ fecha_fin })
+
+            console.log({ duracion })
+
             // Definiendo el detalle de la fecha de eventos
             if (fecha_inicio && fecha_fin && duracion) {
                 const fechaInicioStr = HDate.convertStringDateToString(fecha_inicio)
@@ -156,6 +166,8 @@ export default class HPdf {
 
                 textoFechasEvento += `, con una duración de ${detalleDuracion}`
             }
+
+            console.log({ textoFechasEvento })
 
             const { nombre_url } = tipoEvento as ITipoEvento
 
@@ -249,6 +261,9 @@ export default class HPdf {
                     fontSizeForNombreAlumno = 48;
 
                     y = 345;  // Posición Y
+
+                    console.log({ y })
+
                     maxWidth = 720; // Ancho máximo disponible para el texto
 
                     // Distancia entre líneas para el nombre del alumno
@@ -284,11 +299,15 @@ export default class HPdf {
 
                     y -= 90; // Ajustar la posición Y para el siguiente texto
 
+                    console.log({ y })
+
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
 
                     // Dividir el título del evento si es necesario
                     linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth, customFontBalooBold, fontSizeForTituloEvento);
+
+                    console.log({ linesTituloEvento })
 
                     for (let i = 0; i < linesTituloEvento.length; i++) {
                         lineWidthTituloEvento = customFontBalooBold.widthOfTextAtSize(linesTituloEvento[i], fontSizeForTituloEvento);
@@ -308,14 +327,19 @@ export default class HPdf {
                     // Configurar el texto de la fecha del evento
                     fontSizeForFechaEvento = 24;
 
-                    y -= 60
+                    y -= 50
+                    console.log({ y })
 
                     for (let i = 0; i < fechasEvento.length; i++) {
+                        let detailTextoFecha = fechasEvento[i]
+
+                        console.log({ detailTextoFecha })
+
                         lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(fechasEvento[i], fontSizeForFechaEvento);
 
                         fechaEventoPositionX = (pageWidth - lineWidthFechaEvento) / 2;
 
-                        pagina.drawText(fechasEvento[i], {
+                        pagina.drawText(detailTextoFecha, {
                             x: fechaEventoPositionX,
                             y: y - i * lineHeightTituloEvento, // Ajustar la posición vertical para cada línea
                             size: fontSizeForFechaEvento,
@@ -454,7 +478,13 @@ export default class HPdf {
 
                     maxWidth = 520
 
-                    y -= 72; // Ajustar la posición Y para el siguiente texto
+                    if (fecha_inicio === null && fecha_fin === null) {
+                        y -= 90
+                    } else {
+                        y -= 72;
+                    }
+
+                    console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.9 * fontSizeForTituloEvento;
@@ -477,27 +507,36 @@ export default class HPdf {
                         });
                     }
 
-                    // Configurar el texto de la fecha del evento
-                    fontSizeForFechaEvento = 24;
+                    if (fecha_inicio !== null && fecha_fin !== null) {
+                        // Configurar el texto de la fecha del evento
+                        fontSizeForFechaEvento = 24;
 
-                    y -= 58
+                        if (linesTituloEvento.length === 1) {
+                            y -= 40
+                        } else {
+                            y -= 58
 
-                    // Dividir el título del evento si es necesario
-                    linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
+                            lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
+                        }
 
-                    for (let i = 0; i < linesFechasEvento.length; i++) {
-                        lineWidthTituloEvento = customFontBalooMedium.widthOfTextAtSize(linesFechasEvento[i], fontSizeForFechaEvento);
+                        // Dividir el título del evento si es necesario
+                        linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
 
-                        fechaEventoPositionX = (pageWidth - lineWidthTituloEvento) / 2;  // Centrado horizontal
+                        for (let i = 0; i < linesFechasEvento.length; i++) {
+                            lineWidthTituloEvento = customFontBalooMedium.widthOfTextAtSize(linesFechasEvento[i], fontSizeForFechaEvento);
 
-                        // Dibujar el título del evento centrado
-                        pagina.drawText(linesFechasEvento[i], {
-                            x: fechaEventoPositionX,
-                            y: y - i * lineHeightTituloEvento,
-                            size: fontSizeForFechaEvento,
-                            font: customFontBalooMedium,
-                            color: rgb(222 / 255, 148 / 255, 40 / 255),
-                        });
+                            fechaEventoPositionX = (pageWidth - lineWidthTituloEvento) / 2;  // Centrado horizontal
+
+                            // Dibujar el título del evento centrado
+                            pagina.drawText(linesFechasEvento[i], {
+                                x: fechaEventoPositionX,
+                                y: y - i * lineHeightTituloEvento,
+                                size: fontSizeForFechaEvento,
+                                font: customFontBalooMedium,
+                                color: rgb(222 / 255, 148 / 255, 40 / 255),
+                            });
+                        }
+
                     }
 
                     // for (let i = 0; i < fechasEvento.length; i++) {
