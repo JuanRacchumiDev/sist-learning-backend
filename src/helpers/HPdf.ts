@@ -847,7 +847,7 @@ export default class HPdf {
                     // console.log({ nombreImpresion })
                     // console.log({ anchoNombreImpresion })
 
-                    fontSizeForNombreAlumno = 48
+                    fontSizeForNombreAlumno = 46
 
                     if (anchoNombreImpresion <= 33) {
                         fontSizeForNombreAlumno = 54
