@@ -847,10 +847,10 @@ export default class HPdf {
                     // console.log({ nombreImpresion })
                     // console.log({ anchoNombreImpresion })
 
-                    fontSizeForNombreAlumno = 44
+                    fontSizeForNombreAlumno = 50
 
                     if (anchoNombreImpresion <= 33) {
-                        fontSizeForNombreAlumno = 46
+                        fontSizeForNombreAlumno = 54
                     }
 
                     maxWidth = 600; // Ancho máximo disponible para el texto
