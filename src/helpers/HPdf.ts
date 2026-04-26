@@ -847,16 +847,16 @@ export default class HPdf {
                     // console.log({ nombreImpresion })
                     // console.log({ anchoNombreImpresion })
 
-                    fontSizeForNombreAlumno = 40
+                    fontSizeForNombreAlumno = 42
 
                     if (anchoNombreImpresion <= 33) {
-                        fontSizeForNombreAlumno = 42
+                        fontSizeForNombreAlumno = 44
                     }
 
                     maxWidth = 600; // Ancho máximo disponible para el texto
 
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
-                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontBroughton, fontSizeForNombreAlumno);
+                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontKuenstlerBold, fontSizeForNombreAlumno);
 
                     // console.log({ linesNombreAlumno })
 
@@ -875,7 +875,7 @@ export default class HPdf {
 
                     // Dibujar el nombre del alumno centrado
                     for (let i = 0; i < linesNombreAlumno.length; i++) {
-                        lineWidthNombreAlumno = customFontBroughton.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
+                        lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
                         // console.log({ lineWidthNombreAlumno })
 
                         let nombreAlumnoPositionX = 0
@@ -897,8 +897,8 @@ export default class HPdf {
                             x: nombreAlumnoPositionX,
                             y: y - i * lineHeightNombreAlumno,
                             size: fontSizeForNombreAlumno,
-                            font: customFontBroughton,
-                            color: rgb(29 / 255, 44 / 255, 91 / 255)
+                            font: customFontKuenstlerBold,
+                            color: rgb(0 / 255, 0 / 255, 0 / 255)
                         });
                     }
                     break
