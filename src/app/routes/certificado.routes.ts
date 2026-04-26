@@ -7,9 +7,10 @@ const protectedRouter = Router();
 
 publicRouter.get('/:id', CertificadoController.getCertificadoPorId)
 publicRouter.get('/codigo/:codigo', CertificadoController.getCertificadoPorCodigo)
+publicRouter.get('/numero-documento/:numeroDocumento', CertificadoController.getCertificadosPorNumeroDocumento)
 publicRouter.get('/download/:id', CertificadoController.downloadPorId)
-publicRouter.post('/load-data', CertificadoController.loadData)
 publicRouter.get('/download/name/:filename', CertificadoController.downloadPorFilename)
+publicRouter.post('/load-data', CertificadoController.loadData)
 
 protectedRouter.get('/busqueda/', authToken, CertificadoController.getCertificadoPorAlumnoPorEvento)
 protectedRouter.get('/paginate', authToken, CertificadoController.getCertificadosPaginated)

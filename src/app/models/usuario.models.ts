@@ -24,6 +24,11 @@ export class Usuario extends Model<IUsuario, UsuarioAttributes> implements IUsua
     public sistema?: boolean | undefined
     public estado?: boolean | undefined
 
+    public readonly perfil?: Perfil;
+    public readonly trabajador?: Trabajador;
+    public readonly instructor?: Instructor;
+    public readonly alumno?: Alumno;
+
     // Timestamps
     public readonly createdAt!: Date
     public readonly updatedAt!: Date

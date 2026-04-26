@@ -34,6 +34,10 @@ class UsuarioService {
         return await UsuarioRepository.updateEstado(id, estado)
     }
 
+    async resetPassword(numeroDocumento: string) {
+        return await UsuarioRepository.resetPassword(numeroDocumento)
+    }
+
     async deleteUsuario(id: number) {
         return await UsuarioRepository.delete(id)
     }

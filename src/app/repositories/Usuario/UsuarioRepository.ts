@@ -11,7 +11,7 @@ import { INSTRUCTOR_INCLUDE } from "../../../includes/InstructorInclude";
 import { ALUMNO_INCLUDE } from "../../../includes/AlumnoInclude";
 import { PERFIL_INCLUDE } from "../../../includes/PerfilInclude";
 import HPagination from "../../../helpers/HPagination";
-import { Op } from "sequelize";
+import { Op, where, fn, col } from "sequelize";
 
 class UsuarioRepository {
     async getAll(): Promise<UsuarioResponse> {
@@ -48,9 +48,22 @@ class UsuarioRepository {
             }
 
             if (search) {
+                const searchLike = `%${search.toLowerCase()}%`
+
                 whereConditions[Op.or] = [
-                    { username: { [Op.like]: `%${search}%` } }
+                    where(fn('LOWER', col('Usuario.username')), { [Op.like]: searchLike }),
+                    where(fn('LOWER', col('Alumno.nombres')), { [Op.like]: searchLike }),
+                    where(fn('LOWER', col('Alumno.apellido_paterno')), { [Op.like]: searchLike }),
+                    where(fn('LOWER', col('Alumno.apellido_materno')), { [Op.like]: searchLike }),
+                    where(
+                        fn('LOWER', fn('CONCAT', col('Alumno.nombres'), ' ', col('Alumno.apellido_paterno'), ' ', col('Alumno.apellido_materno'))),
+                        { [Op.like]: searchLike }
+                    )
                 ]
+
+                // whereConditions[Op.or] = [
+                //     { username: { [Op.like]: `%${search}%` } }
+                // ]
             }
 
             const { count, rows } = await Usuario.findAndCountAll({
@@ -66,7 +79,8 @@ class UsuarioRepository {
                     ['id', 'DESC']
                 ],
                 limit,
-                offset
+                offset,
+                subQuery: false
             })
 
             const totalPages = Math.ceil(count / limit)
@@ -241,6 +255,46 @@ class UsuarioRepository {
             return { result: true, data: usuario as IUsuario, message: 'Usuario actualizado con éxito', status: 200 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async resetPassword(numeroDocumento: string): Promise<UsuarioResponse> {
+        try {
+            const usuario = await Usuario.findOne({
+                include: [
+                    {
+                        model: Alumno,
+                        as: 'alumno',
+                        where: { numero_documento: numeroDocumento },
+                        attributes: ['id', 'numero_documento']
+                    }
+                ]
+            })
+
+            if (!usuario) {
+                return {
+                    result: false,
+                    message: 'No existe usuario registrado',
+                    status: 200
+                }
+            }
+
+            const newPassword = numeroDocumento
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            await usuario.update({
+                password: hashedPassword
+            })
+
+            return {
+                result: true,
+                message: "Contraseña reseteada con éxito",
+                data: usuario as IUsuario,
+                status: 200
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
     }

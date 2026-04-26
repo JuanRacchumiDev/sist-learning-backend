@@ -12,6 +12,7 @@ router.patch('/:id', authToken, UsuarioController.updateUsuario)
 router.patch('/cambiar-estado/:id', authToken, UsuarioController.updateEstado)
 router.delete('/:id', authToken, UsuarioController.deleteUsuario)
 
+router.patch('/reset-password/:numeroDocumento', UsuarioController.resetPassword)
 router.post('/load-data-alumnos', UsuarioController.loadDataAlumnos)
 
 export default router

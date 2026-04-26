@@ -141,6 +141,24 @@ class UsuarioController {
         }
     }
 
+    async resetPassword(req: Request, res: Response) {
+        const { numeroDocumento } = req.params;
+
+        const response = await UsuarioService.resetPassword(numeroDocumento);
+
+        const { result, error } = response
+
+        if (result) {
+            res.status(200).json(response);
+        } else {
+            if (error) {
+                res.status(500).json(response);
+            } else {
+                res.status(200).json(response);
+            }
+        }
+    }
+
     async deleteUsuario(req: Request, res: Response) {
         const { id } = req.params;
 

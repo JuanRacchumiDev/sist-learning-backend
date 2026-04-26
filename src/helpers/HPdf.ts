@@ -80,7 +80,7 @@ export default class HPdf {
             // Obteniendo respuesta de la plantilla
             const responsePlantilla = await PlantillaRepository.getById(idPlantilla)
 
-            console.log({ responsePlantilla })
+            // console.log({ responsePlantilla })
 
             const {
                 result: resultPlantilla,
@@ -98,7 +98,7 @@ export default class HPdf {
             // Obteniendo ruta absoluta de la plantilla
             const pathAbsoluteTemplate: string = path.resolve(__dirname, `../../public/pdf/${pathPlantilla}`)
 
-            console.log({ pathAbsoluteTemplate })
+            // console.log({ pathAbsoluteTemplate })
 
             // Obteniendo ruta absoluta de las fuentes
             const pathFontKuenstler: string = path.resolve(__dirname, '../../public/fonts/KUNSTLER.TTF')
@@ -108,6 +108,8 @@ export default class HPdf {
             const pathFontBalooBold: string = path.resolve(__dirname, '../../public/fonts/BalooChettan2-Bold.ttf')
 
             const pathFontBalooMedium: string = path.resolve(__dirname, '../../public/fonts/BalooChettan2-Medium.ttf')
+
+            const pathFontBroughton: string = path.resolve(__dirname, '../../public/fonts/Broughton.ttf')
 
             // Obteniendo ruta absoluta del logo
             const pathLogo: string = path.resolve(__dirname, '../../public/img/logo_transparente_small.png')
@@ -133,6 +135,10 @@ export default class HPdf {
                 return { result: false, message: `No existe fuente BalooChettan2-Medium.ttf` }
             }
 
+            if (!fs.existsSync(pathFontBroughton)) {
+                return { result: false, message: `No existe fuente Broughton.ttf` }
+            }
+
             // Validando si el logo existe
             if (!fs.existsSync(pathLogo)) {
                 return { result: false, message: `No existe el logo` }
@@ -148,11 +154,11 @@ export default class HPdf {
                 duracion
             } = evento
 
-            console.log({ fecha_inicio })
+            // console.log({ fecha_inicio })
 
-            console.log({ fecha_fin })
+            // console.log({ fecha_fin })
 
-            console.log({ duracion })
+            // console.log({ duracion })
 
             // Definiendo el detalle de la fecha de eventos
             if (fecha_inicio && fecha_fin && duracion) {
@@ -167,7 +173,7 @@ export default class HPdf {
                 textoFechasEvento += `, con una duración de ${detalleDuracion}`
             }
 
-            console.log({ textoFechasEvento })
+            // console.log({ textoFechasEvento })
 
             const { nombre_url } = tipoEvento as ITipoEvento
 
@@ -203,6 +209,10 @@ export default class HPdf {
 
             const outputPath: string = path.resolve(__dirname, `../../public/certificados/${sanitizedTitulo}/${filename}`)
 
+            // console.log({ filename })
+
+            // console.log({ outputPath })
+
             if (fecha_fin) {
                 const fechaFinal = toZonedTime(fecha_fin, TIMEZONES.LIMA)
 
@@ -217,6 +227,8 @@ export default class HPdf {
 
             // Verificando que el directorio de salida exista, sino se crea
             const outputDir: string = path.dirname(outputPath)
+
+            // console.log({ outputDir })
 
             if (!fs.existsSync(outputDir)) {
                 fs.mkdirSync(outputDir, { recursive: true })
@@ -244,6 +256,9 @@ export default class HPdf {
             const fontBalooMedium = fs.readFileSync(pathFontBalooMedium)
             const customFontBalooMedium = await pdfDoc.embedFont(fontBalooMedium)
 
+            const fontBroughton = fs.readFileSync(pathFontBroughton)
+            const customFontBroughton = await pdfDoc.embedFont(fontBroughton)
+
             // Obtener la primera página
             const pagina = pdfDoc.getPage(0)
 
@@ -252,7 +267,7 @@ export default class HPdf {
 
             // console.log({ pageWidth })
 
-            console.log({ pathPlantilla })
+            // console.log({ pathPlantilla })
 
             switch (pathPlantilla) {
                 case "plantillas/plantilla_d.pdf":
@@ -262,7 +277,7 @@ export default class HPdf {
 
                     y = 345;  // Posición Y
 
-                    console.log({ y })
+                    // console.log({ y })
 
                     maxWidth = 720; // Ancho máximo disponible para el texto
 
@@ -299,7 +314,7 @@ export default class HPdf {
 
                     y -= 90; // Ajustar la posición Y para el siguiente texto
 
-                    console.log({ y })
+                    // console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
@@ -307,7 +322,7 @@ export default class HPdf {
                     // Dividir el título del evento si es necesario
                     linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth, customFontBalooBold, fontSizeForTituloEvento);
 
-                    console.log({ linesTituloEvento })
+                    // console.log({ linesTituloEvento })
 
                     for (let i = 0; i < linesTituloEvento.length; i++) {
                         lineWidthTituloEvento = customFontBalooBold.widthOfTextAtSize(linesTituloEvento[i], fontSizeForTituloEvento);
@@ -328,12 +343,12 @@ export default class HPdf {
                     fontSizeForFechaEvento = 24;
 
                     y -= 50
-                    console.log({ y })
+                    // console.log({ y })
 
                     for (let i = 0; i < fechasEvento.length; i++) {
                         let detailTextoFecha = fechasEvento[i]
 
-                        console.log({ detailTextoFecha })
+                        // console.log({ detailTextoFecha })
 
                         lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(fechasEvento[i], fontSizeForFechaEvento);
 
@@ -484,7 +499,7 @@ export default class HPdf {
                         y -= 72;
                     }
 
-                    console.log({ y })
+                    // console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.9 * fontSizeForTituloEvento;
@@ -536,49 +551,7 @@ export default class HPdf {
                                 color: rgb(222 / 255, 148 / 255, 40 / 255),
                             });
                         }
-
                     }
-
-                    // for (let i = 0; i < fechasEvento.length; i++) {
-                    //     lineWidthFechaEvento = customFontBalooMedium.widthOfTextAtSize(fechasEvento[i], fontSizeForFechaEvento);
-
-                    //     fechaEventoPositionX = (pageWidth - lineWidthFechaEvento) / 2;
-
-                    //     pagina.drawText(fechasEvento[i], {
-                    //         x: fechaEventoPositionX,
-                    //         y: y - i * lineHeightEvento, // Ajustar la posición vertical para cada línea
-                    //         size: fontSizeForFechaEvento,
-                    //         font: customFontBalooMedium,
-                    //         color: rgb(222 / 255, 148 / 255, 40 / 255),
-                    //     });
-                    // }
-
-                    // Configurar el texto del título del evento
-                    // fontSizeForEvento = 30;
-
-                    // tituloEventoPositionX = ((pageWidth - lineWidthEvento) / 2) - 60
-
-                    // if (linesAlumno.length === 1) {
-                    //     y -= 70
-                    // } else {
-                    //     y -= 78
-                    // }
-
-                    // pagina.drawText(tituloEvento, {
-                    //     x: tituloEventoPositionX,
-                    //     y,
-                    //     size: fontSizeForEvento,
-                    //     font: customFontBalooBold,
-                    //     color: rgb(0 / 255, 32 / 255, 58 / 255),
-                    // });
-
-                    // pagina.drawText(textoFechasEvento, {
-                    //     x: tituloEventoPositionX,
-                    //     y: y - 50,
-                    //     size: fontSizeForEvento,
-                    //     font: customFontBalooBold,
-                    //     color: rgb(0 / 255, 32 / 255, 58 / 255)
-                    // })
                     break
                 case "plantillas/diploma_especializacion_edicion_completa.pdf":
                     // Configurar el texto del nombre del alumno
@@ -592,7 +565,7 @@ export default class HPdf {
                     // Dividir el nombre del alumno en líneas si excede el ancho máximo
                     linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth + 100, customFontKuenstlerBold, fontSizeForNombreAlumno);
 
-                    console.log({ linesNombreAlumno })
+                    // console.log({ linesNombreAlumno })
 
                     if (linesNombreAlumno.length === 1) {
                         fontSizeForNombreAlumno = 44
@@ -600,13 +573,13 @@ export default class HPdf {
                         y = 360
                     }
 
-                    console.log({ y })
+                    // console.log({ y })
 
-                    console.log({ fontSizeForNombreAlumno })
+                    // console.log({ fontSizeForNombreAlumno })
 
                     lineHeightNombreAlumno = 0.9 * fontSizeForNombreAlumno;
 
-                    console.log({ lineHeightNombreAlumno })
+                    // console.log({ lineHeightNombreAlumno })
 
                     // Dibujar el nombre del alumno centrado
                     for (let i = 0; i < linesNombreAlumno.length; i++) {
@@ -623,7 +596,7 @@ export default class HPdf {
                         // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
                         // const nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100;
 
-                        console.log({ nombreAlumnoPositionX })
+                        // console.log({ nombreAlumnoPositionX })
 
                         pagina.drawText(linesNombreAlumno[i], {
                             x: nombreAlumnoPositionX,
@@ -644,18 +617,18 @@ export default class HPdf {
                     }
 
                     if (linesNombreAlumno.length > 1) {
-                        console.log('aa')
+                        // console.log('aa')
                         // y -= 70
                         y -= 90
                     } else {
-                        console.log('bb')
+                        // console.log('bb')
                         y -= 80
                         // y -= 90
                     }
 
-                    console.log({ tituloEvento })
-                    console.log({ linesTituloEvento })
-                    console.log({ y })
+                    // console.log({ tituloEvento })
+                    // console.log({ linesTituloEvento })
+                    // console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
@@ -663,7 +636,7 @@ export default class HPdf {
                     // Dibujar el nombre del evento centrado
                     for (let i = 0; i < linesTituloEvento.length; i++) {
                         const getItemTitulo = linesTituloEvento[i]
-                        console.log({ getItemTitulo })
+                        // console.log({ getItemTitulo })
                         // lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
 
                         // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
@@ -688,13 +661,13 @@ export default class HPdf {
                     // Dividir el título del evento si es necesario
                     linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
 
-                    console.log({ linesFechasEvento })
+                    // console.log({ linesFechasEvento })
 
                     if (linesTituloEvento.length > 1) {
-                        console.log('cc')
+                        // console.log('cc')
                         y -= 140
                     } else {
-                        console.log('dd')
+                        // console.log('dd')
                         y -= 130
                     }
 
@@ -741,10 +714,10 @@ export default class HPdf {
                         y = 360
                     }
 
-                    console.log('---- posición y inicial ----')
-                    console.log({ y })
+                    // console.log('---- posición y inicial ----')
+                    // console.log({ y })
 
-                    console.log({ fontSizeForNombreAlumno })
+                    // console.log({ fontSizeForNombreAlumno })
 
                     lineHeightNombreAlumno = 0.9 * fontSizeForNombreAlumno;
 
@@ -776,7 +749,7 @@ export default class HPdf {
                     fontSizeForTituloEvento = 28;
 
                     linesTituloEvento = this.splitTextIntoLines(tituloEvento, maxWidth - 100, customFontKuenstlerBold, fontSizeForTituloEvento);
-                    console.log({ linesTituloEvento })
+                    // console.log({ linesTituloEvento })
 
                     // console.log({ tituloEvento })
                     // console.log({ linesTituloEvento })
@@ -786,18 +759,18 @@ export default class HPdf {
                     }
 
                     if (linesNombreAlumno.length > 1) {
-                        console.log('aa')
+                        // console.log('aa')
                         // y -= 70
                         y -= 90
                     } else {
-                        console.log('bb')
+                        // console.log('bb')
                         y -= 80
                         // y -= 90
                     }
 
-                    console.log({ tituloEvento })
-                    console.log({ linesTituloEvento })
-                    console.log({ y })
+                    // console.log({ tituloEvento })
+                    // console.log({ linesTituloEvento })
+                    // console.log({ y })
 
                     // Distancia entre líneas para el nombre del evento
                     lineHeightTituloEvento = 0.8 * fontSizeForTituloEvento;
@@ -805,7 +778,7 @@ export default class HPdf {
                     // Dibujar el nombre del evento centrado
                     for (let i = 0; i < linesTituloEvento.length; i++) {
                         const getItemTitulo = linesTituloEvento[i]
-                        console.log({ getItemTitulo })
+                        // console.log({ getItemTitulo })
                         // lineWidthNombreAlumno = customFontKuenstlerBold.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
 
                         // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
@@ -830,18 +803,18 @@ export default class HPdf {
                     // Dividir el título del evento si es necesario
                     linesFechasEvento = this.splitTextIntoLines(textoFechasEvento, maxWidth, customFontBalooBold, fontSizeForFechaEvento);
 
-                    console.log({ linesFechasEvento })
+                    // console.log({ linesFechasEvento })
 
                     if (linesTituloEvento.length > 1) {
-                        console.log('---- a ----')
+                        // console.log('---- a ----')
                         y -= 140
                     } else {
-                        console.log('---- b ----')
+                        // console.log('---- b ----')
                         y -= 130
                     }
 
-                    console.log('---- posición y linesTituloEvento ----')
-                    console.log({ y })
+                    // console.log('---- posición y linesTituloEvento ----')
+                    // console.log({ y })
 
                     if (linesFechasEvento.length > 1) {
                         y += 20
@@ -864,6 +837,71 @@ export default class HPdf {
                         });
                     }
                     break
+                case 'plantillas/certificado_participacion_con_firma.pdf':
+                case 'plantillas/certificado_participacion_sin_firma.pdf':
+                    // Configurar el texto del nombre del alumno
+
+                    y = 320;  // Posición Y
+
+                    const anchoNombreImpresion = nombreImpresion.length
+                    // console.log({ nombreImpresion })
+                    // console.log({ anchoNombreImpresion })
+
+                    fontSizeForNombreAlumno = 40
+
+                    if (anchoNombreImpresion <= 33) {
+                        fontSizeForNombreAlumno = 42
+                    }
+
+                    maxWidth = 600; // Ancho máximo disponible para el texto
+
+                    // Dividir el nombre del alumno en líneas si excede el ancho máximo
+                    linesNombreAlumno = this.splitTextIntoLines(nombreImpresion, maxWidth, customFontBroughton, fontSizeForNombreAlumno);
+
+                    // console.log({ linesNombreAlumno })
+
+                    if (linesNombreAlumno.length !== 1) {
+                        y = 340
+                    }
+
+                    // console.log('---- posición y inicial ----')
+                    // console.log({ y })
+
+                    // console.log({ fontSizeForNombreAlumno })
+
+                    lineHeightNombreAlumno = 0.9 * fontSizeForNombreAlumno;
+
+                    // console.log({ lineHeightNombreAlumno })
+
+                    // Dibujar el nombre del alumno centrado
+                    for (let i = 0; i < linesNombreAlumno.length; i++) {
+                        lineWidthNombreAlumno = customFontBroughton.widthOfTextAtSize(linesNombreAlumno[i], fontSizeForNombreAlumno);
+                        // console.log({ lineWidthNombreAlumno })
+
+                        let nombreAlumnoPositionX = 0
+
+                        if (linesNombreAlumno.length > 1) {
+                            // console.log('aa')
+                            nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120
+                        } else {
+                            // console.log('bb')
+                            nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 100
+                        }
+
+                        // console.log({ nombreAlumnoPositionX })
+
+                        // const nombrePositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 110;  // Centrado horizontal
+                        // const nombreAlumnoPositionX = ((pageWidth - lineWidthNombreAlumno) / 2) + 120;
+
+                        pagina.drawText(linesNombreAlumno[i], {
+                            x: nombreAlumnoPositionX,
+                            y: y - i * lineHeightNombreAlumno,
+                            size: fontSizeForNombreAlumno,
+                            font: customFontBroughton,
+                            color: rgb(29 / 255, 44 / 255, 91 / 255)
+                        });
+                    }
+                    break
             }
 
             // Crear nueva página para el logo, código QR y tabla
@@ -873,14 +911,22 @@ export default class HPdf {
 
             const newPage = pdfDoc.addPage([newPageWidth, newPageHeight]);
 
+            const heightPage = newPage.getHeight()
+            // console.log({ heightPage })
+
             // Crear un rectángulo para texto introductorio
             const startX = 20
 
-            const startY = newPage.getHeight() - 170
+            const startY = heightPage - 170
+            // console.log({ startY })
 
-            const cellWidth = (nombreTipoEvento !== 'diploma-de-especializacion') ? 390 : 270
+            const cellWidth = (nombreTipoEvento !== 'diploma-de-especializacion') ? 450 : 270
 
             const cellHeight = (nombreTipoEvento !== 'diploma-de-especializacion') ? 50 : 155
+
+            // console.log('---- página 2 ----')
+            // console.log({ cellWidth })
+            // console.log({ cellHeight })
 
             newPage.drawRectangle({
                 x: startX,
@@ -903,6 +949,8 @@ export default class HPdf {
                 texto += `por el Art. 25 de D.S. 070-2013-PCM y la Tercera Disposición `
                 texto += `Complementaria Final del D.S. 026-2016-PCM.`
             }
+
+            // console.log({ texto })
 
             newPage.drawText(texto, {
                 x: startX + 5,
@@ -927,13 +975,16 @@ export default class HPdf {
 
             const startTemarioX = (nombreTipoEvento !== 'diploma-de-especializacion') ? 20 : 300
             let startTemarioY = (nombreTipoEvento !== 'diploma-de-especializacion') ? 440 : (startY + 135)
-            const cellWidthTemario = (nombreTipoEvento !== 'diploma-de-especializacion') ? 350 : 300
+            const cellWidthTemario = (nombreTipoEvento !== 'diploma-de-especializacion') ? 450 : 300
             const cellHeightTemario = 20
+
+            // console.log({ startTemarioY })
+            // console.log({ cellWidthTemario })
 
             // Dibujar celda para el título del evento
             newPage.drawRectangle({
                 x: startTemarioX,
-                y: startTemarioY,
+                y: (startTemarioY + 40),
                 width: cellWidthTemario + 50,
                 height: cellHeightTemario,
                 color: rgb(1, 1, 1),
@@ -942,18 +993,19 @@ export default class HPdf {
             // Dibujar el título del evento en la celda
             newPage.drawText(tituloEvento, {
                 x: startTemarioX + 5,
-                y: startTemarioY + 5,
+                y: (startTemarioY + 45),
                 size: 14,
                 font: customFontBalooBold,
                 color: rgb(0 / 255, 32 / 255, 58 / 255)
             });
 
             startTemarioY = startTemarioY - 30
+            // console.log({ startTemarioY })
 
             // Dibujar celda para el título del temario
             newPage.drawRectangle({
                 x: startTemarioX,
-                y: startTemarioY,
+                y: startTemarioY + 40,
                 width: cellWidthTemario,
                 height: cellHeightTemario,
                 borderColor: rgb(0, 0, 0),
@@ -963,28 +1015,29 @@ export default class HPdf {
 
             newPage.drawText('Temario', {
                 x: startTemarioX + 5,
-                y: startTemarioY + 5,
+                y: startTemarioY + 45,
                 size: 12,
                 color: rgb(0, 0, 0),
             });
 
             // Ajustar la posición para los ítems del temario
-            let currentY = 0
+            // let currentY = 0
+            let currentY = startTemarioY + 35
 
             if (temarioEvento.length > 0) {
 
                 temarioEvento.forEach((item, index) => {
 
-                    if (index == 0) {
-                        currentY = startTemarioY - index * (cellHeightTemario + 3)
-                    }
+                    // if (index == 0) {
+                    //     currentY = startTemarioY - index * (cellHeightTemario + 3)
+                    // }
 
                     // Dividir cada ítem del temario
-                    const linesItemTemario = this.splitTextIntoLines(item as string, 210, customFontKuenstler, 12);
+                    const linesItemTemario = this.splitTextIntoLines(item as string, 260, customFontKuenstler, 12);
 
                     if (linesItemTemario.length > 0) {
                         for (let i = 0; i < linesItemTemario.length; i++) {
-                            currentY -= 18
+                            currentY -= 12
 
                             newPage.drawText(`${linesItemTemario[i]}`, {
                                 x: startTemarioX + 3,
@@ -1274,6 +1327,8 @@ export default class HPdf {
                 // Si el archivo no existe, lo generamos
                 await QRCode.toFile(qrOutputPath, dataUrlQR);
             }
+
+            // console.log('--- hasta aquí pasó ---')
 
             const dataResult = {
                 outputPath,

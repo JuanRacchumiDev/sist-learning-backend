@@ -1,7 +1,5 @@
 import { CertificadoResponse, CertificadoResponsePaginate, ICertificado, ICertificadoPaginate } from "../../interfaces/Certificado/ICertificado";
-import { Alumno } from "../../models/alumno.models";
 import { Certificado } from "../../models/certificado.models";
-import { Evento } from "../../models/evento.models";
 import fs from 'fs';
 import AlumnoService from '../../services/alumno.service';
 import EventoService from '../../services/evento.service';
@@ -39,14 +37,26 @@ class CertificadoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean, search?: string): Promise<CertificadoResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        estado?: boolean,
+        search?: string,
+        id_alumno?: number,
+        maxTotal?: number
+    ): Promise<CertificadoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
             const whereConditions: any = {}
+
             if (typeof estado === 'boolean') {
                 whereConditions.estado = estado
+            }
+
+            if (id_alumno) {
+                whereConditions.id_alumno = id_alumno
             }
 
             if (search) {
@@ -72,6 +82,7 @@ class CertificadoRepository {
                 offset
             })
 
+            const virtualCont = (search || !maxTotal) ? count : Math.min(count, maxTotal)
             const totalPages = Math.ceil(count / limit)
             const nextPage = HPagination.getNextPage(page, limit, count)
             const previousPage = HPagination.getPreviousPage(page)
@@ -80,7 +91,7 @@ class CertificadoRepository {
                 currentPage: page,
                 limit,
                 totalPages,
-                totalItems: count,
+                totalItems: virtualCont,
                 nextPage,
                 previousPage
             }
@@ -190,6 +201,51 @@ class CertificadoRepository {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getByNumeroDocumento(numeroDocumento: string): Promise<CertificadoResponse> {
+        try {
+            const certificados = await Certificado.findAll({
+                attributes: CERTIFICADO_ATTRIBUTES,
+                include: [
+                    {
+                        ...ALUMNO_INCLUDE,
+                        where: {
+                            numero_documento: numeroDocumento
+                        }
+                    },
+                    EVENTO_INCLUDE,
+                    TIPO_CERTIFICADO_INCLUDE
+                ],
+                order: [
+                    ['id', 'DESC']
+                ]
+            })
+
+            if (certificados.length === 0) {
+                return {
+                    result: false,
+                    message: 'No se encontraron certificados para el número de documento proporcionado',
+                    data: [],
+                    status: 404
+                }
+            }
+
+            return {
+                result: true,
+                message: 'Certificados obtenidos exitosamente',
+                data: certificados,
+                status: 200
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return {
+                result: false,
+                message: 'Error al filtrar certificados por número de documento',
+                error: errorMessage,
+                status: 500
+            };
         }
     }
 
@@ -351,7 +407,11 @@ class CertificadoRepository {
             // Generar un nuevo certificado
             const responseCertificado = await HPdf.generarCertificado(data, alumno, evento)
 
+            console.log({ responseCertificado })
+
             const { dataResult } = responseCertificado as TResponseCertificado
+
+            console.log({ dataResult })
 
             const { outputPath, filename, codigo_qr, codigo } = dataResult as TCertificado
 

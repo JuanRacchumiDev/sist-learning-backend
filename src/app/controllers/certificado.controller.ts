@@ -22,17 +22,29 @@ class CertificadoController {
     }
 
     async getCertificadosPaginated(req: Request, res: Response) {
-        const page = parseInt(req.query.page as string) || 1
-        const limit = parseInt(req.query.limit as string) || 10
-        const estadoParam = req.query.estado
-        const search = req.query.busqueda as string | undefined
-        let estado: boolean | undefined
+        const { query: { page, limit, estado, busqueda, id_alumno } } = req
 
-        if (typeof estadoParam === 'string') {
-            estado = estadoParam.toLowerCase() === 'true'
+        const paramPage = parseInt(page as string) || 1
+        const paramLimit = parseInt(limit as string) || 10
+        const maxRegistrosIniciales = 500;
+
+        const paramEstado = estado
+        const paramBusqueda = busqueda as string | undefined
+        const paramIdAlumno = id_alumno ? parseInt(id_alumno as string) : undefined
+
+        let defineEstado: boolean | undefined
+        if (typeof paramEstado === 'string') {
+            defineEstado = paramEstado.toLowerCase() === 'true'
         }
 
-        const response = await CertificadoService.getCertificadosPaginado(page, limit, estado, search)
+        const response = await CertificadoService.getCertificadosPaginado(
+            paramPage,
+            paramLimit,
+            defineEstado,
+            paramBusqueda,
+            paramIdAlumno,
+            busqueda ? undefined : maxRegistrosIniciales
+        )
 
         const { result } = response
 
@@ -103,6 +115,34 @@ class CertificadoController {
         const idEvento = Number(id_evento)
 
         const response = await CertificadoService.getCertificadoPorAlumnoPorEvento(+idAlumno, +idEvento)
+
+        const { result, error } = response
+
+        if (result) {
+            res.status(200).json(response)
+        } else {
+            if (error) {
+                res.status(500).json(response)
+            } else {
+                res.status(200).json(response)
+            }
+        }
+    }
+
+    async getCertificadosPorNumeroDocumento(req: Request, res: Response) {
+        const { params } = req
+
+        const { numeroDocumento } = params
+
+        const numeroDocumentoStr = numeroDocumento as string
+
+        // console.log({ numeroDocumento })
+
+        // console.log({ numeroDocumentoStr })
+
+        const response = await CertificadoService.getCertificadosPorNumeroDocumento(numeroDocumentoStr)
+
+        // console.log({ response })
 
         const { result, error } = response
 

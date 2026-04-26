@@ -7,8 +7,8 @@ class CertificadoService {
         return await CertificadoRepository.getAll()
     }
 
-    async getCertificadosPaginado(page: number, limit: number, estado?: boolean, search?: string) {
-        return await CertificadoRepository.getAllWithPaginate(page, limit, estado, search)
+    async getCertificadosPaginado(page: number, limit: number, estado?: boolean, search?: string, id_alumno?: number, maxTotal?: number) {
+        return await CertificadoRepository.getAllWithPaginate(page, limit, estado, search, id_alumno, maxTotal)
     }
 
     async getCertificadosPorAlumno(idAlumno: number) {
@@ -35,6 +35,10 @@ class CertificadoService {
 
     async getCertificadoPorAlumnoPorEvento(idAlumno: number, idEvento: number) {
         return await CertificadoRepository.getByAlumnoIdEventoId(idAlumno, idEvento)
+    }
+
+    async getCertificadosPorNumeroDocumento(numeroDocumento: string) {
+        return await CertificadoRepository.getByNumeroDocumento(numeroDocumento)
     }
 
     async downloadPorId(id: number) {
