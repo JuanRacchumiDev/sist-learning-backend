@@ -554,6 +554,7 @@ export default class HPdf {
                     }
                     break
                 case "plantillas/diploma_especializacion_edicion_completa.pdf":
+                case "plantillas/plantilla_especializacion_moyobamba.pdf":
                     // Configurar el texto del nombre del alumno
 
                     y = 340;  // Posición Y
@@ -695,6 +696,7 @@ export default class HPdf {
                     }
                     break
                 case "plantillas/certificado_Diploma_de_Especializacion_Tacna.pdf":
+                case "plantillas/plantilla_especializacion_tacna.pdf":
                     // Configurar el texto del nombre del alumno
 
                     y = 340;  // Posición Y
