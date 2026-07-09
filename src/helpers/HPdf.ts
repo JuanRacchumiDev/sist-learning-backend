@@ -442,11 +442,11 @@ export default class HPdf {
                     if (linesNombreAlumno.length === 1) {
                         y -= 70
                     } else {
-                        y -= 90
+                        y -= 78
                     }
 
                     pagina.drawText(tituloEvento, {
-                        x: tituloEventoPositionX - 5,
+                        x: tituloEventoPositionX,
                         y,
                         size: fontSizeForTituloEvento,
                         font: customFontBalooBold,
@@ -623,7 +623,8 @@ export default class HPdf {
                         y -= 90
                     } else {
                         // console.log('bb')
-                        y -= 80
+                        y -= 86
+                        // y -= 80
                         // y -= 90
                     }
 
@@ -647,7 +648,7 @@ export default class HPdf {
                         tituloEventoPositionX = (pageWidth - lineWidthTituloEvento) - 230;
 
                         pagina.drawText(getItemTitulo, {
-                            x: tituloEventoPositionX,
+                            x: tituloEventoPositionX + 5,
                             y: y - i * lineHeightTituloEvento,
                             size: fontSizeForTituloEvento,
                             font: customFontBalooBold,
