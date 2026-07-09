@@ -442,11 +442,11 @@ export default class HPdf {
                     if (linesNombreAlumno.length === 1) {
                         y -= 70
                     } else {
-                        y -= 78
+                        y -= 90
                     }
 
                     pagina.drawText(tituloEvento, {
-                        x: tituloEventoPositionX,
+                        x: tituloEventoPositionX - 5,
                         y,
                         size: fontSizeForTituloEvento,
                         font: customFontBalooBold,
