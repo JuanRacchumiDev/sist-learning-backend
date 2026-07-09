@@ -623,7 +623,7 @@ export default class HPdf {
                         y -= 90
                     } else {
                         // console.log('bb')
-                        y -= 86
+                        y -= 75
                         // y -= 80
                         // y -= 90
                     }
@@ -648,7 +648,7 @@ export default class HPdf {
                         tituloEventoPositionX = (pageWidth - lineWidthTituloEvento) - 230;
 
                         pagina.drawText(getItemTitulo, {
-                            x: tituloEventoPositionX + 5,
+                            x: tituloEventoPositionX - 3,
                             y: y - i * lineHeightTituloEvento,
                             size: fontSizeForTituloEvento,
                             font: customFontBalooBold,
