@@ -407,11 +407,7 @@ class CertificadoRepository {
             // Generar un nuevo certificado
             const responseCertificado = await HPdf.generarCertificado(data, alumno, evento)
 
-            console.log({ responseCertificado })
-
             const { dataResult } = responseCertificado as TResponseCertificado
-
-            console.log({ dataResult })
 
             const { outputPath, filename, codigo_qr, codigo } = dataResult as TCertificado
 

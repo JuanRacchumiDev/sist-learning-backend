@@ -98,7 +98,7 @@ export default class HPdf {
             // Obteniendo ruta absoluta de la plantilla
             const pathAbsoluteTemplate: string = path.resolve(__dirname, `../../public/pdf/${pathPlantilla}`)
 
-            // console.log({ pathAbsoluteTemplate })
+            console.log({ pathAbsoluteTemplate })
 
             // Obteniendo ruta absoluta de las fuentes
             const pathFontKuenstler: string = path.resolve(__dirname, '../../public/fonts/KUNSTLER.TTF')
@@ -209,9 +209,9 @@ export default class HPdf {
 
             const outputPath: string = path.resolve(__dirname, `../../public/certificados/${sanitizedTitulo}/${filename}`)
 
-            // console.log({ filename })
+            console.log({ filename })
 
-            // console.log({ outputPath })
+            console.log({ outputPath })
 
             if (fecha_fin) {
                 const fechaFinal = toZonedTime(fecha_fin, TIMEZONES.LIMA)
@@ -267,7 +267,7 @@ export default class HPdf {
 
             // console.log({ pageWidth })
 
-            // console.log({ pathPlantilla })
+            console.log({ pathPlantilla })
 
             switch (pathPlantilla) {
                 case "plantillas/plantilla_d.pdf":
